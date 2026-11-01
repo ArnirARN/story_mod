@@ -22,9 +22,17 @@ jobs:
           path: build/libs/*.jar
       - name: Smoke test (start a server, load all story data)
         run: |
-          ./gradlew runGameTestServer --no-daemon || true
+          mkdir -p run
+          echo "eula=true" > run/eula.txt
+          timeout 300 ./gradlew runServer --no-daemon > server.out 2>&1 &
+          for i in $(seq 1 280); do
+            if grep -q 'Done (' run/logs/latest.log 2>/dev/null; then break; fi
+            sleep 1
+          done
+          pkill -f 'net.neoforged' || true
           LOG=run/logs/latest.log
           test -f "$LOG"
+          grep -q 'Done (' "$LOG"
           grep -q "Loaded 3 story dialogues" "$LOG"
           if grep -iE "storymod" "$LOG" | grep -iE "error|exception|couldn't|failed"; then
             echo "Story data errors found"; exit 1
