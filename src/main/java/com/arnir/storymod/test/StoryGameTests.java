@@ -468,4 +468,161 @@ public final class StoryGameTests {
         leave(helper, p);
         helper.succeed();
     }
+
+    // ------------------------------------------------------------------ side quests
+
+    @GameTest(template = T, batch = "story_13")
+    public static void bellSummonsIrmenAndReadingQuest(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer p = player(helper, PlayerRoles.KEEPER);
+        state.set("veld_met");
+        TriggerManager.check(p, state);
+        check(findNpc(helper, "irmen") == null, "irmen came without the bell");
+        state.set("bell_rung_dawn");
+        TriggerManager.check(p, state);
+        StoryNpc irmen = findNpc(helper, "irmen");
+        check(irmen != null, "irmen did not come after the bell");
+        expectNode(talk(p, irmen), "first");
+        say(p, "Ты призрак");
+        expectNode(say(p, "велели не записывать"), "secret");
+        expectNode(say(p, "Хорошо"), "hub");
+        check(state.has("irmen_met"), "irmen_met not set");
+        check(!hasOption(p, "набралось достаточно"), "reward offered without five notes");
+        check(hasOption(p, "Сколько записей"), "no progress option");
+        check(!hasOption(p, "руки как у"), "keeper option shown before Os is repaired");
+        for (String id : List.of("founding", "roster", "forge_truth", "breaking", "seal")) {
+            state.set("page_" + id);
+        }
+        talk(p, irmen);
+        expectNode(say(p, "набралось достаточно"), "reward");
+        check(Inventories.carriesPage(p, "irmen_testament"), "testament not given");
+        check(count(p, "minecraft:enchanted_book") == 1, "reward book not given");
+        talk(p, irmen);
+        check(!hasOption(p, "набралось достаточно"), "reward offered twice");
+        leave(helper, p);
+        helper.succeed();
+    }
+
+    private static StoryNpc findNpc(GameTestHelper helper, String character) {
+        for (StoryNpc npc : helper.getLevel().getEntities(com.arnir.storymod.registry.ModEntities.STORY_NPC.get(),
+                e -> e.getCharacter().equals(character) && !e.isRemoved())) {
+            return npc;
+        }
+        return null;
+    }
+
+    @GameTest(template = T, batch = "story_14")
+    public static void keeperLampTakesANight(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer k = player(helper, PlayerRoles.KEEPER);
+        ServerPlayer w = player(helper, PlayerRoles.WANDERER);
+        state.set("veld_met");
+        state.set("os_met");
+        state.set("os_repaired");
+        StoryNpc os = npc(helper, "os");
+        talk(w, os);
+        check(!hasOption(w, "помочь с поисками"), "wanderer can start the keeper lamp");
+        say(w, "Ничего");
+        give(k, new ItemStack(Items.ECHO_SHARD, 2));
+        give(k, new ItemStack(Items.PRISMARINE_CRYSTALS, 8));
+        give(k, new ItemStack(Items.GLOWSTONE_DUST, 4));
+        talk(k, os);
+        expectNode(say(k, "помочь с поисками"), "lamp1");
+        expectNode(say(k, "Вот детали"), "lamp2");
+        check(count(k, "minecraft:echo_shard") == 0, "lamp parts not taken");
+        helper.getLevel().setDayTime(15000);
+        expectNode(talk(k, os), "hub");
+        expectNode(say(k, "Как там лампа"), "lamp_wait");
+        state.backdate("os_lamp_started", 24000L);
+        helper.getLevel().setDayTime(24000L + 15000);
+        expectNode(talk(w, os), "hub");
+        say(w, "Ничего");
+        expectNode(talk(k, os), "lamp_done");
+        expectNode(say(k, "Покажи"), "lamp_menu");
+        check(state.has("os_lamp_ready"), "lamp not ready");
+        talk(w, os);
+        expectNode(say(w, "Покажи дорогу"), "lamp_menu");
+        leave(helper, k, w);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_15")
+    public static void eyeAwakensWithEndOfferings(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer w = player(helper, PlayerRoles.WANDERER);
+        state.set("veld_met");
+        state.set("eye_given");
+        give(w, new ItemStack(ModItems.WHITE_EYE.get()));
+        give(w, new ItemStack(Items.ENDER_PEARL, 16));
+        give(w, new ItemStack(Items.CHORUS_FRUIT, 16));
+        helper.getLevel().setDayTime(18000);
+        TriggerManager.check(w, state);
+        check(!state.hasPersonal(w.getUUID(), "eye_awakened"), "eye awakened before visiting the End");
+        state.setPersonal(w.getUUID(), "been_end");
+        TriggerManager.check(w, state);
+        check(state.hasPersonal(w.getUUID(), "eye_awakened"), "eye did not awaken");
+        check(count(w, "minecraft:ender_pearl") == 0 && count(w, "minecraft:chorus_fruit") == 0, "offerings not taken");
+        check(count(w, "storymod:white_eye") == 1, "eye lost");
+        leave(helper, w);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_16")
+    public static void lostItemsCanBeRecovered(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer w = player(helper, PlayerRoles.WANDERER);
+        state.set("veld_met");
+        state.set("os_met");
+        state.set("eye_given");
+        StoryNpc os = npc(helper, "os");
+        talk(w, os);
+        say(w, "Дневник куда-то пропал");
+        check(count(w, "storymod:journal") == 1, "journal not returned");
+        talk(w, os);
+        check(!hasOption(w, "Дневник куда-то пропал"), "journal offered while carried");
+        say(w, "Око пропало");
+        check(count(w, "storymod:white_eye") == 1, "eye not returned");
+        talk(w, os);
+        check(!hasOption(w, "Око пропало"), "eye offered while carried");
+        leave(helper, w);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_17")
+    public static void everyDialogueOpensForEveryRole(GameTestHelper helper) {
+        // Smoke test: starting a conversation in many story states never throws and always shows something.
+        for (String role : List.of("", PlayerRoles.WANDERER, PlayerRoles.KEEPER)) {
+            StoryState state = freshState(helper);
+            ServerPlayer p = player(helper, role);
+            List<List<String>> stages = List.of(
+                    List.of(),
+                    List.of("veld_met", "os_met"),
+                    List.of("veld_met", "os_met", "ash_met_1", "page_roster", "page_forge_truth", "page_obsession"),
+                    List.of("veld_met", "os_met", "ash_met_1", "ash_met_2", "os_repaired", "os_memory", "irmen_met"),
+                    List.of("veld_met", "finale_ready", "ash_met_2", "void_awakened"),
+                    List.of("ending", "ending_dawn"),
+                    List.of("ending", "ending_seal"),
+                    List.of("ending", "ending_fight"));
+            for (List<String> stage : stages) {
+                state.reset();
+                state.set("intro_spawned");
+                stage.forEach(state::set);
+                for (String c : com.arnir.storymod.command.StoryCommand.CHARACTERS) {
+                    StoryNpc npc = npc(helper, c);
+                    DialogueSessions.forget(p);
+                    DialogueSessions.start(p, npc);
+                    DialogueSessions.View v = DialogueSessions.view(p);
+                    // Opening nothing is allowed only if the node removed the character (a farewell).
+                    check(v != null || npc.isRemoved(),
+                            c + " opened nothing at stage " + stage + " for role '" + role + "'");
+                    DialogueSessions.forget(p);
+                    if (!npc.isRemoved()) {
+                        npc.discard();
+                    }
+                }
+            }
+            leave(helper, p);
+        }
+        helper.succeed();
+    }
 }
