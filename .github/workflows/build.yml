@@ -20,3 +20,12 @@ jobs:
         with:
           name: storymod-jar
           path: build/libs/*.jar
+      - name: Smoke test (start a server, load all story data)
+        run: |
+          ./gradlew runGameTestServer --no-daemon || true
+          LOG=run/logs/latest.log
+          test -f "$LOG"
+          grep -q "Loaded 3 story dialogues" "$LOG"
+          if grep -iE "storymod" "$LOG" | grep -iE "error|exception|couldn't|failed"; then
+            echo "Story data errors found"; exit 1
+          fi
