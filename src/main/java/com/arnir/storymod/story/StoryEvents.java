@@ -154,6 +154,11 @@ public final class StoryEvents {
         if (!(event.getEntity() instanceof ServerPlayer player) || player.tickCount % SCAN_INTERVAL != 0) {
             return;
         }
+        tickStory(player);
+    }
+
+    /** Everything the story checks about a player every two seconds. */
+    public static void tickStory(ServerPlayer player) {
         StoryState state = StoryState.get(player.getServer());
         if (!state.has("intro_spawned") || state.has("ending")) {
             return;

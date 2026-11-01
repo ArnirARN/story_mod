@@ -625,4 +625,31 @@ public final class StoryGameTests {
         }
         helper.succeed();
     }
+
+    @GameTest(template = T, batch = "story_18")
+    public static void findingCoresMovesTheStory(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer p = player(helper, "");
+        state.set("veld_met");
+        give(p, new ItemStack(ModItems.CORE_DEPTHS.get()));
+        give(p, page("roster"));
+        com.arnir.storymod.story.StoryEvents.tickStory(p);
+        check(state.has("found_core_depths"), "core not noticed");
+        check(state.has("page_roster"), "note not noticed");
+        check(state.has("ash_spawn_1") && findNpc(helper, "ash") != null, "ash did not appear after the first core");
+
+        giveCores(p);
+        com.arnir.storymod.story.StoryEvents.tickStory(p);
+        check(!state.has("finale_ready"), "finale without the void awakening");
+        state.set("void_awakened");
+        state.set("ash_met_2");
+        com.arnir.storymod.story.StoryEvents.tickStory(p);
+        check(state.has("finale_ready"), "finale not ready");
+        check(!state.has("ash_at_anchor"), "ash came before three days passed");
+        state.backdate("ash_met_2", 24000L * 3);
+        com.arnir.storymod.story.StoryEvents.tickStory(p);
+        check(state.has("ash_at_anchor"), "ash did not come to the circle");
+        leave(helper, p);
+        helper.succeed();
+    }
 }
