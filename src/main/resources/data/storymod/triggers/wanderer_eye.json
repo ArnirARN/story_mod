@@ -1,0 +1,42 @@
+{
+  "once": "player",
+  "if": {
+    "role": "wanderer",
+    "flags": [
+      "veld_met"
+    ],
+    "days_since": {
+      "flag": "veld_met",
+      "days": 3
+    },
+    "moon_phase": 0,
+    "time": {
+      "from": 17000,
+      "to": 19500
+    },
+    "near_anchor": 7
+  },
+  "actions": [
+    {
+      "type": "sound",
+      "sound": "minecraft:block.end_portal_frame.fill"
+    },
+    {
+      "type": "title",
+      "text": "Свет помнит.",
+      "subtitle": "…и тебя тоже."
+    },
+    {
+      "type": "message",
+      "text": "Лодестоун в центре круга холодеет, и из-под камня, как из воды, поднимается белый глаз. Он смотрит прямо на тебя. Ты протягиваешь руку, и он ложится в ладонь, будто всегда там лежал."
+    },
+    {
+      "type": "give_item",
+      "item": "storymod:white_eye"
+    },
+    {
+      "type": "set_flag",
+      "flag": "eye_given"
+    }
+  ]
+}

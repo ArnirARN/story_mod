@@ -4,6 +4,11 @@
   "item.storymod.core_tides": "Сердечник Приливов",
   "item.storymod.core_void": "Сердечник Пустоты",
   "item.storymod.dawn_star": "Звезда Рассвета",
+  "item.storymod.white_eye": "Белое Око",
+  "item.storymod.keeper_gear": "Шестерня наладчицы",
+  "item.storymod.journal": "Дневник странника",
   "item.storymod.dawn_star.desc": "Тёплая, как утро, которого могло не быть.",
-  "entity.storymod.story_npc": "Персонаж"
+  "entity.storymod.story_npc": "Персонаж",
+  "item.storymod.white_eye.desc": "Смотрит туда же, куда и ты.",
+  "item.storymod.keeper_gear.desc": "Ещё тёплая. Пахнет маслом и аметистом."
 }

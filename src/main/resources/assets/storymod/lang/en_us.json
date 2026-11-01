@@ -4,6 +4,11 @@
   "item.storymod.core_tides": "Core of the Tides",
   "item.storymod.core_void": "Core of the Void",
   "item.storymod.dawn_star": "Dawn Star",
+  "item.storymod.white_eye": "White Eye",
+  "item.storymod.keeper_gear": "Keeper's Gear",
+  "item.storymod.journal": "Wanderer's Journal",
   "item.storymod.dawn_star.desc": "Warm, like a morning that almost never came.",
-  "entity.storymod.story_npc": "Character"
+  "entity.storymod.story_npc": "Character",
+  "item.storymod.white_eye.desc": "It looks where you look.",
+  "item.storymod.keeper_gear.desc": "Still warm. Smells of oil and amethyst."
 }

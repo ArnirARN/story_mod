@@ -46,6 +46,8 @@ public final class StoryEvents {
     @SubscribeEvent
     public static void onReloadListeners(AddReloadListenerEvent event) {
         event.addListener(DialogueManager.INSTANCE);
+        event.addListener(com.arnir.storymod.dialogue.TriggerManager.INSTANCE);
+        event.addListener(com.arnir.storymod.dialogue.JournalManager.INSTANCE);
     }
 
     @SubscribeEvent
@@ -58,6 +60,7 @@ public final class StoryEvents {
         if (event.getEntity() instanceof ServerPlayer player) {
             startStoryIfNeeded(player.getServer());
             StoryState state = StoryState.get(player.getServer());
+            PlayerRoles.onLogin(player, state);
             if (!state.has("veld_met")) {
                 player.sendSystemMessage(Component.literal(
                                 "Тебе кажется, что кто-то тихо зовёт тебя по имени. Голос доносится оттуда, где этот мир начинается.")
@@ -157,6 +160,7 @@ public final class StoryEvents {
         }
         scanInventory(player, state);
         checkAppearances(player, state);
+        com.arnir.storymod.dialogue.TriggerManager.check(player, state);
     }
 
     private static void scanInventory(ServerPlayer player, StoryState state) {
@@ -215,12 +219,13 @@ public final class StoryEvents {
             appear(level, player, "ash", "Ты снова чувствуешь запах пепла. Кто-то стоит совсем рядом.");
         }
 
-        if (cores >= ModItems.CORE_IDS.size() && !state.has("finale_ready")) {
+        if (cores >= ModItems.CORE_IDS.size() && state.has("void_awakened") && !state.has("finale_ready")) {
             state.set("finale_ready");
             broadcast(player.getServer(), "Земля под ногами вздрагивает. Там, где начинается мир, кто-то ждёт тебя.");
         }
         BlockPos anchor = state.anchor();
-        if (state.has("finale_ready") && state.has("ash_met_2") && !state.has("ash_at_anchor") && anchor != null) {
+        // The seal needs a few days to gather strength after the second meeting before she can come.
+        if (state.has("finale_ready") && state.daysSince("ash_met_2") >= 3 && !state.has("ash_at_anchor") && anchor != null) {
             state.set("ash_at_anchor");
             StoryNpc.spawn(player.getServer().overworld(), "ash", anchor.offset(-3, 0, 1), -90.0F);
         }
@@ -262,6 +267,15 @@ public final class StoryEvents {
         }
         List<String> lines = AMBIENT.get(Math.min(coresFound(state), AMBIENT.size() - 1));
         broadcast(server, lines.get(server.overworld().random.nextInt(lines.size())));
+    }
+
+    /** Endermen do not take offence at the wanderer's gaze. */
+    @SubscribeEvent
+    public static void onEndermanAnger(net.neoforged.neoforge.event.entity.living.EnderManAngerEvent event) {
+        if (event.getPlayer() instanceof ServerPlayer player
+                && StoryState.get(player.getServer()).role(player.getUUID()).equals(PlayerRoles.WANDERER)) {
+            event.setCanceled(true);
+        }
     }
 
     public static void onBossDefeated(ServerLevel level, StoryNpc boss) {

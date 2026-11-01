@@ -17,6 +17,8 @@ public final class ModNetwork {
                 (payload, context) -> context.enqueueWork(() -> ClientDialogueHandler.open(payload)));
         registrar.playToClient(CloseDialoguePayload.TYPE, CloseDialoguePayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(ClientDialogueHandler::close));
+        registrar.playToClient(OpenJournalPayload.TYPE, OpenJournalPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> ClientDialogueHandler.openJournal(payload)));
         registrar.playToServer(ChooseOptionPayload.TYPE, ChooseOptionPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> {
                     if (context.player() instanceof ServerPlayer player) {

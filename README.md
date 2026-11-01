@@ -12,6 +12,9 @@
 - Задания в свободном порядке, привязанные к ванильным структурам всего мира, включая Нижний мир и Край.
 - Записки, которые можно найти в сундуках. Их читают как обычные книги.
 - Несколько концовок.
+- Личные роли игроков со своими заданиями, местом появления и предметами. Роли назначаются по нику при первом входе: `ArnirA` и `sserutto`.
+- Дневник у каждого игрока (ПКМ): показывает только его текущие цели и то, что он уже знает.
+- Часть событий требует подождать несколько игровых дней, прийти в определённое время суток, фазу луны или место.
 
 ## Сборка
 
@@ -40,6 +43,7 @@
 | `/story spawn <персонаж>` | Призвать персонажа рядом, если он потерялся |
 | `/story flags` | Показать флаги сюжета (спойлер!) |
 | `/story flag set\|clear <флаг>` | Поставить или снять флаг |
+| `/story role <игрок> wanderer\|keeper\|none` | Назначить личную роль (если ник другой) |
 | `/story reset` | Сбросить сюжет. Вступление начнётся заново при следующем входе |
 
 ## Как устроен контент
@@ -47,8 +51,10 @@
 Сюжет полностью описан данными, код менять не нужно:
 
 - `data/storymod/dialogues/<персонаж>.json` — диалоги. `entries` выбирают стартовый узел по условиям, `nodes` содержат текст, действия и варианты ответа.
+- `data/storymod/triggers/*.json` — события, которые срабатывают сами, когда условие выполнено (один раз на мир или на игрока).
+- `data/storymod/journal/*.json` — строки дневника и условия, когда их показывать.
 - `data/storymod/loot_table/` и `data/storymod/loot_modifiers/` — что и с каким шансом добавляется в ванильные сундуки.
 - `assets/storymod/textures/entity/npc/<персонаж>.png` — скин персонажа (обычная раскладка скина игрока 64×64).
 
-Условия: `flags`, `not_flags`, `items`, `carry_pages`, `flag_count`, `any`.
-Действия: `set_flag`, `clear_flag`, `give_item`, `give_item_all`, `take_item`, `give_loot`, `spawn_npc`, `despawn_self`, `despawn_character`, `become_boss`, `broadcast`, `message`, `effect`, `sound`, `lightning`.
+Условия: `flags`, `not_flags`, `pflags`, `not_pflags`, `role`, `not_role`, `role_near`, `items`, `carry_pages`, `flag_count`, `days_since`, `time`, `moon_phase`, `dimension`, `near_anchor`, `advancement`, `any`, `not`.
+Действия: `set_flag`, `clear_flag`, `set_pflag`, `clear_pflag`, `title`, `give_item`, `give_item_all`, `take_item`, `give_loot`, `spawn_npc`, `despawn_self`, `despawn_character`, `become_boss`, `broadcast`, `message`, `effect`, `sound`, `lightning`.

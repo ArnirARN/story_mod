@@ -1,0 +1,90 @@
+package com.arnir.storymod.story;
+
+import com.arnir.storymod.registry.ModItems;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.levelgen.Heightmap;
+
+import java.util.Locale;
+import java.util.Map;
+
+/**
+ * Personal story roles. Players get them by nickname on first login; admins can reassign with /story role.
+ */
+public final class PlayerRoles {
+    public static final String WANDERER = "wanderer";
+    public static final String KEEPER = "keeper";
+
+    /** Default nickname → role. */
+    private static final Map<String, String> DEFAULTS = Map.of(
+            "arnira", WANDERER,
+            "sserutto", KEEPER);
+
+    private PlayerRoles() {
+    }
+
+    public static void onLogin(ServerPlayer player, StoryState state) {
+        if (state.role(player.getUUID()).isEmpty()) {
+            String role = DEFAULTS.get(player.getGameProfile().getName().toLowerCase(Locale.ROOT));
+            if (role != null && !state.roleTaken(role)) {
+                state.setRole(player.getUUID(), role);
+            }
+        }
+        if (!state.hasPersonal(player.getUUID(), "journal_given")) {
+            state.setPersonal(player.getUUID(), "journal_given");
+            ItemStack journal = new ItemStack(ModItems.JOURNAL.get());
+            if (!player.getInventory().add(journal)) {
+                player.drop(journal, false);
+            }
+        }
+        if (WANDERER.equals(state.role(player.getUUID())) && !state.hasPersonal(player.getUUID(), "wanderer_arrived")) {
+            state.setPersonal(player.getUUID(), "wanderer_arrived");
+            arriveWanderer(player);
+        }
+    }
+
+    /** The wanderer does not arrive where everyone else does. */
+    private static void arriveWanderer(ServerPlayer player) {
+        ServerLevel level = player.getServer().overworld();
+        BlockPos spawn = level.getSharedSpawnPos();
+        BlockPos center = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, spawn.offset(-36, 0, 28));
+        BlockPos floor = center.below();
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                if (Math.abs(dx) + Math.abs(dz) > 3) {
+                    continue;
+                }
+                level.setBlockAndUpdate(floor.offset(dx, 0, dz), (dx + dz) % 2 == 0
+                        ? Blocks.END_STONE_BRICKS.defaultBlockState() : Blocks.END_STONE.defaultBlockState());
+                for (int y = 1; y <= 3; y++) {
+                    BlockPos air = floor.offset(dx, y, dz);
+                    if (!level.getBlockState(air).isAir() && level.getBlockState(air).canBeReplaced()) {
+                        level.setBlockAndUpdate(air, Blocks.AIR.defaultBlockState());
+                    }
+                }
+            }
+        }
+        int[][] pillars = {{-2, -2}, {2, -2}, {-2, 2}, {2, 2}};
+        for (int i = 0; i < pillars.length; i++) {
+            int height = 2 + i % 2;
+            for (int y = 0; y <= height; y++) {
+                BlockPos p = floor.offset(pillars[i][0], y, pillars[i][1]);
+                level.setBlockAndUpdate(p, y == height ? Blocks.END_ROD.defaultBlockState() : Blocks.PURPUR_PILLAR.defaultBlockState());
+            }
+        }
+        level.setBlockAndUpdate(floor.offset(1, 1, 2), Blocks.CHORUS_FLOWER.defaultBlockState());
+        level.setBlockAndUpdate(floor, Blocks.CRYING_OBSIDIAN.defaultBlockState());
+
+        player.teleportTo(level, center.getX() + 0.5, center.getY(), center.getZ() + 0.5, 180.0F, 10.0F);
+        player.setRespawnPosition(Level.OVERWORLD, center, 180.0F, true, false);
+        player.sendSystemMessage(Component.literal(
+                        "Ты открываешь глаза. Свет здесь слишком яркий, а тишина слишком знакомая. Дорогу сюда память не сохранила.")
+                .withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
+    }
+}

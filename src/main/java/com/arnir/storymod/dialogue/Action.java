@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Something a dialogue node or option does. Types:
- * set_flag, clear_flag, give_item, give_item_all, take_item, give_loot, spawn_npc, despawn_self,
+ * Something a dialogue node, option or trigger does. Types:
+ * set_flag, clear_flag, set_pflag, clear_pflag, title, give_item, give_item_all, take_item, give_loot, spawn_npc, despawn_self,
  * despawn_character, become_boss, broadcast, message, effect, sound, lightning.
  */
 public record Action(String type, JsonObject args) {
@@ -61,6 +61,15 @@ public record Action(String type, JsonObject args) {
         switch (type) {
             case "set_flag" -> state.set(str("flag", ""));
             case "clear_flag" -> state.clear(str("flag", ""));
+            case "set_pflag" -> state.setPersonal(player.getUUID(), str("flag", ""));
+            case "clear_pflag" -> state.clearPersonal(player.getUUID(), str("flag", ""));
+            case "title" -> {
+                player.connection.send(new net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket(20, 80, 30));
+                player.connection.send(new net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket(
+                        Component.literal(str("subtitle", "")).withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC)));
+                player.connection.send(new net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket(
+                        Component.literal(str("text", "")).withStyle(ChatFormatting.WHITE)));
+            }
             case "give_item" -> give(player, new ItemStack(Inventories.item(str("item", "minecraft:air")), num("count", 1)));
             case "give_item_all" -> {
                 for (ServerPlayer p : level.getServer().getPlayerList().getPlayers()) {

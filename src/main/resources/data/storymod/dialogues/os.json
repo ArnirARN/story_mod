@@ -27,6 +27,37 @@
     },
     {
       "if": {
+        "flags": [
+          "os_repair_started"
+        ],
+        "not_flags": [
+          "os_repaired"
+        ],
+        "role": "keeper",
+        "days_since": {
+          "flag": "os_repair_started",
+          "days": 2
+        },
+        "time": {
+          "from": 13000,
+          "to": 23000
+        }
+      },
+      "node": "reboot_done"
+    },
+    {
+      "if": {
+        "flags": [
+          "os_repair_started"
+        ],
+        "not_flags": [
+          "os_repaired"
+        ]
+      },
+      "node": "rebooting"
+    },
+    {
+      "if": {
         "not_flags": [
           "os_met"
         ]
@@ -38,6 +69,155 @@
     }
   ],
   "nodes": {
+    "repair1": {
+      "text": [
+        "Сканирование… Руки наладчицы. Ось помнит такие руки. Ошибка. Не помнит.",
+        "Для ремонта нужно: медь, шестнадцать слитков. Редстоун, восемь. Осколки аметиста, четыре. И часы, чтобы Ось снова знал время."
+      ],
+      "options": [
+        {
+          "text": "Вот всё, что нужно.",
+          "next": "repair2",
+          "if": {
+            "items": [
+              {
+                "item": "minecraft:copper_ingot",
+                "count": 16
+              },
+              {
+                "item": "minecraft:redstone",
+                "count": 8
+              },
+              {
+                "item": "minecraft:amethyst_shard",
+                "count": 4
+              },
+              {
+                "item": "minecraft:clock",
+                "count": 1
+              }
+            ]
+          },
+          "actions": [
+            {
+              "type": "take_item",
+              "item": "minecraft:copper_ingot",
+              "count": 16
+            },
+            {
+              "type": "take_item",
+              "item": "minecraft:redstone",
+              "count": 8
+            },
+            {
+              "type": "take_item",
+              "item": "minecraft:amethyst_shard",
+              "count": 4
+            },
+            {
+              "type": "take_item",
+              "item": "minecraft:clock",
+              "count": 1
+            },
+            {
+              "type": "set_flag",
+              "flag": "os_repair_started"
+            }
+          ]
+        },
+        {
+          "text": "Соберу и вернусь.",
+          "next": "hub"
+        }
+      ]
+    },
+    "repair2": {
+      "text": [
+        "Детали приняты. Начинаю перезагрузку.",
+        "Ось будет спать два дня. Не будить. Ось проснётся ночью, когда видно звёзды. И только для той, кто чинила."
+      ],
+      "actions": [
+        {
+          "type": "sound",
+          "sound": "minecraft:block.beacon.deactivate"
+        }
+      ],
+      "options": [
+        {
+          "text": "Спи спокойно.",
+          "next": null
+        }
+      ]
+    },
+    "repair_other": {
+      "text": "Можно. Но не тобой. Ось нужна наладчица. Твои руки… другие.",
+      "options": [
+        {
+          "text": "Понятно.",
+          "next": "hub"
+        }
+      ]
+    },
+    "rebooting": {
+      "text": "Ззз… щёлк… перезагрузка… не будить… ночью… через два дня…",
+      "options": [
+        {
+          "text": "…",
+          "next": null
+        }
+      ]
+    },
+    "reboot_done": {
+      "text": [
+        "Щёлк. Щёлк. Система запущена. Время: ночь. Звёзды: на месте. Наладчица: рядом.",
+        "Спасибо. Ось чувствует себя… целым. Это новое ощущение. У тебя руки как у… данные недоступны. Пока.",
+        "Возьми. Шестерня из старого сердца Оси. Оси она больше не нужна, а тебе пригодится."
+      ],
+      "actions": [
+        {
+          "type": "set_flag",
+          "flag": "os_repaired"
+        },
+        {
+          "type": "give_item",
+          "item": "storymod:keeper_gear"
+        },
+        {
+          "type": "sound",
+          "sound": "minecraft:block.beacon.activate"
+        }
+      ],
+      "options": [
+        {
+          "text": "Рада, что ты снова в строю.",
+          "next": "hub"
+        }
+      ]
+    },
+    "scan_w": {
+      "text": "Сканирование. Температура: ниже нормы. Частота: Край. Ось не понимает. Ось не будет докладывать хозяину.",
+      "actions": [
+        {
+          "type": "set_pflag",
+          "flag": "os_scanned"
+        }
+      ],
+      "options": [
+        {
+          "text": "Спасибо, Ось.",
+          "next": "hub"
+        }
+      ]
+    },
+    "h_damaged": {
+      "text": "Данные о двух Сердечниках повреждены. Щёлк. Ось нужен ремонт. Нужны умелые руки.",
+      "options": [
+        {
+          "text": "Понятно.",
+          "next": "hints"
+        }
+      ]
+    },
     "intro": {
       "text": [
         "Щёлк. Новый голос. Регистрирую.",
@@ -77,11 +257,42 @@
           }
         },
         {
+          "text": "Дай посмотрю, что с тобой.",
+          "next": "repair1",
+          "if": {
+            "role": "keeper",
+            "not_flags": [
+              "os_repair_started"
+            ]
+          }
+        },
+        {
+          "text": "Ты весь скрипишь. Тебя можно починить?",
+          "next": "repair_other",
+          "if": {
+            "not_role": "keeper",
+            "not_flags": [
+              "os_repair_started"
+            ]
+          }
+        },
+        {
+          "text": "Ось, что ты видишь, когда смотришь на меня?",
+          "next": "scan_w",
+          "if": {
+            "role": "wanderer",
+            "not_pflags": [
+              "os_scanned"
+            ]
+          }
+        },
+        {
           "text": "Ты знаешь, кто такая Пепельная?",
           "next": "mem1",
           "if": {
             "flags": [
-              "ash_met_2"
+              "ash_met_2",
+              "os_repaired"
             ],
             "not_flags": [
               "os_memory"
@@ -144,6 +355,9 @@
           "text": "Сердечник Приливов",
           "next": "h_tides",
           "if": {
+            "flags": [
+              "os_repaired"
+            ],
             "not_flags": [
               "found_core_tides"
             ]
@@ -153,8 +367,20 @@
           "text": "Сердечник Пустоты",
           "next": "h_void",
           "if": {
+            "flags": [
+              "os_repaired"
+            ],
             "not_flags": [
               "found_core_void"
+            ]
+          }
+        },
+        {
+          "text": "А остальные?",
+          "next": "h_damaged",
+          "if": {
+            "not_flags": [
+              "os_repaired"
             ]
           }
         },
