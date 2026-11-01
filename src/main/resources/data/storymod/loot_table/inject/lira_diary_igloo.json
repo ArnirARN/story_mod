@@ -1,0 +1,40 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Отец считает ночами. Я видела цифры. Он знает, что Горн пьёт солнце, и знает, сколько ему осталось.\n\nОн говорит: ещё немного, потом исправим.",
+                "За стенами гибнут поля. Люди уходят на юг, но юг тоже темнеет.\n\nЕсли отец не остановит Горн, это сделаю я. Я знаю, где его сердце. Я сама его настраивала."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Дневник подмастерья",
+              "author": "Л.",
+              "generation": 0
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{storymod_page:\"lira_diary\"}"
+            }
+          ]
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.7
+        }
+      ]
+    }
+  ]
+}

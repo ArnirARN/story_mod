@@ -1,0 +1,9 @@
+{
+  "item.storymod.core_depths": "Сердечник Глубин",
+  "item.storymod.core_flame": "Сердечник Пламени",
+  "item.storymod.core_tides": "Сердечник Приливов",
+  "item.storymod.core_void": "Сердечник Пустоты",
+  "item.storymod.dawn_star": "Звезда Рассвета",
+  "item.storymod.dawn_star.desc": "Тёплая, как утро, которого могло не быть.",
+  "entity.storymod.story_npc": "Персонаж"
+}

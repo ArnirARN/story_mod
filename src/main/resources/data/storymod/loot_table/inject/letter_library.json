@@ -1,0 +1,41 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Папа.\n\nЕсли ты читаешь это, значит, я сделала то, что должна была. Горн не ошибся. Он работал правильно. Он просто такой: чтобы светить вечно, он должен забирать.",
+                "Я разбила его, потому что ты бы не смог. Я запечатаю его собой.\n\nНе ищи меня в огне. Я буду рядом, ближе, чем ты думаешь.",
+                "Я не сержусь. Я только хочу, чтобы однажды ты перестал считать и просто посмотрел вокруг.\n\nТвоя Лира."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Письмо отцу",
+              "author": "Лира",
+              "generation": 0
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{storymod_page:\"letter\"}"
+            }
+          ]
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.6
+        }
+      ]
+    }
+  ]
+}

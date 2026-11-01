@@ -1,0 +1,40 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "[Поверх чертежа, неровным почерком]\n\nГорн можно собрать заново. Сердечники живы, я их чувствую.\n\nОшибка не в расчётах. Ошибки не было.",
+                "Свет помнит всех, кого сжёг. Если запустить Горн на полную мощь, я смогу вытянуть её обратно.\n\nЛира. Я смогу вернуть её.\n\nСолнце подождёт."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Чертёж с пометками",
+              "author": "Вельд",
+              "generation": 0
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{storymod_page:\"obsession\"}"
+            }
+          ]
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.12
+        }
+      ]
+    }
+  ]
+}

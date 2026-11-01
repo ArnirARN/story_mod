@@ -1,0 +1,30 @@
+{
+  "replace": false,
+  "entries": [
+    "storymod:founding_pyramid",
+    "storymod:founding_cartographer",
+    "storymod:roster_jungle",
+    "storymod:roster_shipwreck",
+    "storymod:forge_truth_mineshaft",
+    "storymod:forge_truth_dungeon",
+    "storymod:lira_diary_igloo",
+    "storymod:lira_diary_treasure",
+    "storymod:lira_diary_plains",
+    "storymod:breaking_outpost",
+    "storymod:breaking_portal",
+    "storymod:obsession_mansion",
+    "storymod:obsession_city",
+    "storymod:letter_library",
+    "storymod:letter_city",
+    "storymod:os_schema_trial",
+    "storymod:os_schema_dungeon",
+    "storymod:seal_bastion",
+    "storymod:seal_fortress",
+    "storymod:dawn_end_city",
+    "storymod:core_depths_city",
+    "storymod:core_flame_fortress",
+    "storymod:core_flame_bastion",
+    "storymod:core_tides_elder",
+    "storymod:core_void_end_city"
+  ]
+}

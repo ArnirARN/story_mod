@@ -1,0 +1,41 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Третий год.\n\nМощность Горна выросла вдвое. За то же время полуденный свет за стенами города ослаб на одну десятую.\n\nСовпадение? Я повторила замеры.",
+                "Не совпадение.\n\nГорн не создаёт свет. Он его забирает. У солнца. Чем больше даёт Горн, тем меньше остаётся миру.",
+                "Отчёт отправлен главному инженеру.\n\nОтвет: «Расход приемлем».\n\nБольше ответов не было."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Отчёт о расходе света",
+              "author": "Наблюдатель Тесса",
+              "generation": 0
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{storymod_page:\"forge_truth\"}"
+            }
+          ]
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.3
+        }
+      ]
+    }
+  ]
+}
