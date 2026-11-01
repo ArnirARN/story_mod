@@ -30,7 +30,7 @@ import java.util.List;
 
 /**
  * Something a dialogue node, option or trigger does. Types:
- * set_flag, clear_flag, set_pflag, clear_pflag, title, give_item, give_item_all, take_item, give_loot, spawn_npc, despawn_self,
+ * set_flag, clear_flag, set_pflag, clear_pflag, title, give_structure_compass, give_item, give_item_all, take_item, give_loot, spawn_npc, despawn_self,
  * despawn_character, become_boss, broadcast, message, effect, sound, lightning.
  */
 public record Action(String type, JsonObject args) {
@@ -63,6 +63,7 @@ public record Action(String type, JsonObject args) {
             case "clear_flag" -> state.clear(str("flag", ""));
             case "set_pflag" -> state.setPersonal(player.getUUID(), str("flag", ""));
             case "clear_pflag" -> state.clearPersonal(player.getUUID(), str("flag", ""));
+            case "give_structure_compass" -> giveStructureCompass(player, level);
             case "title" -> {
                 player.connection.send(new net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket(20, 80, 30));
                 player.connection.send(new net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket(
@@ -133,6 +134,28 @@ public record Action(String type, JsonObject args) {
             }
             default -> StoryMod.LOGGER.warn("Unknown dialogue action type '{}'", type);
         }
+    }
+
+    /**
+     * A compass pointing at the nearest structure from a structure tag, e.g.
+     * {"type": "give_structure_compass", "structure": "storymod:ancient_cities", "name": "..."}
+     */
+    private void giveStructureCompass(ServerPlayer player, ServerLevel level) {
+        net.minecraft.tags.TagKey<net.minecraft.world.level.levelgen.structure.Structure> tag =
+                net.minecraft.tags.TagKey.create(Registries.STRUCTURE, ResourceLocation.parse(str("structure", "")));
+        BlockPos found = level.findNearestMapStructure(tag, player.blockPosition(), num("radius", 64), false);
+        if (found == null) {
+            player.sendSystemMessage(Component.literal(str("fail_text", "Стрелка кружится и не может выбрать направление."))
+                    .withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
+            return;
+        }
+        ItemStack compass = new ItemStack(net.minecraft.world.item.Items.COMPASS);
+        compass.set(net.minecraft.core.component.DataComponents.LODESTONE_TRACKER,
+                new net.minecraft.world.item.component.LodestoneTracker(
+                        java.util.Optional.of(net.minecraft.core.GlobalPos.of(level.dimension(), found)), false));
+        compass.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME,
+                Component.literal(str("name", "Компас")).withStyle(ChatFormatting.AQUA));
+        give(player, compass);
     }
 
     private Component text(ServerPlayer player) {

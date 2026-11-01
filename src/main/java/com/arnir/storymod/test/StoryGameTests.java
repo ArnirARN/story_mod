@@ -42,7 +42,7 @@ import java.util.List;
 @GameTestHolder(StoryMod.MODID)
 @PrefixGameTestTemplate(false)
 public final class StoryGameTests {
-    private static final String T = "storymod:empty";
+    private static final String T = "empty";
 
     private StoryGameTests() {
     }
@@ -147,7 +147,7 @@ public final class StoryGameTests {
 
     @GameTest(template = T, batch = "story_01")
     public static void dataLoads(GameTestHelper helper) {
-        for (String c : List.of("veld", "os", "ash")) {
+        for (String c : List.of("veld", "os", "ash", "irmen")) {
             check(DialogueManager.get(c) != null, "dialogue missing: " + c);
         }
         helper.succeed();

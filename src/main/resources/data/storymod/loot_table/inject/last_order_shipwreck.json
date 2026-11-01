@@ -1,0 +1,40 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Всем мастерам.\n\nГорн не останавливать. Расход света утверждён. Жалобы с окраин не рассматривать.",
+                "Подмастерье Лиру от сердца Горна отстранить. Ключи наладчицы печатей изъять.\n\nКлючи изъять не удалось."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Последний приказ Ордена",
+              "author": "Совет Зенита",
+              "generation": 0
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{storymod_page:\"last_order\"}"
+            }
+          ]
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.3
+        }
+      ]
+    }
+  ]
+}

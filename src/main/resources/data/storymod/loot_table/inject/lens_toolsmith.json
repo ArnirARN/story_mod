@@ -1,0 +1,40 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Аметист держит звук, медь его ведёт, редстоун помнит.\n\nЕсли сложить их правильно, механизм проснётся даже после тысячи лет сна.",
+                "Нужно только дать ему время. Две ночи, не меньше. Механизмы, как и люди, не любят, когда их будят днём."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Заметки о механизмах",
+              "author": "Л.",
+              "generation": 0
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{storymod_page:\"lens\"}"
+            }
+          ]
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.4
+        }
+      ]
+    }
+  ]
+}

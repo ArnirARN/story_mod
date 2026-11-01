@@ -269,6 +269,23 @@ public final class StoryEvents {
         broadcast(server, lines.get(server.overworld().random.nextInt(lines.size())));
     }
 
+    /** Ringing a bell at the old stone circle at dawn is remembered by the story. */
+    @SubscribeEvent
+    public static void onRightClickBlock(net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickBlock event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)
+                || !player.level().getBlockState(event.getPos()).is(Blocks.BELL)) {
+            return;
+        }
+        StoryState state = StoryState.get(player.getServer());
+        BlockPos anchor = state.anchor();
+        long time = player.getServer().overworld().getDayTime() % 24000L;
+        boolean dawn = time >= 22500L || time <= 500L;
+        if (anchor != null && dawn && player.level().dimension() == Level.OVERWORLD
+                && event.getPos().distSqr(anchor) <= 12 * 12 && state.has("veld_met")) {
+            state.set("bell_rung_dawn");
+        }
+    }
+
     /** Endermen do not take offence at the wanderer's gaze. */
     @SubscribeEvent
     public static void onEndermanAnger(net.neoforged.neoforge.event.entity.living.EnderManAngerEvent event) {

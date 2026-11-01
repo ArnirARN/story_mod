@@ -58,6 +58,26 @@
     },
     {
       "if": {
+        "flags": [
+          "os_lamp_started"
+        ],
+        "not_flags": [
+          "os_lamp_ready"
+        ],
+        "role": "keeper",
+        "days_since": {
+          "flag": "os_lamp_started",
+          "days": 1
+        },
+        "time": {
+          "from": 13000,
+          "to": 23000
+        }
+      },
+      "node": "lamp_done"
+    },
+    {
+      "if": {
         "not_flags": [
           "os_met"
         ]
@@ -325,8 +345,288 @@
           }
         },
         {
+          "text": "Ось, ты можешь помочь с поисками?",
+          "next": "lamp1",
+          "if": {
+            "role": "keeper",
+            "flags": [
+              "os_repaired"
+            ],
+            "not_flags": [
+              "os_lamp_started"
+            ]
+          }
+        },
+        {
+          "text": "Как там лампа?",
+          "next": "lamp_wait",
+          "if": {
+            "flags": [
+              "os_lamp_started"
+            ],
+            "not_flags": [
+              "os_lamp_ready"
+            ]
+          }
+        },
+        {
+          "text": "Покажи дорогу.",
+          "next": "lamp_menu",
+          "if": {
+            "flags": [
+              "os_lamp_ready"
+            ]
+          }
+        },
+        {
+          "text": "Ты помнишь что-нибудь ещё?",
+          "next": "os_bell",
+          "if": {
+            "flags": [
+              "os_repaired"
+            ],
+            "not_flags": [
+              "os_bell_hint"
+            ]
+          }
+        },
+        {
+          "text": "Дневник куда-то пропал.",
+          "next": "lost_journal",
+          "if": {
+            "not": {
+              "items": [
+                {
+                  "item": "storymod:journal"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "text": "Око пропало.",
+          "next": "lost_eye",
+          "if": {
+            "role": "wanderer",
+            "flags": [
+              "eye_given"
+            ],
+            "not": {
+              "items": [
+                {
+                  "item": "storymod:white_eye"
+                }
+              ]
+            }
+          }
+        },
+        {
           "text": "Ничего. До встречи.",
           "next": null
+        }
+      ]
+    },
+    "lamp1": {
+      "text": [
+        "Ось может. Нужна резонансная лампа. Ось помнит чертёж.",
+        "Осколки эха, два. Кристаллы призмарина, восемь. Светопыль, четыре. Наладчица соберёт, Ось настроит. Настройка займёт одну ночь."
+      ],
+      "options": [
+        {
+          "text": "Вот детали.",
+          "next": "lamp2",
+          "if": {
+            "items": [
+              {
+                "item": "minecraft:echo_shard",
+                "count": 2
+              },
+              {
+                "item": "minecraft:prismarine_crystals",
+                "count": 8
+              },
+              {
+                "item": "minecraft:glowstone_dust",
+                "count": 4
+              }
+            ]
+          },
+          "actions": [
+            {
+              "type": "take_item",
+              "item": "minecraft:echo_shard",
+              "count": 2
+            },
+            {
+              "type": "take_item",
+              "item": "minecraft:prismarine_crystals",
+              "count": 8
+            },
+            {
+              "type": "take_item",
+              "item": "minecraft:glowstone_dust",
+              "count": 4
+            },
+            {
+              "type": "set_flag",
+              "flag": "os_lamp_started"
+            }
+          ]
+        },
+        {
+          "text": "Позже.",
+          "next": "hub"
+        }
+      ]
+    },
+    "lamp2": {
+      "text": "Лампа собрана. Ось настраивает. Приходи следующей ночью. Наладчица нужна, чтобы закрутить последний винт.",
+      "actions": [
+        {
+          "type": "sound",
+          "sound": "minecraft:block.amethyst_block.chime"
+        }
+      ],
+      "options": [
+        {
+          "text": "Хорошо.",
+          "next": "hub"
+        }
+      ]
+    },
+    "lamp_wait": {
+      "text": "Лампа гудит. Настройка идёт. Ночью, наладчица. Не раньше, чем пройдёт день.",
+      "options": [
+        {
+          "text": "…",
+          "next": "hub"
+        }
+      ]
+    },
+    "lamp_done": {
+      "text": [
+        "Последний винт. Щёлк.",
+        "Лампа поёт. Ось слышит дальние места: эхо под землёй, песню под водой, шёпот старых книг. Ось может показать дорогу. Любому из вас."
+      ],
+      "actions": [
+        {
+          "type": "set_flag",
+          "flag": "os_lamp_ready"
+        },
+        {
+          "type": "sound",
+          "sound": "minecraft:block.amethyst_block.resonate"
+        }
+      ],
+      "options": [
+        {
+          "text": "Покажи.",
+          "next": "lamp_menu"
+        }
+      ]
+    },
+    "lamp_menu": {
+      "text": "Куда?",
+      "options": [
+        {
+          "text": "К спящему городу глубин.",
+          "next": "lamp_menu",
+          "actions": [
+            {
+              "type": "give_structure_compass",
+              "structure": "storymod:ancient_cities",
+              "radius": 96,
+              "name": "Компас: спящий город"
+            }
+          ]
+        },
+        {
+          "text": "К храму стражей под водой.",
+          "next": "lamp_menu",
+          "actions": [
+            {
+              "type": "give_structure_compass",
+              "structure": "storymod:monuments",
+              "radius": 64,
+              "name": "Компас: храм стражей"
+            }
+          ]
+        },
+        {
+          "text": "К подземной библиотеке.",
+          "next": "lamp_menu",
+          "actions": [
+            {
+              "type": "give_structure_compass",
+              "structure": "storymod:strongholds",
+              "radius": 100,
+              "name": "Компас: подземная библиотека"
+            }
+          ]
+        },
+        {
+          "text": "К особняку в тёмном лесу.",
+          "next": "lamp_menu",
+          "actions": [
+            {
+              "type": "give_structure_compass",
+              "structure": "storymod:mansions",
+              "radius": 100,
+              "name": "Компас: особняк"
+            }
+          ]
+        },
+        {
+          "text": "Хватит.",
+          "next": "hub"
+        }
+      ]
+    },
+    "os_bell": {
+      "text": [
+        "Ось помнит обычай. В Хальде на рассвете звонили в колокол у круга. Чтобы позвать архивариуса.",
+        "Колокола здесь нет. Колокол можно поставить. Ось не знает, кто ответит. Архивариус давно… щёлк… давно."
+      ],
+      "actions": [
+        {
+          "type": "set_flag",
+          "flag": "os_bell_hint"
+        }
+      ],
+      "options": [
+        {
+          "text": "Интересно.",
+          "next": "hub"
+        }
+      ]
+    },
+    "lost_journal": {
+      "text": "Ось хранит копию. Ось хранит копии всего.",
+      "actions": [
+        {
+          "type": "give_item",
+          "item": "storymod:journal"
+        }
+      ],
+      "options": [
+        {
+          "text": "Спасибо.",
+          "next": "hub"
+        }
+      ]
+    },
+    "lost_eye": {
+      "text": "Око не теряется. Оно возвращается к тому, кого видит. Смотри: уже здесь.",
+      "actions": [
+        {
+          "type": "give_item",
+          "item": "storymod:white_eye"
+        }
+      ],
+      "options": [
+        {
+          "text": "…",
+          "next": "hub"
         }
       ]
     },

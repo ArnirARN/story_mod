@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Я, Ирмен Тихий, свидетельствую: Вельд знал. Он читал отчёты Тессы. Это он написал «расход приемлем».",
+                "Но я видел и другое. В ночь раскола он бросился в сердце Горна за дочерью, и свет его не убил.\n\nПотому что Лира закрыла его собой."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Последняя страница хроники",
+              "author": "Ирмен Тихий",
+              "generation": 0
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{storymod_page:\"irmen_testament\"}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

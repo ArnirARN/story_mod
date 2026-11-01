@@ -31,6 +31,7 @@ public class DialogueScreen extends Screen {
     private int panelY;
     private int panelWidth;
     private int panelHeight;
+    private int buttonHeight = BUTTON_HEIGHT;
 
     public DialogueScreen(OpenDialoguePayload payload) {
         super(Component.literal(payload.speaker()));
@@ -51,7 +52,11 @@ public class DialogueScreen extends Screen {
         panelWidth = Math.min(PANEL_MAX_WIDTH, this.width - 20);
         int textHeight = wrap(payload.text()).size() * (this.font.lineHeight + 1);
         int options = Math.max(1, payload.options().size());
-        int buttonsHeight = options * (BUTTON_HEIGHT + BUTTON_GAP);
+        // Shrink the buttons when many options would not fit on a small screen.
+        int fixed = PADDING + this.font.lineHeight + 6 + textHeight + 8 + PADDING + 26;
+        int perOption = Math.max(14, Math.min(BUTTON_HEIGHT + BUTTON_GAP, (this.height - fixed) / options));
+        buttonHeight = perOption - (perOption >= 18 ? BUTTON_GAP : 1);
+        int buttonsHeight = options * perOption;
         panelHeight = PADDING + this.font.lineHeight + 6 + textHeight + 8 + buttonsHeight + PADDING;
         panelX = (this.width - panelWidth) / 2;
         panelY = Math.max(10, this.height - panelHeight - 16);
@@ -64,7 +69,7 @@ public class DialogueScreen extends Screen {
             for (int i = 0; i < payload.options().size(); i++) {
                 Component label = Component.literal((i + 1) + ". " + payload.options().get(i));
                 addOption(label, payload.optionIds().get(i), y, buttonWidth);
-                y += BUTTON_HEIGHT + BUTTON_GAP;
+                y += perOption;
             }
         }
         updateButtons();
@@ -72,7 +77,7 @@ public class DialogueScreen extends Screen {
 
     private void addOption(Component label, int optionId, int y, int width) {
         Button button = Button.builder(label, b -> choose(optionId))
-                .bounds(panelX + PADDING, y, width, BUTTON_HEIGHT)
+                .bounds(panelX + PADDING, y, width, buttonHeight)
                 .build();
         optionButtons.add(addRenderableWidget(button));
     }

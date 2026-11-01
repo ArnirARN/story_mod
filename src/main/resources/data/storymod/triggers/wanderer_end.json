@@ -1,0 +1,22 @@
+{
+  "once": "player",
+  "if": {
+    "role": "wanderer",
+    "dimension": "minecraft:the_end"
+  },
+  "actions": [
+    {
+      "type": "title",
+      "text": "Тишина.",
+      "subtitle": "Знакомая."
+    },
+    {
+      "type": "message",
+      "text": "Здесь дышится легче, чем где-либо в мире. Высокие проходят мимо, не оборачиваясь. Будто ты свой."
+    },
+    {
+      "type": "set_pflag",
+      "flag": "been_end"
+    }
+  ]
+}

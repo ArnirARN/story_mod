@@ -44,8 +44,10 @@ public class WhiteEyeItem extends Item {
                     .withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC), true);
             return InteractionResultHolder.fail(stack);
         }
+        StoryState state = StoryState.get(sp.getServer());
+        double range = state.hasPersonal(sp.getUUID(), "eye_awakened") ? RANGE * 2 : RANGE;
         Vec3 eye = sp.getEyePosition();
-        Vec3 end = eye.add(sp.getLookAngle().scale(RANGE));
+        Vec3 end = eye.add(sp.getLookAngle().scale(range));
         BlockHitResult hit = level.clip(new ClipContext(eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, sp));
         BlockPos target = hit.getType() == HitResult.Type.MISS
                 ? BlockPos.containing(end)

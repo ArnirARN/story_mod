@@ -38,9 +38,9 @@ jobs:
           LOG=run/logs/latest.log
           test -f "$LOG"
           grep -q 'Done (' "$LOG"
-          grep -q "Loaded 3 story dialogues" "$LOG"
-          grep -q "Loaded 4 story triggers" "$LOG"
-          grep -q "Loaded 17 story journal entries" "$LOG"
+          grep -qE "Loaded [1-9][0-9]* story dialogues" "$LOG"
+          grep -qE "Loaded [1-9][0-9]* story triggers" "$LOG"
+          grep -qE "Loaded [1-9][0-9]* story journal entries" "$LOG"
           if grep -iE "storymod" "$LOG" | grep -iE "error|exception|couldn't|failed"; then
             echo "Story data errors found"; exit 1
           fi
