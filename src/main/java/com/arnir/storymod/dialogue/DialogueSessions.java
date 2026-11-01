@@ -21,7 +21,16 @@ public final class DialogueSessions {
     public static final int CLOSE = -1;
     private static final double MAX_DISTANCE_SQ = 10.0 * 10.0;
 
-    private record Session(int npcId, String character, String node) {
+    private record Session(int npcId, String character, String node, List<String> labels, List<Integer> ids) {
+    }
+
+    /** What the player currently sees: option index → label. Empty if not in a conversation. */
+    public record View(int npcId, String character, String node, List<String> labels, List<Integer> ids) {
+    }
+
+    public static View view(ServerPlayer player) {
+        Session s = SESSIONS.get(player.getUUID());
+        return s == null ? null : new View(s.npcId(), s.character(), s.node(), s.labels(), s.ids());
     }
 
     private static final Map<UUID, Session> SESSIONS = new HashMap<>();
@@ -65,8 +74,8 @@ public final class DialogueSessions {
         }
         String speaker = node.speaker() != null ? node.speaker() : dialogue.speaker();
         String text = node.text().replace("{player}", player.getGameProfile().getName());
-        SESSIONS.put(player.getUUID(), new Session(npc.getId(), npc.getCharacter(), nodeId));
-        PacketDistributor.sendToPlayer(player, new OpenDialoguePayload(npc.getId(), speaker, text, labels, ids));
+        SESSIONS.put(player.getUUID(), new Session(npc.getId(), npc.getCharacter(), nodeId, List.copyOf(labels), List.copyOf(ids)));
+        send(player, new OpenDialoguePayload(npc.getId(), speaker, text, labels, ids));
     }
 
     public static void choose(ServerPlayer player, int npcId, int optionIndex) {
@@ -109,7 +118,16 @@ public final class DialogueSessions {
 
     public static void end(ServerPlayer player) {
         SESSIONS.remove(player.getUUID());
-        PacketDistributor.sendToPlayer(player, new CloseDialoguePayload());
+        send(player, new CloseDialoguePayload());
+    }
+
+    /** Sends a packet, tolerating clients without the mod's channel (for example game-test mock players). */
+    public static void send(ServerPlayer player, net.minecraft.network.protocol.common.custom.CustomPacketPayload payload) {
+        try {
+            PacketDistributor.sendToPlayer(player, payload);
+        } catch (RuntimeException e) {
+            com.arnir.storymod.StoryMod.LOGGER.debug("Could not send {} to {}", payload.type().id(), player.getGameProfile().getName());
+        }
     }
 
     public static void forget(ServerPlayer player) {

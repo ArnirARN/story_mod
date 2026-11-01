@@ -134,6 +134,15 @@ public class StoryState extends SavedData {
         return (now() - t) / 24000L;
     }
 
+    /** Pretends a flag was set {@code ticks} earlier than it was (used by tests and admin tools). */
+    public void backdate(String flag, long ticks) {
+        Long t = flagTimes.get(flag);
+        if (t != null) {
+            flagTimes.put(flag, t - ticks);
+            setDirty();
+        }
+    }
+
     public boolean hasPersonal(UUID player, String flag) {
         Set<String> set = playerFlags.get(player);
         return set != null && set.contains(flag);

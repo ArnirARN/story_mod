@@ -20,6 +20,11 @@ jobs:
         with:
           name: storymod-jar
           path: build/libs/*.jar
+      - name: Story game tests
+        run: |
+          ./gradlew runGameTestServer --no-daemon > gametest.out 2>&1 || true
+          grep -E "required tests|passed|failed|GameTestAssert|Exception" gametest.out | grep -v DEBUG | tail -60 || true
+          grep -q "required tests passed" gametest.out
       - name: Smoke test (start a server, load all story data)
         run: |
           mkdir -p run
