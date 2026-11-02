@@ -43,10 +43,55 @@ public final class PlayerRoles {
                 player.drop(journal, false);
             }
         }
+        if (!state.hasPersonal(player.getUUID(), "starter_kit")) {
+            state.setPersonal(player.getUUID(), "starter_kit");
+            giveStarterKit(player, state.role(player.getUUID()));
+        }
         if (WANDERER.equals(state.role(player.getUUID())) && !state.hasPersonal(player.getUUID(), "wanderer_arrived")) {
             state.setPersonal(player.getUUID(), "wanderer_arrived");
             arriveWanderer(player);
         }
+    }
+
+    /** Personal starting things. Also handed out once to players who joined before kits existed. */
+    public static void giveStarterKit(ServerPlayer player, String role) {
+        java.util.List<ItemStack> kit = new java.util.ArrayList<>();
+        switch (role) {
+            case WANDERER -> {
+                kit.add(new ItemStack(ModItems.TWILIGHT_AMULET.get()));
+                kit.add(new ItemStack(net.minecraft.world.item.Items.ENDER_PEARL, 4));
+                kit.add(new ItemStack(net.minecraft.world.item.Items.COOKED_MUTTON, 12));
+                kit.add(note(player, "storymod:notes/start_wanderer"));
+            }
+            case KEEPER -> {
+                kit.add(new ItemStack(ModItems.KEEPER_WRENCH.get()));
+                kit.add(new ItemStack(net.minecraft.world.item.Items.COPPER_INGOT, 12));
+                kit.add(new ItemStack(net.minecraft.world.item.Items.BREAD, 12));
+                kit.add(note(player, "storymod:notes/start_keeper"));
+            }
+            default -> {
+                kit.add(new ItemStack(net.minecraft.world.item.Items.BREAD, 8));
+                kit.add(new ItemStack(net.minecraft.world.item.Items.TORCH, 16));
+            }
+        }
+        for (ItemStack stack : kit) {
+            if (stack.isEmpty()) {
+                continue;
+            }
+            if (!player.getInventory().add(stack)) {
+                player.drop(stack, false);
+            }
+        }
+    }
+
+    private static ItemStack note(ServerPlayer player, String table) {
+        net.minecraft.server.level.ServerLevel level = player.serverLevel();
+        var key = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE,
+                net.minecraft.resources.ResourceLocation.parse(table));
+        var items = level.getServer().reloadableRegistries().getLootTable(key).getRandomItems(
+                new net.minecraft.world.level.storage.loot.LootParams.Builder(level)
+                        .create(net.minecraft.world.level.storage.loot.parameters.LootContextParamSets.EMPTY));
+        return items.isEmpty() ? ItemStack.EMPTY : items.get(0);
     }
 
     /** The wanderer does not arrive where everyone else does. */

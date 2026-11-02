@@ -1,0 +1,414 @@
+{
+  "speaker": "Мира-странница",
+  "entries": [
+    {
+      "if": {
+        "not_pflags": [
+          "mira_met"
+        ]
+      },
+      "node": "first"
+    },
+    {
+      "node": "hub"
+    }
+  ],
+  "nodes": {
+    "first": {
+      "text": [
+        "Добрый день! Я Мира, торгую диковинами.",
+        "Заезжаю к этому кругу каждый третий день, с утра до заката. Дороги нынче темнеют, а у меня как раз товар для тёмных дорог."
+      ],
+      "actions": [
+        {
+          "type": "set_pflag",
+          "flag": "mira_met"
+        }
+      ],
+      "options": [
+        {
+          "text": "Покажи, что есть.",
+          "next": "hub"
+        }
+      ]
+    },
+    "hub": {
+      "text": "Что ищешь?",
+      "options": [
+        {
+          "text": "Диковина наугад (12 изумрудов)",
+          "next": "bought",
+          "if": {
+            "items": [
+              {
+                "item": "minecraft:emerald",
+                "count": 12
+              }
+            ]
+          },
+          "actions": [
+            {
+              "type": "take_item",
+              "item": "minecraft:emerald",
+              "count": 12
+            },
+            {
+              "type": "give_loot",
+              "table": "storymod:artifacts/random"
+            },
+            {
+              "type": "sound",
+              "sound": "minecraft:entity.villager.yes"
+            }
+          ]
+        },
+        {
+          "text": "Старая запись (6 изумрудов)",
+          "next": "bought_note",
+          "if": {
+            "items": [
+              {
+                "item": "minecraft:emerald",
+                "count": 6
+              }
+            ]
+          },
+          "actions": [
+            {
+              "type": "take_item",
+              "item": "minecraft:emerald",
+              "count": 6
+            },
+            {
+              "type": "give_loot",
+              "table": "storymod:artifacts/notes"
+            }
+          ]
+        },
+        {
+          "text": "Без изумрудов ничего не купить?",
+          "next": "prices",
+          "if": {
+            "not": {
+              "items": [
+                {
+                  "item": "minecraft:emerald",
+                  "count": 6
+                }
+              ]
+            }
+          }
+        },
+        {
+          "text": "Тебе нужна помощь?",
+          "next": "q1",
+          "if": {
+            "not_pflags": [
+              "mira_q1_started"
+            ]
+          }
+        },
+        {
+          "text": "Вот ягоды и мёд.",
+          "next": "q1_done",
+          "if": {
+            "pflags": [
+              "mira_q1_started"
+            ],
+            "not_pflags": [
+              "mira_q1_done"
+            ],
+            "items": [
+              {
+                "item": "minecraft:sweet_berries",
+                "count": 16
+              },
+              {
+                "item": "minecraft:glow_berries",
+                "count": 16
+              },
+              {
+                "item": "minecraft:honey_bottle",
+                "count": 1
+              }
+            ]
+          },
+          "actions": [
+            {
+              "type": "take_item",
+              "item": "minecraft:sweet_berries",
+              "count": 16
+            },
+            {
+              "type": "take_item",
+              "item": "minecraft:glow_berries",
+              "count": 16
+            },
+            {
+              "type": "take_item",
+              "item": "minecraft:honey_bottle",
+              "count": 1
+            },
+            {
+              "type": "give_item",
+              "item": "storymod:zenith_ring"
+            },
+            {
+              "type": "set_pflag",
+              "flag": "mira_q1_done"
+            },
+            {
+              "type": "sound",
+              "sound": "minecraft:entity.villager.celebrate"
+            }
+          ]
+        },
+        {
+          "text": "Есть ещё работа?",
+          "next": "q2",
+          "if": {
+            "not_pflags": [
+              "mira_q2_started"
+            ],
+            "pflags": [
+              "mira_q1_done"
+            ]
+          }
+        },
+        {
+          "text": "Вот мембраны и жемчуг.",
+          "next": "q2_done",
+          "if": {
+            "pflags": [
+              "mira_q2_started"
+            ],
+            "not_pflags": [
+              "mira_q2_done"
+            ],
+            "items": [
+              {
+                "item": "minecraft:phantom_membrane",
+                "count": 4
+              },
+              {
+                "item": "minecraft:ender_pearl",
+                "count": 1
+              }
+            ]
+          },
+          "actions": [
+            {
+              "type": "take_item",
+              "item": "minecraft:phantom_membrane",
+              "count": 4
+            },
+            {
+              "type": "take_item",
+              "item": "minecraft:ender_pearl",
+              "count": 1
+            },
+            {
+              "type": "give_item",
+              "item": "storymod:void_feather"
+            },
+            {
+              "type": "set_pflag",
+              "flag": "mira_q2_done"
+            },
+            {
+              "type": "sound",
+              "sound": "minecraft:entity.villager.celebrate"
+            }
+          ]
+        },
+        {
+          "text": "Что-нибудь ещё?",
+          "next": "q3",
+          "if": {
+            "not_pflags": [
+              "mira_q3_started"
+            ],
+            "pflags": [
+              "mira_q2_done"
+            ]
+          }
+        },
+        {
+          "text": "Вот стержни и золото.",
+          "next": "q3_done",
+          "if": {
+            "pflags": [
+              "mira_q3_started"
+            ],
+            "not_pflags": [
+              "mira_q3_done"
+            ],
+            "items": [
+              {
+                "item": "minecraft:blaze_rod",
+                "count": 8
+              },
+              {
+                "item": "minecraft:gold_block",
+                "count": 1
+              }
+            ]
+          },
+          "actions": [
+            {
+              "type": "take_item",
+              "item": "minecraft:blaze_rod",
+              "count": 8
+            },
+            {
+              "type": "take_item",
+              "item": "minecraft:gold_block",
+              "count": 1
+            },
+            {
+              "type": "give_item",
+              "item": "storymod:forge_ember"
+            },
+            {
+              "type": "set_pflag",
+              "flag": "mira_q3_done"
+            },
+            {
+              "type": "sound",
+              "sound": "minecraft:entity.villager.celebrate"
+            }
+          ]
+        },
+        {
+          "text": "Какие слухи?",
+          "next": "rumors"
+        },
+        {
+          "text": "Пока, Мира.",
+          "next": null
+        }
+      ]
+    },
+    "prices": {
+      "text": "Увы, я не благотворительность. Диковина стоит 12 изумрудов, старая запись 6. Жители деревень охотно платят изумрудами.",
+      "options": [
+        {
+          "text": "Понятно.",
+          "next": "hub"
+        }
+      ]
+    },
+    "bought": {
+      "text": "Носи на здоровье. Таких вещиц в мире немного, и каждая что-то умеет, если держать её при себе.",
+      "options": [
+        {
+          "text": "Спасибо.",
+          "next": "hub"
+        }
+      ]
+    },
+    "bought_note": {
+      "text": "Нашла в одном заброшенном сундуке. Читать не стала, это не моё дело.",
+      "options": [
+        {
+          "text": "Спасибо.",
+          "next": "hub"
+        }
+      ]
+    },
+    "rumors": {
+      "text": [
+        "Говорят, в пустынных и лесных храмах находили кольца, что греют на солнце.",
+        "В кораблях и затонувших руинах бывает чешуя, с которой дышишь под водой. Под землёй, в тихих городах, есть подвески для глаз, что не любят темноты.",
+        "А в старых крепостях и особняках попадаются медальоны на удачу. Ищите, путники."
+      ],
+      "options": [
+        {
+          "text": "Спасибо за наводку.",
+          "next": "hub"
+        }
+      ]
+    },
+    "q1": {
+      "text": [
+        "Ох, ещё как. Хочу заварить чай в дорогу, а ягод нет.",
+        "Принеси 16 сладких ягод, 16 светящихся ягод и бутылочку мёда. Отблагодарю кольцом, которое греет на солнце."
+      ],
+      "actions": [
+        {
+          "type": "set_pflag",
+          "flag": "mira_q1_started"
+        }
+      ],
+      "options": [
+        {
+          "text": "Договорились.",
+          "next": "hub"
+        }
+      ]
+    },
+    "q1_done": {
+      "text": "Чудесно! Держи кольцо. Пока светит солнце, оно понемногу лечит. Носи хоть в кармане.",
+      "options": [
+        {
+          "text": "Спасибо, Мира.",
+          "next": "hub"
+        }
+      ]
+    },
+    "q2": {
+      "text": [
+        "Есть. Хочу сшить перо, которое держит в воздухе. Для него нужны 4 мембраны фантома и эндер-жемчужина.",
+        "Мембраны роняют те твари, что кружат над теми, кто долго не спит."
+      ],
+      "actions": [
+        {
+          "type": "set_pflag",
+          "flag": "mira_q2_started"
+        }
+      ],
+      "options": [
+        {
+          "text": "Договорились.",
+          "next": "hub"
+        }
+      ]
+    },
+    "q2_done": {
+      "text": "Готово. Если падаешь, пригнись, и перо замедлит падение.",
+      "options": [
+        {
+          "text": "Спасибо, Мира.",
+          "next": "hub"
+        }
+      ]
+    },
+    "q3": {
+      "text": [
+        "В Нижнем мире есть уголь, который не гаснет. Я умею его будить.",
+        "Принеси 8 огненных стержней и блок золота. Дам уголёк, с которым жар Нижнего мира тебе не страшен."
+      ],
+      "actions": [
+        {
+          "type": "set_pflag",
+          "flag": "mira_q3_started"
+        }
+      ],
+      "options": [
+        {
+          "text": "Договорились.",
+          "next": "hub"
+        }
+      ]
+    },
+    "q3_done": {
+      "text": "Держи. Пока ты в Нижнем мире, огонь будет к тебе добр.",
+      "options": [
+        {
+          "text": "Спасибо, Мира.",
+          "next": "hub"
+        }
+      ]
+    }
+  }
+}

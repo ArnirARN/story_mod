@@ -154,7 +154,27 @@ public final class StoryEvents {
         if (!(event.getEntity() instanceof ServerPlayer player) || player.tickCount % SCAN_INTERVAL != 0) {
             return;
         }
+        tickItems(player);
         tickStory(player);
+    }
+
+    /** Passive powers of carried trinkets. Works in any story state. */
+    public static void tickItems(ServerPlayer player) {
+        java.util.Set<net.minecraft.world.item.Item> seen = new java.util.HashSet<>();
+        Inventory inv = player.getInventory();
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            net.minecraft.world.item.Item item = inv.getItem(i).getItem();
+            if (!seen.add(item)) {
+                continue;
+            }
+            if (item instanceof com.arnir.storymod.item.ArtifactItem artifact) {
+                artifact.pulse(player);
+            } else if (item instanceof com.arnir.storymod.item.TwilightAmuletItem) {
+                com.arnir.storymod.item.TwilightAmuletItem.pulse(player);
+            } else if (item instanceof com.arnir.storymod.item.KeeperWrenchItem) {
+                com.arnir.storymod.item.KeeperWrenchItem.pulse(player);
+            }
+        }
     }
 
     /** Everything the story checks about a player every two seconds. */
@@ -259,6 +279,48 @@ public final class StoryEvents {
                     "В полдень видно звёзды. Это неправильно."),
             List.of("Всё замерло. Решение за тобой.",
                     "Мир задержал дыхание."));
+
+    @SubscribeEvent
+    public static void onServerTickMerchant(ServerTickEvent.Post event) {
+        if (event.getServer().getTickCount() % 100 == 0) {
+            updateMerchant(event.getServer());
+        }
+    }
+
+    /** True on the days and hours the travelling merchant stands at the circle: every third day, morning to dusk. */
+    public static boolean merchantHours(long dayTime) {
+        long day = dayTime / 24000L;
+        long time = dayTime % 24000L;
+        return day % 3 == 0 && time >= 0 && time < 11500;
+    }
+
+    /** Brings the travelling merchant to the stone circle on her days and sends her away afterwards. */
+    public static void updateMerchant(MinecraftServer server) {
+        StoryState state = StoryState.get(server);
+        BlockPos anchor = state.anchor();
+        if (anchor == null || !state.has("veld_met")) {
+            return;
+        }
+        boolean open = merchantHours(server.overworld().getDayTime());
+        boolean here = state.has("mira_here");
+        if (open && !here) {
+            state.set("mira_here");
+            ServerLevel overworld = server.overworld();
+            BlockPos pos = groundNear(overworld, anchor.offset(6, 0, -5), 1);
+            StoryNpc.spawn(overworld, "mira", pos, 225.0F);
+            if (!state.has("mira_announced")) {
+                state.set("mira_announced");
+                broadcast(server, "К старому кругу камней свернула повозка. Похоже, у вас гостья.");
+            }
+        } else if (!open && here) {
+            state.clear("mira_here");
+            state.bumpGeneration("mira");
+            for (StoryNpc npc : server.overworld().getEntities(com.arnir.storymod.registry.ModEntities.STORY_NPC.get(),
+                    e -> e.getCharacter().equals("mira"))) {
+                npc.discard();
+            }
+        }
+    }
 
     @SubscribeEvent
     public static void onServerTick(ServerTickEvent.Post event) {

@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Тому, кто проснётся у белых камней.\n\nАмулет сбережёт тебя в темноте. Темнота тебе не враг, скоро ты сам в этом убедишься.",
+                "Сожми амулет, и тени примут тебя на несколько вдохов. Не злоупотребляй: тени тоже устают.\n\nИ найди того, кто зовёт. Он у старого круга."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Тому, кто у белых камней",
+              "author": "—",
+              "generation": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

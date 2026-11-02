@@ -147,7 +147,7 @@ public final class StoryGameTests {
 
     @GameTest(template = T, batch = "story_01")
     public static void dataLoads(GameTestHelper helper) {
-        for (String c : List.of("veld", "os", "ash", "irmen")) {
+        for (String c : com.arnir.storymod.command.StoryCommand.CHARACTERS) {
             check(DialogueManager.get(c) != null, "dialogue missing: " + c);
         }
         helper.succeed();
@@ -650,6 +650,151 @@ public final class StoryGameTests {
         com.arnir.storymod.story.StoryEvents.tickStory(p);
         check(state.has("ash_at_anchor"), "ash did not come to the circle");
         leave(helper, p);
+        helper.succeed();
+    }
+
+    // ------------------------------------------------------------------ starting kits, trinkets, merchant
+
+    @GameTest(template = T, batch = "story_19")
+    public static void starterKitsPerRole(GameTestHelper helper) {
+        freshState(helper);
+        ServerPlayer w = player(helper, PlayerRoles.WANDERER);
+        ServerPlayer k = player(helper, PlayerRoles.KEEPER);
+        PlayerRoles.giveStarterKit(w, PlayerRoles.WANDERER);
+        PlayerRoles.giveStarterKit(k, PlayerRoles.KEEPER);
+        check(count(w, "storymod:twilight_amulet") == 1, "wanderer has no amulet");
+        check(count(k, "storymod:keeper_wrench") == 1, "keeper has no wrench");
+        check(count(w, "storymod:keeper_wrench") == 0 && count(k, "storymod:twilight_amulet") == 0, "kits mixed up");
+        check(count(w, "minecraft:written_book") == 1 && count(k, "minecraft:written_book") == 1, "welcome notes missing");
+        // Welcome notes must not count as story notes.
+        for (int i = 0; i < w.getInventory().getContainerSize(); i++) {
+            check(Inventories.pageId(w.getInventory().getItem(i)) == null, "welcome note counted as a story note");
+        }
+        leave(helper, w, k);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_20")
+    public static void roleItemsWorkOnlyForTheirOwner(GameTestHelper helper) {
+        freshState(helper);
+        ServerPlayer w = player(helper, PlayerRoles.WANDERER);
+        ServerPlayer k = player(helper, PlayerRoles.KEEPER);
+        w.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        k.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+
+        w.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(ModItems.TWILIGHT_AMULET.get()));
+        ModItems.TWILIGHT_AMULET.get().use(helper.getLevel(), w, net.minecraft.world.InteractionHand.MAIN_HAND);
+        check(w.hasEffect(net.minecraft.world.effect.MobEffects.INVISIBILITY), "amulet did not hide its owner");
+        k.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(ModItems.TWILIGHT_AMULET.get()));
+        ModItems.TWILIGHT_AMULET.get().use(helper.getLevel(), k, net.minecraft.world.InteractionHand.MAIN_HAND);
+        check(!k.hasEffect(net.minecraft.world.effect.MobEffects.INVISIBILITY), "amulet worked for the wrong player");
+
+        ItemStack pick = new ItemStack(Items.IRON_PICKAXE);
+        pick.setDamageValue(200);
+        k.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(ModItems.KEEPER_WRENCH.get()));
+        k.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, pick);
+        ModItems.KEEPER_WRENCH.get().use(helper.getLevel(), k, net.minecraft.world.InteractionHand.MAIN_HAND);
+        check(pick.getDamageValue() == 200, "wrench repaired without copper");
+        give(k, new ItemStack(Items.COPPER_INGOT, 2));
+        ModItems.KEEPER_WRENCH.get().use(helper.getLevel(), k, net.minecraft.world.InteractionHand.MAIN_HAND);
+        check(k.getItemInHand(net.minecraft.world.InteractionHand.OFF_HAND).getDamageValue() < 200, "wrench did not repair");
+        check(count(k, "minecraft:copper_ingot") == 1, "wrench did not spend exactly one copper");
+
+        ItemStack pick2 = new ItemStack(Items.IRON_PICKAXE);
+        pick2.setDamageValue(200);
+        give(w, new ItemStack(Items.COPPER_INGOT, 2));
+        w.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(ModItems.KEEPER_WRENCH.get()));
+        w.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, pick2);
+        ModItems.KEEPER_WRENCH.get().use(helper.getLevel(), w, net.minecraft.world.InteractionHand.MAIN_HAND);
+        check(w.getItemInHand(net.minecraft.world.InteractionHand.OFF_HAND).getDamageValue() == 200, "wrench worked for the wrong player");
+        leave(helper, w, k);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_21")
+    public static void trinketsGiveTheirEffects(GameTestHelper helper) {
+        freshState(helper);
+        ServerPlayer p = player(helper, "");
+        give(p, new ItemStack(ModItems.ORDER_MEDALLION.get()));
+        give(p, new ItemStack(ModItems.ZENITH_RING.get()));
+        give(p, new ItemStack(ModItems.FORGE_EMBER.get()));
+        helper.getLevel().setDayTime(6000);
+        com.arnir.storymod.story.StoryEvents.tickItems(p);
+        check(p.hasEffect(net.minecraft.world.effect.MobEffects.LUCK), "medallion gave no luck");
+        check(p.hasEffect(net.minecraft.world.effect.MobEffects.REGENERATION), "ring gave no regeneration at noon");
+        check(!p.hasEffect(net.minecraft.world.effect.MobEffects.FIRE_RESISTANCE), "ember worked outside the Nether");
+        p.removeAllEffects();
+        helper.getLevel().setDayTime(18000);
+        com.arnir.storymod.story.StoryEvents.tickItems(p);
+        check(!p.hasEffect(net.minecraft.world.effect.MobEffects.REGENERATION), "ring worked at night");
+        // A stronger potion effect is never weakened.
+        p.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.LUCK, 20 * 60, 2));
+        com.arnir.storymod.story.StoryEvents.tickItems(p);
+        check(p.getEffect(net.minecraft.world.effect.MobEffects.LUCK).getAmplifier() == 2, "trinket weakened a potion");
+        leave(helper, p);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_22")
+    public static void merchantComesEveryThirdDayAndTrades(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer p = player(helper, "");
+        net.minecraft.server.MinecraftServer server = helper.getLevel().getServer();
+        helper.getLevel().setDayTime(24000L * 3 + 2000);
+        com.arnir.storymod.story.StoryEvents.updateMerchant(server);
+        check(findNpc(helper, "mira") == null, "merchant came before the story started");
+        state.set("veld_met");
+        com.arnir.storymod.story.StoryEvents.updateMerchant(server);
+        StoryNpc mira = findNpc(helper, "mira");
+        check(mira != null, "merchant did not come on her day");
+        mira.moveTo(p.getX() + 1, p.getY(), p.getZ());
+
+        expectNode(talk(p, mira), "first");
+        say(p, "Покажи");
+        check(hasOption(p, "Без изумрудов"), "no hint about prices when broke");
+        give(p, new ItemStack(Items.EMERALD, 12));
+        talk(p, mira);
+        expectNode(say(p, "Диковина наугад"), "bought");
+        check(count(p, "minecraft:emerald") == 0, "emeralds not taken");
+        int artifacts = 0;
+        for (String id : ModItems.ARTIFACT_IDS) {
+            artifacts += count(p, "storymod:" + id);
+        }
+        check(artifacts == 1, "expected one trinket, got " + artifacts);
+
+        talk(p, mira);
+        check(!hasOption(p, "Есть ещё работа"), "second quest offered before the first");
+        expectNode(say(p, "нужна помощь"), "q1");
+        give(p, new ItemStack(Items.SWEET_BERRIES, 16));
+        give(p, new ItemStack(Items.GLOW_BERRIES, 16));
+        give(p, new ItemStack(Items.HONEY_BOTTLE));
+        talk(p, mira);
+        expectNode(say(p, "Вот ягоды"), "q1_done");
+        check(state.hasPersonal(p.getUUID(), "mira_q1_done"), "quest not finished");
+        talk(p, mira);
+        check(!hasOption(p, "Вот ягоды"), "quest can be turned in twice");
+        check(hasOption(p, "Есть ещё работа"), "second quest not offered");
+
+        helper.getLevel().setDayTime(24000L * 3 + 13000);
+        com.arnir.storymod.story.StoryEvents.updateMerchant(server);
+        check(mira.isRemoved(), "merchant stayed after dusk");
+        helper.getLevel().setDayTime(24000L * 4 + 2000);
+        com.arnir.storymod.story.StoryEvents.updateMerchant(server);
+        check(findNpc(helper, "mira") == null, "merchant came on the wrong day");
+        helper.getLevel().setDayTime(24000L * 6 + 2000);
+        com.arnir.storymod.story.StoryEvents.updateMerchant(server);
+        check(findNpc(helper, "mira") != null, "merchant did not come back");
+        leave(helper, p);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_23", timeoutTicks = 200)
+    public static void trinketsDropFromChests(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        checkLoot(level, "chests/jungle_temple", s -> s.is(ModItems.ZENITH_RING.get()), "zenith ring");
+        checkLoot(level, "chests/buried_treasure", s -> s.is(ModItems.GUARDIAN_SCALE.get()), "guardian scale");
+        checkLoot(level, "chests/woodland_mansion", s -> s.is(ModItems.ORDER_MEDALLION.get()), "order medallion");
+        checkLoot(level, "chests/end_city_treasure", s -> s.is(ModItems.VOID_FEATHER.get()), "void feather");
         helper.succeed();
     }
 }
