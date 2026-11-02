@@ -51,6 +51,12 @@ repositories {
     }
 }
 
+// Runtime-only mods for the dev/test runs; not part of the published jar's dependencies.
+configurations {
+    localRuntime
+    runtimeClasspath.extendsFrom localRuntime
+}
+
 dependencies {
     // Optional: lets artifacts be worn in Curios slots. The mod works without Curios.
     compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"

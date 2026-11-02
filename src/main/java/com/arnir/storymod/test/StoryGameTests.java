@@ -922,4 +922,62 @@ public final class StoryGameTests {
         leave(helper, w, k);
         helper.succeed();
     }
+
+    public static final List<String> STRUCTURES = List.of("white_sanctuary", "keeper_workshop", "order_tower",
+            "sand_observatory", "frost_crypt");
+
+    @GameTest(template = T, batch = "story_28", timeoutTicks = 400)
+    public static void ownStructuresExistAndHaveLoot(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        var access = level.registryAccess();
+        var structures = access.registryOrThrow(Registries.STRUCTURE);
+        var sets = access.registryOrThrow(Registries.STRUCTURE_SET);
+        var biomes = access.registryOrThrow(Registries.BIOME);
+        for (String name : STRUCTURES) {
+            ResourceLocation id = StoryMod.id(name);
+            check(structures.containsKey(id), "structure not registered: " + name);
+            check(sets.containsKey(id), "structure set missing: " + name);
+            var tag = net.minecraft.tags.TagKey.create(Registries.BIOME, StoryMod.id("has_structure/" + name));
+            check(biomes.getTag(tag).map(t -> t.size() > 0).orElse(false), "no biomes for " + name);
+            var template = level.getStructureManager().get(id);
+            check(template.isPresent(), "template missing: " + name);
+            var containers = new ArrayList<net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo>();
+            var settings = new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings();
+            containers.addAll(template.get().filterBlocks(BlockPos.ZERO, settings, net.minecraft.world.level.block.Blocks.CHEST));
+            containers.addAll(template.get().filterBlocks(BlockPos.ZERO, settings, net.minecraft.world.level.block.Blocks.BARREL));
+            boolean hasLoot = false;
+            for (var info : containers) {
+                if (info.nbt() != null && ("storymod:chests/" + name).equals(info.nbt().getString("LootTable"))) {
+                    hasLoot = true;
+                }
+            }
+            check(hasLoot, "no loot chest in " + name);
+            checkLoot(level, "storymod:chests/" + name, s -> !s.isEmpty(), "anything from " + name);
+            checkLoot(level, "storymod:chests/" + name, s -> s.getItem() instanceof com.arnir.storymod.item.ArtifactItem,
+                    "a trinket from " + name);
+        }
+        checkLoot(level, "storymod:chests/frost_crypt", s -> s.is(ModItems.TWILIGHT_AMULET.get()), "the amulet from the crypt");
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_29", timeoutTicks = 200)
+    public static void ownStructurePlacesWithItsChest(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        var template = level.getStructureManager().get(StoryMod.id("keeper_workshop")).orElseThrow();
+        BlockPos origin = helper.absolutePos(new BlockPos(0, 40, 0));
+        var settings = new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings();
+        template.placeInWorld(level, origin, origin, settings, level.getRandom(), 2);
+        BlockPos chestPos = origin.offset(7, 1, 4);
+        check(level.getBlockState(chestPos).is(net.minecraft.world.level.block.Blocks.CHEST), "chest not placed");
+        var be = level.getBlockEntity(chestPos);
+        check(be instanceof net.minecraft.world.level.block.entity.ChestBlockEntity, "chest has no contents holder");
+        check(((net.minecraft.world.level.block.entity.ChestBlockEntity) be).getLootTable() != null, "chest has no loot table");
+        // Clean up so later tests start from empty space.
+        var size = template.getSize();
+        for (BlockPos p : BlockPos.betweenClosed(origin, origin.offset(size.getX() - 1, size.getY() - 1, size.getZ() - 1))) {
+            level.removeBlockEntity(p);
+            level.setBlock(p, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
+        }
+        helper.succeed();
+    }
 }

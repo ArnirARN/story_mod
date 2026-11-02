@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "storymod:keeper_workshop",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 34,
+    "separation": 12,
+    "salt": 730114202
+  }
+}
