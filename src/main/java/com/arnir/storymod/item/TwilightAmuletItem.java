@@ -1,7 +1,5 @@
 package com.arnir.storymod.item;
 
-import com.arnir.storymod.story.PlayerRoles;
-import com.arnir.storymod.story.StoryState;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -23,7 +21,7 @@ import net.minecraft.world.level.LightLayer;
 import java.util.List;
 
 /**
- * The wanderer's starting keepsake. Use: step into the shadows for a few seconds.
+ * A keepsake found in old ruins. Use: step into the shadows for a few seconds.
  * Carried in darkness: moves a little faster.
  */
 public class TwilightAmuletItem extends Item {
@@ -33,8 +31,9 @@ public class TwilightAmuletItem extends Item {
         super(properties);
     }
 
+    /** Anyone who finds it can use it. */
     public static boolean isOwner(ServerPlayer player) {
-        return StoryState.get(player.getServer()).role(player.getUUID()).equals(PlayerRoles.WANDERER);
+        return true;
     }
 
     @Override

@@ -170,7 +170,7 @@ public final class StoryGameTests {
 
     private static void checkLoot(ServerLevel level, String table, java.util.function.Predicate<ItemStack> wanted, String what) {
         LootTable loot = level.getServer().reloadableRegistries().getLootTable(
-                ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.withDefaultNamespace(table)));
+                ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.parse(table)));
         for (int i = 0; i < 400; i++) {
             LootParams params = new LootParams.Builder(level)
                     .withParameter(LootContextParams.ORIGIN, Vec3.ZERO)
@@ -662,9 +662,10 @@ public final class StoryGameTests {
         ServerPlayer k = player(helper, PlayerRoles.KEEPER);
         PlayerRoles.giveStarterKit(w, PlayerRoles.WANDERER);
         PlayerRoles.giveStarterKit(k, PlayerRoles.KEEPER);
-        check(count(w, "storymod:twilight_amulet") == 1, "wanderer has no amulet");
+        check(count(w, "storymod:white_pearl") == 1, "wanderer has no pearl");
+        check(count(w, "storymod:twilight_amulet") == 0, "wanderer still gets the old amulet");
         check(count(k, "storymod:keeper_wrench") == 1, "keeper has no wrench");
-        check(count(w, "storymod:keeper_wrench") == 0 && count(k, "storymod:twilight_amulet") == 0, "kits mixed up");
+        check(count(w, "storymod:keeper_wrench") == 0 && count(k, "storymod:white_pearl") == 0, "kits mixed up");
         check(count(w, "minecraft:written_book") == 1 && count(k, "minecraft:written_book") == 1, "welcome notes missing");
         // Welcome notes must not count as story notes.
         for (int i = 0; i < w.getInventory().getContainerSize(); i++) {
@@ -682,12 +683,12 @@ public final class StoryGameTests {
         w.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
         k.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
 
-        w.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(ModItems.TWILIGHT_AMULET.get()));
-        ModItems.TWILIGHT_AMULET.get().use(helper.getLevel(), w, net.minecraft.world.InteractionHand.MAIN_HAND);
-        check(w.hasEffect(net.minecraft.world.effect.MobEffects.INVISIBILITY), "amulet did not hide its owner");
-        k.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(ModItems.TWILIGHT_AMULET.get()));
-        ModItems.TWILIGHT_AMULET.get().use(helper.getLevel(), k, net.minecraft.world.InteractionHand.MAIN_HAND);
-        check(!k.hasEffect(net.minecraft.world.effect.MobEffects.INVISIBILITY), "amulet worked for the wrong player");
+        w.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(ModItems.WHITE_PEARL.get()));
+        ModItems.WHITE_PEARL.get().use(helper.getLevel(), w, net.minecraft.world.InteractionHand.MAIN_HAND);
+        check(w.hasEffect(net.minecraft.world.effect.MobEffects.INVISIBILITY), "pearl did not hide its owner");
+        k.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(ModItems.WHITE_PEARL.get()));
+        ModItems.WHITE_PEARL.get().use(helper.getLevel(), k, net.minecraft.world.InteractionHand.MAIN_HAND);
+        check(!k.hasEffect(net.minecraft.world.effect.MobEffects.INVISIBILITY), "pearl worked for the wrong player");
 
         ItemStack pick = new ItemStack(Items.IRON_PICKAXE);
         pick.setDamageValue(200);
@@ -795,6 +796,130 @@ public final class StoryGameTests {
         checkLoot(level, "chests/buried_treasure", s -> s.is(ModItems.GUARDIAN_SCALE.get()), "guardian scale");
         checkLoot(level, "chests/woodland_mansion", s -> s.is(ModItems.ORDER_MEDALLION.get()), "order medallion");
         checkLoot(level, "chests/end_city_treasure", s -> s.is(ModItems.VOID_FEATHER.get()), "void feather");
+        helper.succeed();
+    }
+
+    // ------------------------------------------------------------------ white pearl, Curios, structures
+
+    private static net.minecraft.world.InteractionResult useOnBlock(ServerPlayer p, BlockPos abs) {
+        var hit = new net.minecraft.world.phys.BlockHitResult(Vec3.atCenterOf(abs), net.minecraft.core.Direction.UP, abs, false);
+        var ctx = new net.minecraft.world.item.context.UseOnContext(p, net.minecraft.world.InteractionHand.MAIN_HAND, hit);
+        return p.getMainHandItem().useOn(ctx);
+    }
+
+    @GameTest(template = T, batch = "story_24")
+    public static void whitePearlCarriesBlocks(GameTestHelper helper) {
+        freshState(helper);
+        ServerLevel level = helper.getLevel();
+        ServerPlayer w = player(helper, PlayerRoles.WANDERER);
+        ServerPlayer k = player(helper, PlayerRoles.KEEPER);
+        w.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        k.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        var pearl = ModItems.WHITE_PEARL.get();
+        BlockPos stone = helper.absolutePos(new BlockPos(1, 1, 1));
+        BlockPos chest = helper.absolutePos(new BlockPos(3, 1, 1));
+        BlockPos target = helper.absolutePos(new BlockPos(1, 1, 3));
+        level.setBlockAndUpdate(stone, net.minecraft.world.level.block.Blocks.MOSSY_COBBLESTONE.defaultBlockState());
+        level.setBlockAndUpdate(chest, net.minecraft.world.level.block.Blocks.CHEST.defaultBlockState());
+
+        k.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(pearl));
+        k.setShiftKeyDown(true);
+        useOnBlock(k, stone);
+        check(level.getBlockState(stone).is(net.minecraft.world.level.block.Blocks.MOSSY_COBBLESTONE), "pearl lifted a block for the wrong player");
+
+        w.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(pearl));
+        w.setShiftKeyDown(true);
+        useOnBlock(w, chest);
+        check(level.getBlockState(chest).is(net.minecraft.world.level.block.Blocks.CHEST), "pearl lifted a container");
+        w.getCooldowns().removeCooldown(pearl);
+        useOnBlock(w, stone);
+        check(level.getBlockState(stone).isAir(), "pearl did not lift the block");
+        var held = com.arnir.storymod.item.WhitePearlItem.carried(w.getMainHandItem(), level);
+        check(held != null && held.is(net.minecraft.world.level.block.Blocks.MOSSY_COBBLESTONE), "lifted block not kept in the pearl");
+
+        // Using it in the air while holding a block must not trigger the shadow step.
+        w.setShiftKeyDown(false);
+        pearl.use(level, w, net.minecraft.world.InteractionHand.MAIN_HAND);
+        check(!w.hasEffect(net.minecraft.world.effect.MobEffects.INVISIBILITY), "shadow step while carrying a block");
+
+        // Click the floor under the target: the block goes on top of it.
+        level.setBlockAndUpdate(target.below(), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        useOnBlock(w, target.below());
+        check(level.getBlockState(target).is(net.minecraft.world.level.block.Blocks.MOSSY_COBBLESTONE), "block not set down");
+        check(com.arnir.storymod.item.WhitePearlItem.carried(w.getMainHandItem(), level) == null, "pearl still holds the block");
+        leave(helper, w, k);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_25")
+    public static void whitePearlDodgesArrows(GameTestHelper helper) {
+        freshState(helper);
+        ServerLevel level = helper.getLevel();
+        ServerPlayer w = player(helper, PlayerRoles.WANDERER);
+        ServerPlayer k = player(helper, PlayerRoles.KEEPER);
+        w.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        k.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        give(w, new ItemStack(ModItems.WHITE_PEARL.get()));
+        give(k, new ItemStack(ModItems.WHITE_PEARL.get()));
+        var arrow = new net.minecraft.world.damagesource.DamageSource(level.registryAccess()
+                .registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(net.minecraft.world.damagesource.DamageTypes.ARROW));
+        float old = com.arnir.storymod.item.WhitePearlItem.dodgeChance;
+        com.arnir.storymod.item.WhitePearlItem.dodgeChance = 1.0F;
+        try {
+            Vec3 before = w.position();
+            w.hurt(arrow, 4.0F);
+            check(w.getHealth() == w.getMaxHealth(), "arrow hit the pearl's owner");
+            check(w.position().distanceTo(before) > 1.0, "owner did not slip away");
+            w.hurt(arrow, 4.0F);
+            check(w.getHealth() < w.getMaxHealth(), "dodged twice without a pause");
+            k.hurt(arrow, 4.0F);
+            check(k.getHealth() < k.getMaxHealth(), "pearl protected the wrong player");
+        } finally {
+            com.arnir.storymod.item.WhitePearlItem.dodgeChance = old;
+        }
+        leave(helper, w, k);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_26")
+    public static void oldAmuletBecomesThePearl(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer w = player(helper, PlayerRoles.WANDERER);
+        for (String f : List.of("journal_given", "starter_kit", "wanderer_arrived")) {
+            state.setPersonal(w.getUUID(), f);
+        }
+        give(w, new ItemStack(ModItems.TWILIGHT_AMULET.get()));
+        PlayerRoles.onLogin(w, state);
+        check(count(w, "storymod:twilight_amulet") == 0, "old amulet not taken");
+        check(count(w, "storymod:white_pearl") == 1, "pearl not given");
+        PlayerRoles.onLogin(w, state);
+        check(count(w, "storymod:white_pearl") == 1, "pearl given twice");
+        // The amulet now works for anyone who finds it.
+        ServerPlayer k = player(helper, PlayerRoles.KEEPER);
+        k.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(ModItems.TWILIGHT_AMULET.get()));
+        ModItems.TWILIGHT_AMULET.get().use(helper.getLevel(), k, net.minecraft.world.InteractionHand.MAIN_HAND);
+        check(k.hasEffect(net.minecraft.world.effect.MobEffects.INVISIBILITY), "found amulet does not work");
+        leave(helper, w, k);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_27")
+    public static void trinketsWorkFromCuriosSlots(GameTestHelper helper) {
+        freshState(helper);
+        check(com.arnir.storymod.story.PlayerItems.curiosLoaded(), "Curios is not loaded in the test server");
+        ServerPlayer w = player(helper, PlayerRoles.WANDERER);
+        ServerPlayer k = player(helper, PlayerRoles.KEEPER);
+        check(com.arnir.storymod.compat.CuriosCompat.equip(k, "necklace", new ItemStack(ModItems.ORDER_MEDALLION.get())),
+                "no necklace slot");
+        check(com.arnir.storymod.compat.CuriosCompat.equip(w, "necklace", new ItemStack(ModItems.WHITE_PEARL.get())),
+                "no necklace slot for the pearl");
+        check(count(k, "storymod:order_medallion") == 0, "medallion is in the inventory, not the slot");
+        com.arnir.storymod.story.StoryEvents.tickItems(k);
+        check(k.hasEffect(net.minecraft.world.effect.MobEffects.LUCK), "worn medallion gives no luck");
+        check(com.arnir.storymod.item.WhitePearlItem.protects(w), "worn pearl does not protect");
+        var tag = net.minecraft.tags.TagKey.create(Registries.ITEM, ResourceLocation.parse("curios:necklace"));
+        check(new ItemStack(ModItems.WHITE_PEARL.get()).is(tag), "pearl is not a necklace");
+        leave(helper, w, k);
         helper.succeed();
     }
 }

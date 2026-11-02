@@ -47,6 +47,9 @@ public final class ModItems {
     public static final DeferredItem<TwilightAmuletItem> TWILIGHT_AMULET = ITEMS.register("twilight_amulet",
             () -> new TwilightAmuletItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant()));
 
+    public static final DeferredItem<com.arnir.storymod.item.WhitePearlItem> WHITE_PEARL = ITEMS.register("white_pearl",
+            () -> new com.arnir.storymod.item.WhitePearlItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant()));
+
     public static final DeferredItem<KeeperWrenchItem> KEEPER_WRENCH = ITEMS.register("keeper_wrench",
             () -> new KeeperWrenchItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant()));
 

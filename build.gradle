@@ -43,6 +43,20 @@ neoForge {
     }
 }
 
+repositories {
+    maven {
+        name = "Curios"
+        url = "https://maven.theillusivec4.top/"
+        content { includeGroup "top.theillusivec4.curios" }
+    }
+}
+
+dependencies {
+    // Optional: lets artifacts be worn in Curios slots. The mod works without Curios.
+    compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
+    localRuntime "top.theillusivec4.curios:curios-neoforge:${curios_version}"
+}
+
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
     var replaceProperties = [
             minecraft_version      : minecraft_version,

@@ -8,6 +8,7 @@
   "item.storymod.keeper_gear": "Keeper's Gear",
   "item.storymod.journal": "Wanderer's Journal",
   "item.storymod.twilight_amulet": "Twilight Amulet",
+  "item.storymod.white_pearl": "White Pearl",
   "item.storymod.keeper_wrench": "Keeper's Wrench",
   "item.storymod.zenith_ring": "Zenith Ring",
   "item.storymod.echo_pendant": "Echo Pendant",
@@ -19,6 +20,8 @@
   "entity.storymod.story_npc": "Character",
   "item.storymod.white_eye.desc": "It looks where you look.",
   "item.storymod.keeper_gear.desc": "Still warm. Smells of oil and amethyst.",
+  "item.storymod.white_pearl.desc": "Warm, though it should be cold. Everything feels a little closer around it.",
+  "item.storymod.white_pearl.effect": "Sneak + use on a block: lift it. Use while holding one: set it down. Use in the air: shadow step.",
   "item.storymod.twilight_amulet.desc": "Warm in the dark, cold in the light.",
   "item.storymod.twilight_amulet.effect": "Use: shadows hide you and speed you up. Faster in darkness.",
   "item.storymod.keeper_wrench.desc": "Old but sturdy.",
@@ -34,5 +37,7 @@
   "item.storymod.void_feather.desc": "Lighter than air.",
   "item.storymod.void_feather.effect": "Sneak while falling: slow falling.",
   "item.storymod.order_medallion.desc": "A sign of the Order of Zenith.",
-  "item.storymod.order_medallion.effect": "Always: luck."
+  "item.storymod.order_medallion.effect": "Always: luck.",
+  "item.storymod.white_pearl.effect2": "Carried or worn: sometimes slips away from arrows, ender pearls do not hurt, faster in darkness.",
+  "item.storymod.white_pearl.holding": "Holding: %s"
 }

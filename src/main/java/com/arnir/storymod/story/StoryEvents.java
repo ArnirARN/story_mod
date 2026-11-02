@@ -161,14 +161,15 @@ public final class StoryEvents {
     /** Passive powers of carried trinkets. Works in any story state. */
     public static void tickItems(ServerPlayer player) {
         java.util.Set<net.minecraft.world.item.Item> seen = new java.util.HashSet<>();
-        Inventory inv = player.getInventory();
-        for (int i = 0; i < inv.getContainerSize(); i++) {
-            net.minecraft.world.item.Item item = inv.getItem(i).getItem();
+        for (ItemStack stack : PlayerItems.carried(player)) {
+            net.minecraft.world.item.Item item = stack.getItem();
             if (!seen.add(item)) {
                 continue;
             }
             if (item instanceof com.arnir.storymod.item.ArtifactItem artifact) {
                 artifact.pulse(player);
+            } else if (item instanceof com.arnir.storymod.item.WhitePearlItem) {
+                com.arnir.storymod.item.WhitePearlItem.pulse(player);
             } else if (item instanceof com.arnir.storymod.item.TwilightAmuletItem) {
                 com.arnir.storymod.item.TwilightAmuletItem.pulse(player);
             } else if (item instanceof com.arnir.storymod.item.KeeperWrenchItem) {
@@ -359,6 +360,24 @@ public final class StoryEvents {
         if (event.getPlayer() instanceof ServerPlayer player
                 && StoryState.get(player.getServer()).role(player.getUUID()).equals(PlayerRoles.WANDERER)) {
             event.setCanceled(true);
+        }
+    }
+
+    /** The white pearl lets its owner slip away from projectiles. */
+    @SubscribeEvent
+    public static void onIncomingDamage(net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player
+                && event.getSource().is(net.minecraft.tags.DamageTypeTags.IS_PROJECTILE)
+                && com.arnir.storymod.item.WhitePearlItem.tryDodge(player)) {
+            event.setCanceled(true);
+        }
+    }
+
+    /** Thrown ender pearls do not hurt the white pearl's owner. */
+    @SubscribeEvent
+    public static void onPearlTeleport(net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderPearl event) {
+        if (com.arnir.storymod.item.WhitePearlItem.protects(event.getPlayer())) {
+            event.setAttackDamage(0.0F);
         }
     }
 

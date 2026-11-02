@@ -45,7 +45,12 @@ public final class PlayerRoles {
         }
         if (!state.hasPersonal(player.getUUID(), "starter_kit")) {
             state.setPersonal(player.getUUID(), "starter_kit");
+            state.setPersonal(player.getUUID(), "white_pearl_given");
             giveStarterKit(player, state.role(player.getUUID()));
+        }
+        if (WANDERER.equals(state.role(player.getUUID())) && !state.hasPersonal(player.getUUID(), "white_pearl_given")) {
+            state.setPersonal(player.getUUID(), "white_pearl_given");
+            swapAmuletForPearl(player);
         }
         if (WANDERER.equals(state.role(player.getUUID())) && !state.hasPersonal(player.getUUID(), "wanderer_arrived")) {
             state.setPersonal(player.getUUID(), "wanderer_arrived");
@@ -58,7 +63,7 @@ public final class PlayerRoles {
         java.util.List<ItemStack> kit = new java.util.ArrayList<>();
         switch (role) {
             case WANDERER -> {
-                kit.add(new ItemStack(ModItems.TWILIGHT_AMULET.get()));
+                kit.add(new ItemStack(ModItems.WHITE_PEARL.get()));
                 kit.add(new ItemStack(net.minecraft.world.item.Items.ENDER_PEARL, 4));
                 kit.add(new ItemStack(net.minecraft.world.item.Items.COOKED_MUTTON, 12));
                 kit.add(note(player, "storymod:notes/start_wanderer"));
@@ -82,6 +87,32 @@ public final class PlayerRoles {
                 player.drop(stack, false);
             }
         }
+    }
+
+    /** Players who started with the old amulet get the white pearl instead. */
+    public static void swapAmuletForPearl(ServerPlayer player) {
+        var inv = player.getInventory();
+        boolean replaced = false;
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            if (inv.getItem(i).is(ModItems.TWILIGHT_AMULET.get())) {
+                inv.setItem(i, replaced ? ItemStack.EMPTY : new ItemStack(ModItems.WHITE_PEARL.get()));
+                replaced = true;
+            }
+        }
+        if (!replaced) {
+            ItemStack pearl = new ItemStack(ModItems.WHITE_PEARL.get());
+            if (!inv.add(pearl)) {
+                player.drop(pearl, false);
+            }
+        }
+        ItemStack note = note(player, "storymod:notes/start_wanderer");
+        if (!note.isEmpty() && !inv.add(note)) {
+            player.drop(note, false);
+        }
+        player.sendSystemMessage(Component.literal(replaced
+                        ? "Амулет осыпается тёмной пылью. На ладони остаётся что-то белое, гладкое и тёплое."
+                        : "В кармане что-то белое, гладкое и тёплое. Раньше его там не было.")
+                .withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
     }
 
     private static ItemStack note(ServerPlayer player, String table) {
