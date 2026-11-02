@@ -5,6 +5,9 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -44,3 +47,14 @@ jobs:
           if grep -iE "storymod" "$LOG" | grep -iE "error|exception|couldn't|failed"; then
             echo "Story data errors found"; exit 1
           fi
+      - name: Publish the jar as the "latest" release
+        if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp build/libs/storymod-*.jar storymod.jar
+          gh release delete latest --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag || true
+          gh release create latest storymod.jar --repo "$GITHUB_REPOSITORY" --prerelease \
+            --target "${{ github.event.pull_request.head.sha || github.sha }}" \
+            --title "Последняя сборка" \
+            --notes "Свежая сборка мода для Minecraft 1.21.1 (NeoForge 21.1.x). Положите storymod.jar в папку mods на сервере и у каждого игрока."
