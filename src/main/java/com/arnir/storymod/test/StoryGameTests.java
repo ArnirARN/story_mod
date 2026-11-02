@@ -61,6 +61,12 @@ public final class StoryGameTests {
 
     private static StoryState freshState(GameTestHelper helper) {
         StoryState state = StoryState.get(helper.getLevel().getServer());
+        // Players left behind by a failed test must not leak into the next one.
+        var players = helper.getLevel().getServer().getPlayerList();
+        for (ServerPlayer old : List.copyOf(players.getPlayers())) {
+            DialogueSessions.forget(old);
+            players.remove(old);
+        }
         state.reset();
         state.set("intro_spawned");
         state.setAnchor(helper.absolutePos(new BlockPos(2, 1, 2)));
@@ -851,6 +857,13 @@ public final class StoryGameTests {
         helper.succeed();
     }
 
+    /** Returns true if the damage was cancelled. */
+    private static boolean incoming(ServerPlayer p, net.minecraft.world.damagesource.DamageSource source) {
+        var event = new net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent(p,
+                new net.neoforged.neoforge.common.damagesource.DamageContainer(source, 4.0F));
+        return net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled();
+    }
+
     @GameTest(template = T, batch = "story_25")
     public static void whitePearlDodgesArrows(GameTestHelper helper) {
         freshState(helper);
@@ -866,14 +879,16 @@ public final class StoryGameTests {
         float old = com.arnir.storymod.item.WhitePearlItem.dodgeChance;
         com.arnir.storymod.item.WhitePearlItem.dodgeChance = 1.0F;
         try {
+            // Fresh players are briefly invulnerable, so post the damage event directly.
             Vec3 before = w.position();
-            w.hurt(arrow, 4.0F);
-            check(w.getHealth() == w.getMaxHealth(), "arrow hit the pearl's owner");
+            check(incoming(w, arrow), "arrow hit the pearl's owner");
             check(w.position().distanceTo(before) > 1.0, "owner did not slip away");
-            w.hurt(arrow, 4.0F);
-            check(w.getHealth() < w.getMaxHealth(), "dodged twice without a pause");
-            k.hurt(arrow, 4.0F);
-            check(k.getHealth() < k.getMaxHealth(), "pearl protected the wrong player");
+            check(!incoming(w, arrow), "dodged twice without a pause");
+            check(!incoming(k, arrow), "pearl protected the wrong player");
+            var fall = new net.minecraft.world.damagesource.DamageSource(level.registryAccess()
+                    .registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(net.minecraft.world.damagesource.DamageTypes.FALL));
+            w.getPersistentData().remove("storymod_last_dodge");
+            check(!incoming(w, fall), "pearl dodged a fall");
         } finally {
             com.arnir.storymod.item.WhitePearlItem.dodgeChance = old;
         }
@@ -888,6 +903,8 @@ public final class StoryGameTests {
         for (String f : List.of("journal_given", "starter_kit", "wanderer_arrived")) {
             state.setPersonal(w.getUUID(), f);
         }
+        // The mock player already "logged in" before it got its role; pretend it joined before the pearl existed.
+        state.clearPersonal(w.getUUID(), "white_pearl_given");
         give(w, new ItemStack(ModItems.TWILIGHT_AMULET.get()));
         PlayerRoles.onLogin(w, state);
         check(count(w, "storymod:twilight_amulet") == 0, "old amulet not taken");
