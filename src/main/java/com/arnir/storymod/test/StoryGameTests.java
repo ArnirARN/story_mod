@@ -67,6 +67,9 @@ public final class StoryGameTests {
             DialogueSessions.forget(old);
             players.remove(old);
         }
+        for (StoryNpc npc : helper.getLevel().getEntities(com.arnir.storymod.registry.ModEntities.STORY_NPC.get(), e -> true)) {
+            npc.discard();
+        }
         state.reset();
         state.set("intro_spawned");
         state.setAnchor(helper.absolutePos(new BlockPos(2, 1, 2)));
