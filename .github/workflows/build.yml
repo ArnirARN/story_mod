@@ -25,7 +25,7 @@ jobs:
           path: build/libs/*.jar
       - name: Story game tests
         run: |
-          ./gradlew runGameTestServer --no-daemon > gametest.out 2>&1 || true
+          ./gradlew runGameTestServer -PnoCurios --no-daemon > gametest.out 2>&1 || true
           grep -E "required tests|passed|failed|GameTestAssert|Exception" gametest.out | grep -v DEBUG | tail -60 || true
           grep -q "required tests passed" gametest.out
       - name: Smoke test (start a server, load all story data)
@@ -44,6 +44,7 @@ jobs:
           grep -qE "Loaded [1-9][0-9]* story dialogues" "$LOG"
           grep -qE "Loaded [1-9][0-9]* story triggers" "$LOG"
           grep -qE "Loaded [1-9][0-9]* story journal entries" "$LOG"
+          grep -qiE "curios" "$LOG"
           if grep -iE "storymod" "$LOG" | grep -iE "error|exception|couldn't|failed"; then
             echo "Story data errors found"; exit 1
           fi
