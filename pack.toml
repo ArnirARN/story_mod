@@ -1,0 +1,12 @@
+name = "Story Mod"
+version = "0.1.0-307e882"
+pack-format = "packwiz:1.1.0"
+
+[index]
+file = "index.toml"
+hash-format = "sha256"
+hash = "53a776e514e7bcd0298319962d3d2180853bc2477af56218764230250ab91f5a"
+
+[versions]
+minecraft = "1.21.1"
+neoforge = "21.1.265"
