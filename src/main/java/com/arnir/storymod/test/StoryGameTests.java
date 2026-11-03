@@ -673,6 +673,8 @@ public final class StoryGameTests {
         PlayerRoles.giveStarterKit(k, PlayerRoles.KEEPER);
         check(count(w, "storymod:white_pearl") == 1, "wanderer has no pearl");
         check(count(w, "storymod:twilight_amulet") == 0, "wanderer still gets the old amulet");
+        check(count(w, "storymod:white_greatsword") == 1 && count(k, "storymod:keeper_hammer") == 1, "personal weapons missing");
+        check(count(w, "storymod:keeper_hammer") == 0 && count(k, "storymod:white_greatsword") == 0, "weapons mixed up");
         check(count(k, "storymod:keeper_wrench") == 1, "keeper has no wrench");
         check(count(w, "storymod:keeper_wrench") == 0 && count(k, "storymod:white_pearl") == 0, "kits mixed up");
         check(count(w, "minecraft:written_book") == 1 && count(k, "minecraft:written_book") == 1, "welcome notes missing");
@@ -1097,6 +1099,125 @@ public final class StoryGameTests {
         check(!com.arnir.storymod.sync.PackSync.safeName("../evil.jar") && !com.arnir.storymod.sync.PackSync.safeName("a/b.jar")
                 && com.arnir.storymod.sync.PackSync.safeName("create-6.0.10.jar"), "file name check");
         check(com.arnir.storymod.sync.PackSync.status() == com.arnir.storymod.sync.PackSync.Status.OFF, "sync ran in a dev/test server");
+        helper.succeed();
+    }
+
+    // ------------------------------------------------------------------ personal powers and weapons
+
+    @GameTest(template = T, batch = "story_33")
+    public static void rolePowersFollowTheRole(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer w = player(helper, PlayerRoles.WANDERER);
+        ServerPlayer k = player(helper, PlayerRoles.KEEPER);
+        com.arnir.storymod.story.StoryEvents.tickItems(w);
+        com.arnir.storymod.story.StoryEvents.tickItems(k);
+        check(com.arnir.storymod.story.RoleAbilities.has(w, "wanderer_reach"), "wanderer has no reach");
+        check(!com.arnir.storymod.story.RoleAbilities.has(w, "keeper_health"), "wanderer got keeper powers");
+        check(com.arnir.storymod.story.RoleAbilities.has(k, "keeper_health") && k.getMaxHealth() >= 24.0F, "keeper is not sturdier");
+        check(!com.arnir.storymod.story.RoleAbilities.has(k, "wanderer_reach"), "keeper got wanderer powers");
+        check(!com.arnir.storymod.story.RoleAbilities.has(w, "wanderer_one_hand"), "one-hand grip without the blade");
+        w.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(ModItems.WHITE_GREATSWORD.get()));
+        com.arnir.storymod.story.StoryEvents.tickItems(w);
+        check(com.arnir.storymod.story.RoleAbilities.has(w, "wanderer_one_hand"), "greatsword not one-handed for its owner");
+        state.setRole(w.getUUID(), "none");
+        com.arnir.storymod.story.StoryEvents.tickItems(w);
+        check(!com.arnir.storymod.story.RoleAbilities.has(w, "wanderer_reach") && !com.arnir.storymod.story.RoleAbilities.has(w, "wanderer_one_hand"),
+                "powers stayed after the role was taken away");
+        leave(helper, w, k);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_34")
+    public static void personalWeaponsObeyOnlyTheirOwner(GameTestHelper helper) {
+        freshState(helper);
+        ServerLevel level = helper.getLevel();
+        ServerPlayer w = player(helper, PlayerRoles.WANDERER);
+        ServerPlayer k = player(helper, PlayerRoles.KEEPER);
+        w.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        k.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        Vec3 start = helper.absoluteVec(new Vec3(2.5, 1, 0.5));
+        w.moveTo(start.x, start.y, start.z, 0.0F, 0.0F);
+        var pig = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityType.PIG, new Vec3(2.5, 1, 4.5));
+        float pigHealth = pig.getHealth();
+
+        w.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(ModItems.WHITE_GREATSWORD.get()));
+        ModItems.WHITE_GREATSWORD.get().use(level, w, net.minecraft.world.InteractionHand.MAIN_HAND);
+        check(pig.getHealth() < pigHealth || pig.isDeadOrDying(), "phase strike did not hit");
+        check(w.position().distanceTo(start) > 2.0, "phase strike did not move the owner");
+        check(w.getCooldowns().isOnCooldown(ModItems.WHITE_GREATSWORD.get()), "no cooldown after the strike");
+
+        k.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(ModItems.WHITE_GREATSWORD.get()));
+        Vec3 kStart = k.position();
+        ModItems.WHITE_GREATSWORD.get().use(level, k, net.minecraft.world.InteractionHand.MAIN_HAND);
+        check(k.position().distanceTo(kStart) < 0.01, "greatsword worked for the wrong player");
+        check(com.arnir.storymod.item.RoleWeaponItem.scaleDamage(k, 10.0F) < 5.0F, "foreign weapon hits at full strength");
+        check(com.arnir.storymod.item.RoleWeaponItem.scaleDamage(w, 10.0F) == 10.0F, "owner's weapon weakened");
+
+        var pig2 = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityType.PIG, new Vec3(2.5, 1, 2.5));
+        float pig2Health = pig2.getHealth();
+        k.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(ModItems.KEEPER_HAMMER.get()));
+        k.moveTo(pig2.getX() + 1.5, pig2.getY(), pig2.getZ());
+        ModItems.KEEPER_HAMMER.get().use(level, k, net.minecraft.world.InteractionHand.MAIN_HAND);
+        check(pig2.getHealth() < pig2Health || pig2.isDeadOrDying(), "ground slam did not hurt");
+        check(k.getCooldowns().isOnCooldown(ModItems.KEEPER_HAMMER.get()), "no cooldown after the slam");
+        pig.discard();
+        pig2.discard();
+        leave(helper, w, k);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_35")
+    public static void wandererSlipsBehindMeleeAttackers(GameTestHelper helper) {
+        freshState(helper);
+        ServerLevel level = helper.getLevel();
+        ServerPlayer w = player(helper, PlayerRoles.WANDERER);
+        ServerPlayer k = player(helper, PlayerRoles.KEEPER);
+        var zombie = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityType.ZOMBIE, new Vec3(2.5, 1, 1.5));
+        var hit = level.damageSources().mobAttack(zombie);
+        float old = com.arnir.storymod.story.RoleAbilities.counterChance;
+        com.arnir.storymod.story.RoleAbilities.counterChance = 1.0F;
+        try {
+            Vec3 before = w.position();
+            check(incoming(w, hit), "melee blow was not avoided");
+            check(w.position().distanceTo(before) > 0.5, "wanderer did not move behind the attacker");
+            check(!incoming(w, hit), "avoided twice without a pause");
+            check(!incoming(k, hit), "keeper avoided a blow like the wanderer");
+        } finally {
+            com.arnir.storymod.story.RoleAbilities.counterChance = old;
+        }
+        zombie.discard();
+        leave(helper, w, k);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_36")
+    public static void weaponsReachPlayersWhoStartedEarlier(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer w = player(helper, PlayerRoles.WANDERER);
+        ServerPlayer k = player(helper, PlayerRoles.KEEPER);
+        for (ServerPlayer p : List.of(w, k)) {
+            for (String f : List.of("journal_given", "starter_kit", "wanderer_arrived", "white_pearl_given")) {
+                state.setPersonal(p.getUUID(), f);
+            }
+            state.clearPersonal(p.getUUID(), "role_weapon_given");
+            PlayerRoles.onLogin(p, state);
+            PlayerRoles.onLogin(p, state);
+        }
+        check(count(w, "storymod:white_greatsword") == 1, "wanderer did not get exactly one greatsword");
+        check(count(k, "storymod:keeper_hammer") == 1, "keeper did not get exactly one hammer");
+
+        give(k, new ItemStack(ModItems.STONE_HEART.get()));
+        k.setShiftKeyDown(true);
+        com.arnir.storymod.story.StoryEvents.tickItems(k);
+        check(k.hasEffect(net.minecraft.world.effect.MobEffects.DAMAGE_RESISTANCE), "stone heart gives nothing while sneaking");
+        give(w, new ItemStack(ModItems.BERSERKER_CHARM.get()));
+        com.arnir.storymod.story.StoryEvents.tickItems(w);
+        check(!w.hasEffect(net.minecraft.world.effect.MobEffects.DAMAGE_BOOST), "fury charm at full health");
+        w.setHealth(3.0F);
+        com.arnir.storymod.story.StoryEvents.tickItems(w);
+        check(w.hasEffect(net.minecraft.world.effect.MobEffects.DAMAGE_BOOST), "fury charm silent at low health");
+        checkLoot(helper.getLevel(), "storymod:chests/order_tower", st -> st.is(ModItems.ORDER_BLADE.get()), "order blade");
+        leave(helper, w, k);
         helper.succeed();
     }
 }

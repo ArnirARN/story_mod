@@ -67,6 +67,30 @@ public final class ModItems {
     public static final DeferredItem<ArtifactItem> ORDER_MEDALLION = artifact("order_medallion", MobEffects.LUCK, 0,
             p -> true);
 
+    // Personal weapons: full power only for their role.
+    public static final DeferredItem<com.arnir.storymod.item.RoleWeaponItem> WHITE_GREATSWORD = ITEMS.register("white_greatsword",
+            () -> new com.arnir.storymod.item.RoleWeaponItem(net.minecraft.world.item.Tiers.NETHERITE, new Item.Properties()
+                    .rarity(Rarity.EPIC).fireResistant()
+                    .attributes(net.minecraft.world.item.SwordItem.createAttributes(net.minecraft.world.item.Tiers.NETHERITE, 7, -3.0F)),
+                    com.arnir.storymod.story.PlayerRoles.WANDERER));
+    public static final DeferredItem<com.arnir.storymod.item.RoleWeaponItem> KEEPER_HAMMER = ITEMS.register("keeper_hammer",
+            () -> new com.arnir.storymod.item.RoleWeaponItem(net.minecraft.world.item.Tiers.NETHERITE, new Item.Properties()
+                    .rarity(Rarity.EPIC).fireResistant()
+                    .attributes(net.minecraft.world.item.SwordItem.createAttributes(net.minecraft.world.item.Tiers.NETHERITE, 6, -3.2F)),
+                    com.arnir.storymod.story.PlayerRoles.KEEPER));
+    // A sword of the old Order, found in ruins.
+    public static final DeferredItem<net.minecraft.world.item.SwordItem> ORDER_BLADE = ITEMS.register("order_blade",
+            () -> new net.minecraft.world.item.SwordItem(net.minecraft.world.item.Tiers.IRON, new Item.Properties().rarity(Rarity.RARE)
+                    .attributes(net.minecraft.world.item.SwordItem.createAttributes(net.minecraft.world.item.Tiers.IRON, 4, -2.2F))));
+
+    // More trinkets for the random pool.
+    public static final DeferredItem<ArtifactItem> BERSERKER_CHARM = artifact("berserker_charm", MobEffects.DAMAGE_BOOST, 0,
+            p -> p.getHealth() <= p.getMaxHealth() * 0.3F);
+    public static final DeferredItem<ArtifactItem> STONE_HEART = artifact("stone_heart", MobEffects.DAMAGE_RESISTANCE, 0,
+            p -> p.isShiftKeyDown());
+    public static final DeferredItem<ArtifactItem> STORM_FEATHER = artifact("storm_feather", MobEffects.MOVEMENT_SPEED, 0,
+            p -> p.level().isRainingAt(p.blockPosition().above()));
+
     // Quest rewards (not in the random pool).
     public static final DeferredItem<ArtifactItem> CLOCKWORK_HEART = artifact("clockwork_heart", MobEffects.DIG_SPEED, 0,
             p -> true);
@@ -74,7 +98,7 @@ public final class ModItems {
             p -> p.isSprinting());
 
     public static final List<String> ARTIFACT_IDS = List.of("zenith_ring", "echo_pendant", "guardian_scale",
-            "forge_ember", "void_feather", "order_medallion");
+            "forge_ember", "void_feather", "order_medallion", "berserker_charm", "stone_heart", "storm_feather");
 
     private static DeferredItem<ArtifactItem> artifact(String name, net.minecraft.core.Holder<net.minecraft.world.effect.MobEffect> effect,
                                                        int amplifier, java.util.function.Predicate<net.minecraft.server.level.ServerPlayer> when) {

@@ -175,6 +175,7 @@ public final class StoryEvents {
 
     /** Passive powers of carried trinkets. Works in any story state. */
     public static void tickItems(ServerPlayer player) {
+        RoleAbilities.apply(player);
         java.util.Set<net.minecraft.world.item.Item> seen = new java.util.HashSet<>();
         for (ItemStack stack : PlayerItems.carried(player)) {
             net.minecraft.world.item.Item item = stack.getItem();
@@ -187,6 +188,8 @@ public final class StoryEvents {
                 com.arnir.storymod.item.WhitePearlItem.pulse(player);
             } else if (item instanceof com.arnir.storymod.item.TwilightAmuletItem) {
                 com.arnir.storymod.item.TwilightAmuletItem.pulse(player);
+            } else if (item instanceof com.arnir.storymod.item.RoleWeaponItem weapon) {
+                weapon.pulse(player);
             } else if (item instanceof com.arnir.storymod.item.KeeperWrenchItem) {
                 com.arnir.storymod.item.KeeperWrenchItem.pulse(player);
             }
@@ -381,10 +384,20 @@ public final class StoryEvents {
     /** The white pearl lets its owner slip away from projectiles. */
     @SubscribeEvent
     public static void onIncomingDamage(net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player
-                && event.getSource().is(net.minecraft.tags.DamageTypeTags.IS_PROJECTILE)
-                && com.arnir.storymod.item.WhitePearlItem.tryDodge(player)) {
-            event.setCanceled(true);
+        var source = event.getSource();
+        if (event.getEntity() instanceof ServerPlayer player) {
+            if (source.is(net.minecraft.tags.DamageTypeTags.IS_PROJECTILE) && com.arnir.storymod.item.WhitePearlItem.tryDodge(player)) {
+                event.setCanceled(true);
+                return;
+            }
+            if (RoleAbilities.tryCounter(player, source)) {
+                event.setCanceled(true);
+                return;
+            }
+        }
+        // Someone else's personal weapon hits weakly.
+        if (source.getEntity() != null && source.getEntity() == source.getDirectEntity()) {
+            event.setAmount(com.arnir.storymod.item.RoleWeaponItem.scaleDamage(source.getEntity(), event.getAmount()));
         }
     }
 

@@ -44,8 +44,6 @@
     "storymod:core_flame_fortress",
     "storymod:core_flame_bastion",
     "storymod:core_tides_elder",
-    "storymod:core_void_end_city",
-    "storymod:mod_chest_notes",
-    "storymod:mod_chest_artifacts"
+    "storymod:core_void_end_city"
   ]
 }

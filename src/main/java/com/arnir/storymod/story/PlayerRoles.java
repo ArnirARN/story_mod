@@ -46,11 +46,24 @@ public final class PlayerRoles {
         if (!state.hasPersonal(player.getUUID(), "starter_kit")) {
             state.setPersonal(player.getUUID(), "starter_kit");
             state.setPersonal(player.getUUID(), "white_pearl_given");
+            state.setPersonal(player.getUUID(), "role_weapon_given");
             giveStarterKit(player, state.role(player.getUUID()));
         }
         if (WANDERER.equals(state.role(player.getUUID())) && !state.hasPersonal(player.getUUID(), "white_pearl_given")) {
             state.setPersonal(player.getUUID(), "white_pearl_given");
             swapAmuletForPearl(player);
+        }
+        String role = state.role(player.getUUID());
+        if ((WANDERER.equals(role) || KEEPER.equals(role)) && !state.hasPersonal(player.getUUID(), "role_weapon_given")) {
+            state.setPersonal(player.getUUID(), "role_weapon_given");
+            ItemStack weapon = roleWeapon(role);
+            if (!player.getInventory().add(weapon)) {
+                player.drop(weapon, false);
+            }
+            player.sendSystemMessage(Component.literal(WANDERER.equals(role)
+                            ? "Рядом лежит клинок, слишком длинный для одной руки. Но рука помнит его вес, как свой."
+                            : "Рядом лежит молот с медной оковкой. Рукоять стёрта ровно под твою ладонь.")
+                    .withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
         }
         if (WANDERER.equals(state.role(player.getUUID())) && !state.hasPersonal(player.getUUID(), "wanderer_arrived")) {
             state.setPersonal(player.getUUID(), "wanderer_arrived");
@@ -64,12 +77,14 @@ public final class PlayerRoles {
         switch (role) {
             case WANDERER -> {
                 kit.add(new ItemStack(ModItems.WHITE_PEARL.get()));
+                kit.add(roleWeapon(WANDERER));
                 kit.add(new ItemStack(net.minecraft.world.item.Items.ENDER_PEARL, 4));
                 kit.add(new ItemStack(net.minecraft.world.item.Items.COOKED_MUTTON, 12));
                 kit.add(note(player, "storymod:notes/start_wanderer"));
             }
             case KEEPER -> {
                 kit.add(new ItemStack(ModItems.KEEPER_WRENCH.get()));
+                kit.add(roleWeapon(KEEPER));
                 kit.add(new ItemStack(net.minecraft.world.item.Items.COPPER_INGOT, 12));
                 kit.add(new ItemStack(net.minecraft.world.item.Items.BREAD, 12));
                 kit.add(note(player, "storymod:notes/start_keeper"));
@@ -87,6 +102,10 @@ public final class PlayerRoles {
                 player.drop(stack, false);
             }
         }
+    }
+
+    public static ItemStack roleWeapon(String role) {
+        return new ItemStack(WANDERER.equals(role) ? ModItems.WHITE_GREATSWORD.get() : ModItems.KEEPER_HAMMER.get());
     }
 
     /** Players who started with the old amulet get the white pearl instead. */
