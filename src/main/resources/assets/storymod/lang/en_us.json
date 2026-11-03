@@ -63,5 +63,20 @@
   "item.storymod.white_pearl.effect2": "Carried or worn: sometimes slips away from arrows, ender pearls do not hurt, faster in darkness.",
   "item.storymod.white_pearl.holding": "Holding: %s",
   "item.storymod.role_weapon.foreign": "Heavy and dull in anyone else's hands.",
-  "item.storymod.order_blade.desc": "The mark of the Order of Zenith on the guard."
+  "item.storymod.order_blade.desc": "The mark of the Order of Zenith on the guard.",
+  "item.storymod.end_mark": "End Mark",
+  "item.storymod.copper_oath": "Copper Oath",
+  "item.storymod.end_mark.desc": "Cold as the void between stars.",
+  "item.storymod.end_mark.plus": "+ Harder blows, lighter steps.",
+  "item.storymod.end_mark.minus": "- In water and rain: weakness and slowness.",
+  "item.storymod.copper_oath.desc": "An oath struck into copper. It does not come off easily.",
+  "item.storymod.copper_oath.plus": "+ Sturdier armour, quicker hands.",
+  "item.storymod.copper_oath.minus": "- Heavier steps.",
+  "item.storymod.bound": "Bound to its owner: cannot be thrown away or lost on death.",
+  "enchantment.storymod.dusk_edge": "Dusk Edge",
+  "enchantment.storymod.light_thirst": "Light Thirst",
+  "enchantment.storymod.void_chill": "Void Chill",
+  "enchantment.storymod.long_reach": "Long Reach",
+  "enchantment.storymod.shadow_step": "Shadow Step",
+  "enchantment.storymod.sturdy": "Sturdiness"
 }

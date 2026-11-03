@@ -1,0 +1,43 @@
+{
+  "description": {
+    "translate": "enchantment.storymod.dusk_edge"
+  },
+  "supported_items": "#minecraft:enchantable/sharp_weapon",
+  "weight": 5,
+  "max_level": 3,
+  "min_cost": {
+    "base": 10,
+    "per_level_above_first": 10
+  },
+  "max_cost": {
+    "base": 40,
+    "per_level_above_first": 10
+  },
+  "anvil_cost": 4,
+  "slots": [
+    "mainhand"
+  ],
+  "effects": {
+    "minecraft:damage": [
+      {
+        "effect": {
+          "type": "minecraft:add",
+          "value": {
+            "type": "minecraft:linear",
+            "base": 1.5,
+            "per_level_above_first": 1.0
+          }
+        },
+        "requirements": {
+          "condition": "minecraft:time_check",
+          "period": 24000,
+          "value": {
+            "min": 13000,
+            "max": 23000
+          }
+        }
+      }
+    ]
+  },
+  "primary_items": "#minecraft:enchantable/sword"
+}

@@ -46,6 +46,10 @@ public final class RoleAbilities {
             new Mod(Attributes.BLOCK_INTERACTION_RANGE, "wanderer_block_reach", 1.0, AttributeModifier.Operation.ADD_VALUE),
             new Mod(Attributes.MOVEMENT_SPEED, "wanderer_night", 0.15, AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
             new Mod(Attributes.ATTACK_SPEED, "wanderer_one_hand", 0.8, AttributeModifier.Operation.ADD_VALUE),
+            new Mod(Attributes.ATTACK_DAMAGE, "end_mark_strength", 2.0, AttributeModifier.Operation.ADD_VALUE),
+            new Mod(Attributes.MOVEMENT_SPEED, "end_mark_light", 0.10, AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
+            new Mod(Attributes.ARMOR, "copper_oath_armor", 3.0, AttributeModifier.Operation.ADD_VALUE),
+            new Mod(Attributes.MOVEMENT_SPEED, "copper_oath_heavy", -0.08, AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
             new Mod(Attributes.MAX_HEALTH, "keeper_health", 4.0, AttributeModifier.Operation.ADD_VALUE),
             new Mod(Attributes.ARMOR_TOUGHNESS, "keeper_toughness", 2.0, AttributeModifier.Operation.ADD_VALUE),
             new Mod(Attributes.KNOCKBACK_RESISTANCE, "keeper_steady", 0.25, AttributeModifier.Operation.ADD_VALUE),
@@ -69,11 +73,19 @@ public final class RoleAbilities {
             if (player.getMainHandItem().getItem() instanceof RoleWeaponItem w && w.role().equals(PlayerRoles.WANDERER)) {
                 active.add("wanderer_one_hand");
             }
+            if (PlayerItems.has(player, com.arnir.storymod.registry.ModItems.END_MARK.get())) {
+                active.add("end_mark_strength");
+                active.add("end_mark_light");
+            }
         } else if (PlayerRoles.KEEPER.equals(role)) {
             active.add("keeper_health");
             active.add("keeper_toughness");
             active.add("keeper_steady");
             active.add("keeper_mining");
+            if (PlayerItems.has(player, com.arnir.storymod.registry.ModItems.COPPER_OATH.get())) {
+                active.add("copper_oath_armor");
+                active.add("copper_oath_heavy");
+            }
         }
         for (Mod mod : ALL) {
             AttributeInstance inst = player.getAttribute(mod.attribute());

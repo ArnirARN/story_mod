@@ -47,6 +47,7 @@ public final class PlayerRoles {
             state.setPersonal(player.getUUID(), "starter_kit");
             state.setPersonal(player.getUUID(), "white_pearl_given");
             state.setPersonal(player.getUUID(), "role_weapon_given");
+            state.setPersonal(player.getUUID(), "role_mark_given");
             giveStarterKit(player, state.role(player.getUUID()));
         }
         if (WANDERER.equals(state.role(player.getUUID())) && !state.hasPersonal(player.getUUID(), "white_pearl_given")) {
@@ -65,6 +66,17 @@ public final class PlayerRoles {
                             : "Рядом лежит молот с медной оковкой. Рукоять стёрта ровно под твою ладонь.")
                     .withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
         }
+        if ((WANDERER.equals(role) || KEEPER.equals(role)) && !state.hasPersonal(player.getUUID(), "role_mark_given")) {
+            state.setPersonal(player.getUUID(), "role_mark_given");
+            ItemStack mark = roleMark(role);
+            if (!player.getInventory().add(mark)) {
+                player.drop(mark, false);
+            }
+            player.sendSystemMessage(Component.literal(WANDERER.equals(role)
+                            ? "На запястье проступает бледный знак, холодный, как свет далёких звёзд. Он был там всегда, просто раньше ты его не видел."
+                            : "В кармане тёплая медная бляха с клеймом мастерской. Ты не помнишь, когда давала эту клятву, но помнишь, что давала.")
+                    .withStyle(ChatFormatting.DARK_PURPLE, ChatFormatting.ITALIC));
+        }
         if (WANDERER.equals(state.role(player.getUUID())) && !state.hasPersonal(player.getUUID(), "wanderer_arrived")) {
             state.setPersonal(player.getUUID(), "wanderer_arrived");
             arriveWanderer(player);
@@ -78,6 +90,7 @@ public final class PlayerRoles {
             case WANDERER -> {
                 kit.add(new ItemStack(ModItems.WHITE_PEARL.get()));
                 kit.add(roleWeapon(WANDERER));
+                kit.add(roleMark(WANDERER));
                 kit.add(new ItemStack(net.minecraft.world.item.Items.ENDER_PEARL, 4));
                 kit.add(new ItemStack(net.minecraft.world.item.Items.COOKED_MUTTON, 12));
                 kit.add(note(player, "storymod:notes/start_wanderer"));
@@ -85,6 +98,7 @@ public final class PlayerRoles {
             case KEEPER -> {
                 kit.add(new ItemStack(ModItems.KEEPER_WRENCH.get()));
                 kit.add(roleWeapon(KEEPER));
+                kit.add(roleMark(KEEPER));
                 kit.add(new ItemStack(net.minecraft.world.item.Items.COPPER_INGOT, 12));
                 kit.add(new ItemStack(net.minecraft.world.item.Items.BREAD, 12));
                 kit.add(note(player, "storymod:notes/start_keeper"));
@@ -102,6 +116,10 @@ public final class PlayerRoles {
                 player.drop(stack, false);
             }
         }
+    }
+
+    public static ItemStack roleMark(String role) {
+        return new ItemStack(WANDERER.equals(role) ? ModItems.END_MARK.get() : ModItems.COPPER_OATH.get());
     }
 
     public static ItemStack roleWeapon(String role) {

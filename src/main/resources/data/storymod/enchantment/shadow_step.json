@@ -1,0 +1,34 @@
+{
+  "description": {
+    "translate": "enchantment.storymod.shadow_step"
+  },
+  "supported_items": "#minecraft:enchantable/foot_armor",
+  "weight": 3,
+  "max_level": 3,
+  "min_cost": {
+    "base": 10,
+    "per_level_above_first": 10
+  },
+  "max_cost": {
+    "base": 40,
+    "per_level_above_first": 10
+  },
+  "anvil_cost": 4,
+  "slots": [
+    "feet"
+  ],
+  "effects": {
+    "minecraft:attributes": [
+      {
+        "id": "storymod:enchantment.shadow_step",
+        "attribute": "minecraft:generic.movement_speed",
+        "amount": {
+          "type": "minecraft:linear",
+          "base": 0.05,
+          "per_level_above_first": 0.05
+        },
+        "operation": "add_multiplied_base"
+      }
+    ]
+  }
+}

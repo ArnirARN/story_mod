@@ -188,6 +188,8 @@ public final class StoryEvents {
                 com.arnir.storymod.item.WhitePearlItem.pulse(player);
             } else if (item instanceof com.arnir.storymod.item.TwilightAmuletItem) {
                 com.arnir.storymod.item.TwilightAmuletItem.pulse(player);
+            } else if (item instanceof com.arnir.storymod.item.BoundMarkItem mark) {
+                mark.pulse(player);
             } else if (item instanceof com.arnir.storymod.item.RoleWeaponItem weapon) {
                 weapon.pulse(player);
             } else if (item instanceof com.arnir.storymod.item.KeeperWrenchItem) {
@@ -398,6 +400,35 @@ public final class StoryEvents {
         // Someone else's personal weapon hits weakly.
         if (source.getEntity() != null && source.getEntity() == source.getDirectEntity()) {
             event.setAmount(com.arnir.storymod.item.RoleWeaponItem.scaleDamage(source.getEntity(), event.getAmount()));
+        }
+    }
+
+    /** Personal things survive death; lowest priority so worn trinkets are already in the drops. */
+    @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.LOWEST)
+    public static void onDrops(net.neoforged.neoforge.event.entity.living.LivingDropsEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            PersonalItems.keepFromDrops(player, event.getDrops());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRespawn(PlayerEvent.PlayerRespawnEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            PersonalItems.restore(player);
+        }
+    }
+
+    /** Bound things cannot be thrown away: they come straight back. */
+    @SubscribeEvent
+    public static void onToss(net.neoforged.neoforge.event.entity.item.ItemTossEvent event) {
+        ItemStack stack = event.getEntity().getItem();
+        if (PersonalItems.isBound(stack) && event.getPlayer() instanceof ServerPlayer player) {
+            event.setCanceled(true);
+            if (!player.getInventory().add(stack.copy())) {
+                player.getInventory().placeItemBackInInventory(stack.copy());
+            }
+            player.displayClientMessage(Component.literal("Это не отпускает тебя. Или ты не отпускаешь это.")
+                    .withStyle(ChatFormatting.DARK_PURPLE, ChatFormatting.ITALIC), true);
         }
     }
 

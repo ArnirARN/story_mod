@@ -63,5 +63,20 @@
   "item.storymod.white_pearl.effect2": "С собой или на шее: иногда уходит от стрел, жемчуг Края не ранит, в темноте быстрее.",
   "item.storymod.white_pearl.holding": "Внутри: %s",
   "item.storymod.role_weapon.foreign": "В чужих руках тяжёлое и тупое.",
-  "item.storymod.order_blade.desc": "Клеймо Ордена Зенита на гарде."
+  "item.storymod.order_blade.desc": "Клеймо Ордена Зенита на гарде.",
+  "item.storymod.end_mark": "Знак Края",
+  "item.storymod.copper_oath": "Медная клятва",
+  "item.storymod.end_mark.desc": "Холодный, как пустота между звёздами.",
+  "item.storymod.end_mark.plus": "+ Удары сильнее, шаг легче.",
+  "item.storymod.end_mark.minus": "- В воде и под дождём: слабость и медлительность.",
+  "item.storymod.copper_oath.desc": "Клятва, выбитая на меди. Её не снять просто так.",
+  "item.storymod.copper_oath.plus": "+ Броня крепче, руки работают быстрее.",
+  "item.storymod.copper_oath.minus": "- Шаг тяжелее.",
+  "item.storymod.bound": "Привязано к владельцу: не выбросить, не потерять после смерти.",
+  "enchantment.storymod.dusk_edge": "Сумеречная кромка",
+  "enchantment.storymod.light_thirst": "Жажда света",
+  "enchantment.storymod.void_chill": "Холод Пустоты",
+  "enchantment.storymod.long_reach": "Длинная рука",
+  "enchantment.storymod.shadow_step": "Шаг тени",
+  "enchantment.storymod.sturdy": "Стойкость"
 }

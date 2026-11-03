@@ -1222,4 +1222,102 @@ public final class StoryGameTests {
         leave(helper, w, k);
         helper.succeed();
     }
+
+    // ------------------------------------------------------------------ durability, enchantments, bound marks
+
+    private static net.minecraft.core.Holder<net.minecraft.world.item.enchantment.Enchantment> enchantment(GameTestHelper helper, String ns, String id) {
+        var key = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.ENCHANTMENT,
+                net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(ns, id));
+        var holder = helper.getLevel().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getHolder(key);
+        check(holder.isPresent(), "enchantment missing: " + ns + ":" + id);
+        return holder.get();
+    }
+
+    @GameTest(template = T, batch = "story_37")
+    public static void personalWeaponsNeverBreakAndTakeEnchantments(GameTestHelper helper) {
+        ItemStack blade = new ItemStack(ModItems.WHITE_GREATSWORD.get());
+        ItemStack hammer = new ItemStack(ModItems.KEEPER_HAMMER.get());
+        check(!blade.isDamageableItem() && !hammer.isDamageableItem(), "personal weapons can still break");
+        check(blade.isEnchantable() && hammer.isEnchantable(), "personal weapons cannot be enchanted");
+        check(new ItemStack(ModItems.ORDER_BLADE.get()).isDamageableItem(), "order blade should wear out");
+        check(enchantment(helper, "minecraft", "sharpness").value().canEnchant(blade), "sharpness does not fit the greatsword");
+        check(enchantment(helper, "minecraft", "looting").value().canEnchant(hammer), "looting does not fit the hammer");
+        for (String id : List.of("dusk_edge", "light_thirst", "void_chill", "long_reach")) {
+            check(enchantment(helper, "storymod", id).value().canEnchant(blade), id + " does not fit the greatsword");
+        }
+        check(enchantment(helper, "storymod", "shadow_step").value().canEnchant(new ItemStack(Items.DIAMOND_BOOTS)), "shadow step does not fit boots");
+        check(enchantment(helper, "storymod", "sturdy").value().canEnchant(new ItemStack(Items.IRON_CHESTPLATE)), "sturdiness does not fit a chestplate");
+        check(!enchantment(helper, "storymod", "sturdy").value().canEnchant(blade), "sturdiness fits a sword");
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_38")
+    public static void boundMarksGiveAndTake(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer w = player(helper, PlayerRoles.WANDERER);
+        ServerPlayer k = player(helper, PlayerRoles.KEEPER);
+        for (ServerPlayer p : List.of(w, k)) {
+            for (String f : List.of("journal_given", "starter_kit", "wanderer_arrived", "white_pearl_given", "role_weapon_given")) {
+                state.setPersonal(p.getUUID(), f);
+            }
+            state.clearPersonal(p.getUUID(), "role_mark_given");
+            p.getInventory().clearContent();
+            PlayerRoles.onLogin(p, state);
+            PlayerRoles.onLogin(p, state);
+        }
+        check(count(w, "storymod:end_mark") == 1 && count(w, "storymod:copper_oath") == 0, "wanderer did not get exactly one end mark");
+        check(count(k, "storymod:copper_oath") == 1 && count(k, "storymod:end_mark") == 0, "keeper did not get exactly one copper oath");
+
+        com.arnir.storymod.story.StoryEvents.tickItems(w);
+        com.arnir.storymod.story.StoryEvents.tickItems(k);
+        check(com.arnir.storymod.story.RoleAbilities.has(w, "end_mark_strength"), "end mark gives no strength");
+        check(com.arnir.storymod.story.RoleAbilities.has(k, "copper_oath_armor") && com.arnir.storymod.story.RoleAbilities.has(k, "copper_oath_heavy"),
+                "copper oath gives no armour or weight");
+        check(!com.arnir.storymod.story.RoleAbilities.has(k, "end_mark_strength") && !com.arnir.storymod.story.RoleAbilities.has(w, "copper_oath_armor"),
+                "marks mixed up");
+        // A mark in the wrong hands does nothing.
+        give(k, new ItemStack(ModItems.END_MARK.get()));
+        com.arnir.storymod.story.StoryEvents.tickItems(k);
+        check(!com.arnir.storymod.story.RoleAbilities.has(k, "end_mark_strength"), "end mark works for the keeper");
+
+        // The end mark does not like water.
+        helper.setBlock(new BlockPos(2, 1, 3), net.minecraft.world.level.block.Blocks.WATER);
+        w.moveTo(helper.absoluteVec(new Vec3(2.5, 1, 3.5)));
+        w.baseTick();
+        check(w.isInWaterOrRain(), "test setup: wanderer is not in water");
+        com.arnir.storymod.story.StoryEvents.tickItems(w);
+        check(w.hasEffect(net.minecraft.world.effect.MobEffects.WEAKNESS), "end mark gives no weakness in water");
+        helper.setBlock(new BlockPos(2, 1, 3), net.minecraft.world.level.block.Blocks.AIR);
+        leave(helper, w, k);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_39")
+    public static void personalThingsStayWithTheirOwner(GameTestHelper helper) {
+        freshState(helper);
+        ServerPlayer w = player(helper, PlayerRoles.WANDERER);
+        ServerLevel level = helper.getLevel();
+        // Tossing a bound thing brings it straight back.
+        w.drop(new ItemStack(ModItems.END_MARK.get()), false);
+        w.drop(new ItemStack(ModItems.WHITE_PEARL.get()), false);
+        check(count(w, "storymod:end_mark") == 1, "end mark could be thrown away");
+        check(count(w, "storymod:white_pearl") == 1, "white pearl could be thrown away");
+
+        // On death personal things are held back and returned on respawn; the rest drops.
+        w.getInventory().clearContent();
+        List<net.minecraft.world.entity.item.ItemEntity> drops = new java.util.ArrayList<>();
+        for (ItemStack st : List.of(new ItemStack(ModItems.WHITE_GREATSWORD.get()), new ItemStack(ModItems.END_MARK.get()),
+                new ItemStack(Items.DIRT, 5))) {
+            drops.add(new net.minecraft.world.entity.item.ItemEntity(level, w.getX(), w.getY(), w.getZ(), st));
+        }
+        com.arnir.storymod.story.PersonalItems.keepFromDrops(w, drops);
+        check(drops.size() == 1 && drops.get(0).getItem().is(Items.DIRT), "personal things fell out on death");
+        com.arnir.storymod.story.PersonalItems.restore(w);
+        check(count(w, "storymod:white_greatsword") == 1 && count(w, "storymod:end_mark") == 1, "personal things did not come back");
+        check(count(w, "minecraft:dirt") == 0, "ordinary loot came back too");
+        com.arnir.storymod.story.PersonalItems.restore(w);
+        check(count(w, "storymod:white_greatsword") == 1, "personal things duplicated");
+        leave(helper, w);
+        helper.succeed();
+    }
 }

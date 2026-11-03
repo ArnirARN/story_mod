@@ -71,13 +71,23 @@ public final class ModItems {
     public static final DeferredItem<com.arnir.storymod.item.RoleWeaponItem> WHITE_GREATSWORD = ITEMS.register("white_greatsword",
             () -> new com.arnir.storymod.item.RoleWeaponItem(net.minecraft.world.item.Tiers.NETHERITE, new Item.Properties()
                     .rarity(Rarity.EPIC).fireResistant()
+                    .component(net.minecraft.core.component.DataComponents.UNBREAKABLE, new net.minecraft.world.item.component.Unbreakable(true))
                     .attributes(net.minecraft.world.item.SwordItem.createAttributes(net.minecraft.world.item.Tiers.NETHERITE, 7, -3.0F)),
                     com.arnir.storymod.story.PlayerRoles.WANDERER));
     public static final DeferredItem<com.arnir.storymod.item.RoleWeaponItem> KEEPER_HAMMER = ITEMS.register("keeper_hammer",
             () -> new com.arnir.storymod.item.RoleWeaponItem(net.minecraft.world.item.Tiers.NETHERITE, new Item.Properties()
                     .rarity(Rarity.EPIC).fireResistant()
+                    .component(net.minecraft.core.component.DataComponents.UNBREAKABLE, new net.minecraft.world.item.component.Unbreakable(true))
                     .attributes(net.minecraft.world.item.SwordItem.createAttributes(net.minecraft.world.item.Tiers.NETHERITE, 6, -3.2F)),
                     com.arnir.storymod.story.PlayerRoles.KEEPER));
+    // Bound marks: cannot be thrown away, stay after death; a gift and a burden at once.
+    public static final DeferredItem<com.arnir.storymod.item.BoundMarkItem> END_MARK = ITEMS.register("end_mark",
+            () -> new com.arnir.storymod.item.BoundMarkItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant(),
+                    com.arnir.storymod.story.PlayerRoles.WANDERER));
+    public static final DeferredItem<com.arnir.storymod.item.BoundMarkItem> COPPER_OATH = ITEMS.register("copper_oath",
+            () -> new com.arnir.storymod.item.BoundMarkItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant(),
+                    com.arnir.storymod.story.PlayerRoles.KEEPER));
+
     // A sword of the old Order, found in ruins.
     public static final DeferredItem<net.minecraft.world.item.SwordItem> ORDER_BLADE = ITEMS.register("order_blade",
             () -> new net.minecraft.world.item.SwordItem(net.minecraft.world.item.Tiers.IRON, new Item.Properties().rarity(Rarity.RARE)
