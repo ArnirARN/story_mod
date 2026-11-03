@@ -8,6 +8,11 @@ on:
 permissions:
   contents: write
 
+# Only the newest build publishes; older runs for the same branch are cancelled.
+concurrency:
+  group: build-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
