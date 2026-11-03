@@ -1073,4 +1073,30 @@ public final class StoryGameTests {
         leave(helper, p);
         helper.succeed();
     }
+
+    @GameTest(template = T, batch = "story_32")
+    public static void packSyncReadsThePackFormat(GameTestHelper helper) {
+        // Same shape as the files CI publishes to the "pack" branch.
+        String pack = "name = \"Story Mod\"\npack-format = \"packwiz:1.1.0\"\n\n[index]\nfile = \"index.toml\"\n"
+                + "hash-format = \"sha256\"\nhash = \"ab\"\n\n[versions]\nminecraft = \"1.21.1\"\nneoforge = \"21.1.265\"\n";
+        var p = com.arnir.storymod.sync.PackSync.parse(pack);
+        check("index.toml".equals(p.get("file")) && "21.1.265".equals(p.get("neoforge")), "pack.toml not read: " + p);
+        String index = "hash-format = \"sha256\"\n\n[[files]]\nfile = \"mods/create.pw.toml\"\nhash = \"aa\"\nmetafile = true\n\n"
+                + "[[files]]\nfile = \"mods/storymod.jar\"\nhash = \"bb\"\n";
+        var files = com.arnir.storymod.sync.PackSync.parseFiles(index);
+        check(files.size() == 2, "index entries: " + files);
+        check("true".equals(files.get(0).get("metafile")) && files.get(1).get("metafile") == null, "metafile flags wrong");
+        var meta = com.arnir.storymod.sync.PackSync.parse("name = \"Create\"\nfilename = \"create-1.jar\"\nside = \"both\"\n\n"
+                + "[download]\nurl = \"https://cdn.modrinth.com/x.jar\"\nhash-format = \"sha512\"\nhash = \"cc\"\n\n"
+                + "[update.modrinth]\nmod-id = \"abc\"\nversion = \"v1\"\n");
+        check("create-1.jar".equals(meta.get("filename")) && "https://cdn.modrinth.com/x.jar".equals(meta.get("url"))
+                && "cc".equals(meta.get("hash")), "mod file not read: " + meta);
+        check(com.arnir.storymod.sync.PackSync.compareVersions("21.1.172", "21.1.265") < 0, "version compare");
+        check(com.arnir.storymod.sync.PackSync.compareVersions("21.1.265", "21.1.265") == 0, "version equal");
+        check(com.arnir.storymod.sync.PackSync.compareVersions("21.2.1", "21.1.265") > 0, "version minor");
+        check(!com.arnir.storymod.sync.PackSync.safeName("../evil.jar") && !com.arnir.storymod.sync.PackSync.safeName("a/b.jar")
+                && com.arnir.storymod.sync.PackSync.safeName("create-6.0.10.jar"), "file name check");
+        check(com.arnir.storymod.sync.PackSync.status() == com.arnir.storymod.sync.PackSync.Status.OFF, "sync ran in a dev/test server");
+        helper.succeed();
+    }
 }

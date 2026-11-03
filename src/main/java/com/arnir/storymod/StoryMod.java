@@ -23,6 +23,7 @@ public class StoryMod {
         com.arnir.storymod.loot.ModChestCondition.TYPES.register(modBus);
         modBus.addListener(StoryMod::onAttributes);
         modBus.addListener(ModNetwork::register);
+        com.arnir.storymod.sync.PackSync.start();
     }
 
     private static void onAttributes(EntityAttributeCreationEvent event) {

@@ -45,7 +45,9 @@
 
 Свежая сборка всегда лежит в релизе [latest](https://github.com/ArnirARN/story_mod/releases/tag/latest). Curios API уже встроен в jar мода, отдельно ставить ничего не нужно.
 
-**Игрокам (проще всего):** скачайте `storymod.mrpack` и импортируйте его в [Modrinth App](https://modrinth.com/app) или [Prism Launcher](https://prismlauncher.org/). Лаунчер сам поставит Minecraft 1.21.1, NeoForge и мод.
+**С любым лаунчером, включая TLauncher (проще всего):** поставьте в лаунчере NeoForge для 1.21.1 и положите в папку `mods` один файл `storymod.jar`. При запуске игры мод сам скачает остальные моды сборки (и обновит их и себя в следующие запуски), а потом попросит перезапустить игру. На сервере то же самое: после скачивания сервер остановится, его нужно запустить ещё раз. Отключается в `config/storymod-pack.properties` (`enabled=false`).
+
+**Через Modrinth App или Prism:** скачайте `storymod.mrpack` и импортируйте его в [Modrinth App](https://modrinth.com/app) или [Prism Launcher](https://prismlauncher.org/). Лаунчер сам поставит Minecraft 1.21.1, NeoForge и мод.
 
 **Вручную:** поставьте NeoForge для 1.21.1 (21.1.x) и положите `storymod.jar` в папку `mods`.
 
