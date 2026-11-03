@@ -1,0 +1,44 @@
+{
+  "description": {
+    "translate": "enchantment.storymod.sturdy"
+  },
+  "supported_items": "#minecraft:enchantable/chest_armor",
+  "weight": 3,
+  "max_level": 3,
+  "min_cost": {
+    "base": 10,
+    "per_level_above_first": 10
+  },
+  "max_cost": {
+    "base": 40,
+    "per_level_above_first": 10
+  },
+  "anvil_cost": 4,
+  "slots": [
+    "chest"
+  ],
+  "effects": {
+    "minecraft:attributes": [
+      {
+        "id": "storymod:enchantment.sturdy_toughness",
+        "attribute": "minecraft:generic.armor_toughness",
+        "amount": {
+          "type": "minecraft:linear",
+          "base": 1,
+          "per_level_above_first": 1
+        },
+        "operation": "add_value"
+      },
+      {
+        "id": "storymod:enchantment.sturdy_knockback",
+        "attribute": "minecraft:generic.knockback_resistance",
+        "amount": {
+          "type": "minecraft:linear",
+          "base": 0.05,
+          "per_level_above_first": 0.05
+        },
+        "operation": "add_value"
+      }
+    ]
+  }
+}

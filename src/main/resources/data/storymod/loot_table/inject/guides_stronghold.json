@@ -1,0 +1,40 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Были среди нас те, кого слышал Край. Глаза их ловили свет, как у высоких, и высокие проходили мимо них, не оборачиваясь.",
+                "Горн их боялся: его свет не мог их взять. Мастер Вельд хотел их изучить.\n\nПодмастерье Лира прятала их от отца. Я не записал, куда."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Песнь проводников",
+              "author": "Ирмен Тихий",
+              "generation": 0
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{storymod_page:\"guides\"}"
+            }
+          ]
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.2
+        }
+      ]
+    }
+  ]
+}

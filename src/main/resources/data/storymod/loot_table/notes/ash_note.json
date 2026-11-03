@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Орден оставил записи по всему миру: в пустынных и лесных храмах, в шахтах и на затонувших кораблях, в крепостях, особняках, иглу и подземных библиотеках.",
+                "Читай. Сравнивай.\n\nНе верь тому, кто говорит, что знает всё.\n\nДаже мне."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Записка, пахнущая пеплом",
+              "author": "—",
+              "generation": 0
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{storymod_page:\"ash_note\"}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

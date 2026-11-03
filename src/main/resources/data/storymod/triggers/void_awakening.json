@@ -1,0 +1,42 @@
+{
+  "once": "world",
+  "if": {
+    "role": "wanderer",
+    "items": [
+      {
+        "item": "storymod:white_eye"
+      },
+      {
+        "item": "storymod:core_void"
+      }
+    ],
+    "time": {
+      "from": 17000,
+      "to": 19500
+    },
+    "near_anchor": 7
+  },
+  "actions": [
+    {
+      "type": "sound",
+      "sound": "minecraft:block.end_portal.spawn"
+    },
+    {
+      "type": "title",
+      "text": "Пустота открывает глаза.",
+      "subtitle": ""
+    },
+    {
+      "type": "lightning"
+    },
+    {
+      "type": "set_flag",
+      "flag": "void_awakened"
+    },
+    {
+      "type": "broadcast",
+      "text": "Над кругом камней на миг гаснут все звёзды. Сердечник Пустоты проснулся.",
+      "color": "dark_purple"
+    }
+  ]
+}

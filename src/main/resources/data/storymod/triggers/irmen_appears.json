@@ -1,0 +1,24 @@
+{
+  "once": "world",
+  "if": {
+    "flags": [
+      "bell_rung_dawn"
+    ],
+    "near_anchor": 16
+  },
+  "actions": [
+    {
+      "type": "sound",
+      "sound": "minecraft:block.bell.resonate"
+    },
+    {
+      "type": "message",
+      "text": "Звон колокола не стихает, а будто уходит под землю. Из утреннего тумана над камнями выходит тот, кого здесь не было."
+    },
+    {
+      "type": "spawn_npc",
+      "character": "irmen",
+      "distance": 3
+    }
+  ]
+}

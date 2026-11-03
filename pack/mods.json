@@ -1,0 +1,147 @@
+{
+  "_comment": "Mods added to the modpack. CI resolves each on Modrinth with its required dependencies; versions are pinned in mods.lock.json.",
+  "minecraft": "1.21.1",
+  "loader": "neoforge",
+  "mods": [
+    {
+      "slug": "create",
+      "why": "Механизмы"
+    },
+    {
+      "slug": "aether",
+      "why": "Измерение"
+    },
+    {
+      "slug": "ars-nouveau",
+      "why": "Магия"
+    },
+    {
+      "slug": "irons-spells-n-spellbooks",
+      "why": "Магия и оружие"
+    },
+    {
+      "slug": "simply-swords",
+      "why": "Оружие"
+    },
+    {
+      "slug": "sophisticated-backpacks",
+      "why": "Рюкзаки"
+    },
+    {
+      "slug": "yungs-better-dungeons",
+      "why": "Структуры"
+    },
+    {
+      "slug": "yungs-better-mineshafts",
+      "why": "Структуры"
+    },
+    {
+      "slug": "yungs-better-strongholds",
+      "why": "Структуры"
+    },
+    {
+      "slug": "towns-and-towers",
+      "why": "Структуры"
+    },
+    {
+      "slug": "naturalist",
+      "why": "Существа"
+    },
+    {
+      "slug": "jei",
+      "why": "Удобство: рецепты"
+    },
+    {
+      "slug": "jade",
+      "why": "Удобство: подсказки"
+    },
+    {
+      "slug": "friends-and-foes-forge",
+      "why": "Существа"
+    },
+    {
+      "slug": "curios",
+      "why": "Слоты для артефактов (нужен магии)"
+    },
+    {
+      "slug": "geckolib",
+      "why": "Нужен для магии"
+    },
+    {
+      "slug": "irons-lib",
+      "why": "Нужен для Iron's Spells"
+    },
+    {
+      "slug": "playeranimator",
+      "why": "Нужен для Iron's Spells"
+    },
+    {
+      "slug": "sophisticated-core",
+      "why": "Нужен для рюкзаков"
+    },
+    {
+      "slug": "ferrite-core",
+      "why": "Оптимизация памяти"
+    },
+    {
+      "slug": "modernfix",
+      "why": "Оптимизация загрузки"
+    },
+    {
+      "slug": "sodium",
+      "why": "Оптимизация графики"
+    },
+    {
+      "slug": "immediatelyfast",
+      "why": "Оптимизация графики"
+    },
+    {
+      "slug": "entityculling",
+      "why": "Оптимизация графики"
+    },
+    {
+      "slug": "spark",
+      "why": "Поиск лагов"
+    },
+    {
+      "slug": "chunky",
+      "why": "Прогенерация мира"
+    },
+    {
+      "slug": "xaeros-minimap",
+      "why": "Миникарта"
+    },
+    {
+      "slug": "xaeros-world-map",
+      "why": "Карта мира"
+    },
+    {
+      "slug": "waystones",
+      "why": "Точки быстрого перемещения"
+    },
+    {
+      "slug": "simple-backups",
+      "why": "Резервные копии мира"
+    },
+    {
+      "slug": "appleskin",
+      "why": "Сытость на экране"
+    },
+    {
+      "slug": "mouse-tweaks",
+      "why": "Удобный инвентарь"
+    },
+    {
+      "slug": "farmers-delight",
+      "why": "Еда и готовка"
+    },
+    {
+      "slug": "l_enders-cataclysm",
+      "why": "Боссы"
+    },
+    {
+      "slug": "mowzies-mobs",
+      "why": "Боссы и существа"
+    }
+  ]
+}

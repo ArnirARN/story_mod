@@ -1,0 +1,17 @@
+{
+  "once": "player",
+  "if": {
+    "role": "wanderer",
+    "dimension": "aether:the_aether"
+  },
+  "actions": [
+    {
+      "type": "set_pflag",
+      "flag": "been_aether"
+    },
+    {
+      "type": "message",
+      "text": "Здесь всё белое и тихое, а свет не режет глаза. Странно: ты нигде не был так спокоен. Разве что во сне."
+    }
+  ]
+}

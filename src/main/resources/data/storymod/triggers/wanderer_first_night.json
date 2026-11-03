@@ -1,0 +1,20 @@
+{
+  "once": "player",
+  "if": {
+    "role": "wanderer",
+    "flags": [
+      "veld_met"
+    ],
+    "time": {
+      "from": 14000,
+      "to": 22000
+    },
+    "dimension": "minecraft:overworld"
+  },
+  "actions": [
+    {
+      "type": "message",
+      "text": "Ночью тебе спокойнее, чем днём. Высокие тени в темноте не смотрят на тебя со злобой. Скорее с узнаванием."
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "replace": false,
+  "values": [
+    "storymod:berserker_charm",
+    "storymod:clockwork_heart",
+    "storymod:copper_oath",
+    "storymod:core_depths",
+    "storymod:core_flame",
+    "storymod:core_tides",
+    "storymod:core_void",
+    "storymod:dawn_star",
+    "storymod:echo_pendant",
+    "storymod:end_mark",
+    "storymod:forge_ember",
+    "storymod:guardian_scale",
+    "storymod:journal",
+    "storymod:keeper_gear",
+    "storymod:keeper_hammer",
+    "storymod:keeper_wrench",
+    "storymod:order_blade",
+    "storymod:order_medallion",
+    "storymod:stone_heart",
+    "storymod:storm_feather",
+    "storymod:twilight_amulet",
+    "storymod:void_feather",
+    "storymod:white_eye",
+    "storymod:white_greatsword",
+    "storymod:white_pearl",
+    "storymod:zenith_ring",
+    "storymod:zenith_shard"
+  ]
+}

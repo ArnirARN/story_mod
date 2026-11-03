@@ -1,0 +1,40 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Год первый от зажжения.\n\nСегодня Орден Зенита зажёг Солнечный Горн. Магия и механика, слитые воедино: огонь, который не гаснет, и свет, который не кончается.",
+                "Наши города больше не знают ночи. Мастер Вельд говорит, что топлива Горну хватит навечно.\n\nЯ спросил, что это за топливо. Он улыбнулся и не ответил."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Хроника Ордена Зенита",
+              "author": "Архивариус Ирмен",
+              "generation": 0
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{storymod_page:\"founding\"}"
+            }
+          ]
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.5
+        }
+      ]
+    }
+  ]
+}

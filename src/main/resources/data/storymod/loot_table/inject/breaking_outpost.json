@@ -1,0 +1,40 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Ночь на исходе третьего года. Горн вспыхнул так, что стало светло как днём. Потом раскололся.\n\nЧетыре огня ушли в небо: один вниз, один в пламя, один в море, один за край мира.",
+                "Пепел шёл неделю.\n\nГоворят, в ту ночь в сердце Горна была подмастерье главного инженера. Её не нашли.\n\nГлавный инженер ни с кем не говорит."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Последняя запись дозорного",
+              "author": "Неизвестен",
+              "generation": 0
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{storymod_page:\"breaking\"}"
+            }
+          ]
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.5
+        }
+      ]
+    }
+  ]
+}

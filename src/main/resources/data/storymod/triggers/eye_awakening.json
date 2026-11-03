@@ -1,0 +1,52 @@
+{
+  "once": "player",
+  "if": {
+    "role": "wanderer",
+    "pflags": [
+      "been_end"
+    ],
+    "near_anchor": 7,
+    "time": {
+      "from": 17000,
+      "to": 19500
+    },
+    "items": [
+      {
+        "item": "storymod:white_eye"
+      },
+      {
+        "item": "minecraft:ender_pearl",
+        "count": 16
+      },
+      {
+        "item": "minecraft:chorus_fruit",
+        "count": 16
+      }
+    ]
+  },
+  "actions": [
+    {
+      "type": "take_item",
+      "item": "minecraft:ender_pearl",
+      "count": 16
+    },
+    {
+      "type": "take_item",
+      "item": "minecraft:chorus_fruit",
+      "count": 16
+    },
+    {
+      "type": "sound",
+      "sound": "minecraft:block.end_portal_frame.fill"
+    },
+    {
+      "type": "title",
+      "text": "Око раскрывается шире.",
+      "subtitle": "Теперь оно видит вдвое дальше."
+    },
+    {
+      "type": "set_pflag",
+      "flag": "eye_awakened"
+    }
+  ]
+}

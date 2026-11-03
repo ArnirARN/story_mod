@@ -1,0 +1,993 @@
+{
+  "speaker": "Ось",
+  "entries": [
+    {
+      "if": {
+        "flags": [
+          "ending_dawn"
+        ]
+      },
+      "node": "epi_dawn"
+    },
+    {
+      "if": {
+        "flags": [
+          "ending_seal"
+        ]
+      },
+      "node": "epi_seal"
+    },
+    {
+      "if": {
+        "flags": [
+          "ending_fight"
+        ]
+      },
+      "node": "epi_fight"
+    },
+    {
+      "if": {
+        "flags": [
+          "os_brass_started"
+        ],
+        "not_flags": [
+          "os_brass_done"
+        ],
+        "role": "keeper",
+        "days_since": {
+          "flag": "os_brass_started",
+          "days": 2
+        },
+        "time": {
+          "from": 0,
+          "to": 6000
+        }
+      },
+      "node": "brass_done"
+    },
+    {
+      "if": {
+        "flags": [
+          "os_repair_started"
+        ],
+        "not_flags": [
+          "os_repaired"
+        ],
+        "role": "keeper",
+        "days_since": {
+          "flag": "os_repair_started",
+          "days": 2
+        },
+        "time": {
+          "from": 13000,
+          "to": 23000
+        }
+      },
+      "node": "reboot_done"
+    },
+    {
+      "if": {
+        "flags": [
+          "os_repair_started"
+        ],
+        "not_flags": [
+          "os_repaired"
+        ]
+      },
+      "node": "rebooting"
+    },
+    {
+      "if": {
+        "flags": [
+          "os_lamp_started"
+        ],
+        "not_flags": [
+          "os_lamp_ready"
+        ],
+        "role": "keeper",
+        "days_since": {
+          "flag": "os_lamp_started",
+          "days": 1
+        },
+        "time": {
+          "from": 13000,
+          "to": 23000
+        }
+      },
+      "node": "lamp_done"
+    },
+    {
+      "if": {
+        "not_flags": [
+          "os_met"
+        ]
+      },
+      "node": "intro"
+    },
+    {
+      "node": "hub"
+    }
+  ],
+  "nodes": {
+    "repair1": {
+      "text": [
+        "Сканирование… Руки наладчицы. Ось помнит такие руки. Ошибка. Не помнит.",
+        "Для ремонта нужно: медь, шестнадцать слитков. Редстоун, восемь. Осколки аметиста, четыре. И часы, чтобы Ось снова знал время."
+      ],
+      "options": [
+        {
+          "text": "Вот всё, что нужно.",
+          "next": "repair2",
+          "if": {
+            "items": [
+              {
+                "item": "minecraft:copper_ingot",
+                "count": 16
+              },
+              {
+                "item": "minecraft:redstone",
+                "count": 8
+              },
+              {
+                "item": "minecraft:amethyst_shard",
+                "count": 4
+              },
+              {
+                "item": "minecraft:clock",
+                "count": 1
+              }
+            ]
+          },
+          "actions": [
+            {
+              "type": "take_item",
+              "item": "minecraft:copper_ingot",
+              "count": 16
+            },
+            {
+              "type": "take_item",
+              "item": "minecraft:redstone",
+              "count": 8
+            },
+            {
+              "type": "take_item",
+              "item": "minecraft:amethyst_shard",
+              "count": 4
+            },
+            {
+              "type": "take_item",
+              "item": "minecraft:clock",
+              "count": 1
+            },
+            {
+              "type": "set_flag",
+              "flag": "os_repair_started"
+            }
+          ]
+        },
+        {
+          "text": "Соберу и вернусь.",
+          "next": "hub"
+        }
+      ]
+    },
+    "repair2": {
+      "text": [
+        "Детали приняты. Начинаю перезагрузку.",
+        "Ось будет спать два дня. Не будить. Ось проснётся ночью, когда видно звёзды. И только для той, кто чинила."
+      ],
+      "actions": [
+        {
+          "type": "sound",
+          "sound": "minecraft:block.beacon.deactivate"
+        }
+      ],
+      "options": [
+        {
+          "text": "Спи спокойно.",
+          "next": null
+        }
+      ]
+    },
+    "repair_other": {
+      "text": "Можно. Но не тобой. Ось нужна наладчица. Твои руки… другие.",
+      "options": [
+        {
+          "text": "Понятно.",
+          "next": "hub"
+        }
+      ]
+    },
+    "rebooting": {
+      "text": "Ззз… щёлк… перезагрузка… не будить… ночью… через два дня…",
+      "options": [
+        {
+          "text": "…",
+          "next": null
+        }
+      ]
+    },
+    "reboot_done": {
+      "text": [
+        "Щёлк. Щёлк. Система запущена. Время: ночь. Звёзды: на месте. Наладчица: рядом.",
+        "Спасибо. Ось чувствует себя… целым. Это новое ощущение. У тебя руки как у… данные недоступны. Пока.",
+        "Возьми. Шестерня из старого сердца Оси. Оси она больше не нужна, а тебе пригодится."
+      ],
+      "actions": [
+        {
+          "type": "set_flag",
+          "flag": "os_repaired"
+        },
+        {
+          "type": "give_item",
+          "item": "storymod:keeper_gear"
+        },
+        {
+          "type": "sound",
+          "sound": "minecraft:block.beacon.activate"
+        }
+      ],
+      "options": [
+        {
+          "text": "Рада, что ты снова в строю.",
+          "next": "hub"
+        }
+      ]
+    },
+    "scan_w": {
+      "text": "Сканирование. Температура: ниже нормы. Частота: Край. Ось не понимает. Ось не будет докладывать хозяину.",
+      "actions": [
+        {
+          "type": "set_pflag",
+          "flag": "os_scanned"
+        }
+      ],
+      "options": [
+        {
+          "text": "Спасибо, Ось.",
+          "next": "hub"
+        }
+      ]
+    },
+    "h_damaged": {
+      "text": "Данные о двух Сердечниках повреждены. Щёлк. Ось нужен ремонт. Нужны умелые руки.",
+      "options": [
+        {
+          "text": "Понятно.",
+          "next": "hints"
+        }
+      ]
+    },
+    "intro": {
+      "text": [
+        "Щёлк. Новый голос. Регистрирую.",
+        "Я Ось. Автоматон-помощник. Назначение: помогать. Хозяин Вельд велел подсказывать, где искать Сердечники. Ось помнит карты Ордена. Многие карты. Не все."
+      ],
+      "actions": [
+        {
+          "type": "set_flag",
+          "flag": "os_met"
+        }
+      ],
+      "options": [
+        {
+          "text": "Где искать Сердечники?",
+          "next": "hints"
+        },
+        {
+          "text": "Кто тебя сделал?",
+          "next": "maker"
+        }
+      ]
+    },
+    "hub": {
+      "text": "Ось слушает.",
+      "options": [
+        {
+          "text": "Где искать Сердечники?",
+          "next": "hints"
+        },
+        {
+          "text": "Кто тебя сделал?",
+          "next": "maker",
+          "if": {
+            "not_flags": [
+              "os_memory"
+            ]
+          }
+        },
+        {
+          "text": "Дай посмотрю, что с тобой.",
+          "next": "repair1",
+          "if": {
+            "role": "keeper",
+            "not_flags": [
+              "os_repair_started"
+            ]
+          }
+        },
+        {
+          "text": "Ты весь скрипишь. Тебя можно починить?",
+          "next": "repair_other",
+          "if": {
+            "not_role": "keeper",
+            "not_flags": [
+              "os_repair_started"
+            ]
+          }
+        },
+        {
+          "text": "Ось, что ты видишь, когда смотришь на меня?",
+          "next": "scan_w",
+          "if": {
+            "role": "wanderer",
+            "not_pflags": [
+              "os_scanned"
+            ]
+          }
+        },
+        {
+          "text": "Ты знаешь, кто такая Пепельная?",
+          "next": "mem1",
+          "if": {
+            "flags": [
+              "ash_met_2",
+              "os_repaired"
+            ],
+            "not_flags": [
+              "os_memory"
+            ]
+          }
+        },
+        {
+          "text": "Напомни, где искать письмо.",
+          "next": "letter_hint",
+          "if": {
+            "flags": [
+              "os_memory"
+            ],
+            "not_flags": [
+              "page_letter"
+            ]
+          }
+        },
+        {
+          "text": "Среди записей была твоя схема. Там сказано, что тебя собрал не Вельд.",
+          "next": "schema",
+          "if": {
+            "flags": [
+              "page_os_schema"
+            ],
+            "not_flags": [
+              "os_schema",
+              "os_memory"
+            ]
+          }
+        },
+        {
+          "text": "Ось, ты можешь помочь с поисками?",
+          "next": "lamp1",
+          "if": {
+            "role": "keeper",
+            "flags": [
+              "os_repaired"
+            ],
+            "not_flags": [
+              "os_lamp_started"
+            ]
+          }
+        },
+        {
+          "text": "Как там лампа?",
+          "next": "lamp_wait",
+          "if": {
+            "flags": [
+              "os_lamp_started"
+            ],
+            "not_flags": [
+              "os_lamp_ready"
+            ]
+          }
+        },
+        {
+          "text": "Покажи дорогу.",
+          "next": "lamp_menu",
+          "if": {
+            "flags": [
+              "os_lamp_ready"
+            ]
+          }
+        },
+        {
+          "text": "Ты помнишь что-нибудь ещё?",
+          "next": "os_bell",
+          "if": {
+            "flags": [
+              "os_repaired"
+            ],
+            "not_flags": [
+              "os_bell_hint"
+            ]
+          }
+        },
+        {
+          "text": "Дневник куда-то пропал.",
+          "next": "lost_journal",
+          "if": {
+            "not": {
+              "items": [
+                {
+                  "item": "storymod:journal"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "text": "Око пропало.",
+          "next": "lost_eye",
+          "if": {
+            "role": "wanderer",
+            "flags": [
+              "eye_given"
+            ],
+            "not": {
+              "items": [
+                {
+                  "item": "storymod:white_eye"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "text": "Ось, тебе не нужны новые шестерни?",
+          "next": "brass1",
+          "if": {
+            "role": "keeper",
+            "flags": [
+              "os_repaired"
+            ],
+            "not_flags": [
+              "os_brass_started"
+            ],
+            "mods": [
+              "create"
+            ]
+          }
+        },
+        {
+          "text": "Как новое сердце?",
+          "next": "brass_wait",
+          "if": {
+            "flags": [
+              "os_brass_started"
+            ],
+            "not_flags": [
+              "os_brass_done"
+            ]
+          }
+        },
+        {
+          "text": "Ничего. До встречи.",
+          "next": null
+        }
+      ]
+    },
+    "lamp1": {
+      "text": [
+        "Ось может. Нужна резонансная лампа. Ось помнит чертёж.",
+        "Осколки эха, два. Кристаллы призмарина, восемь. Светопыль, четыре. Наладчица соберёт, Ось настроит. Настройка займёт одну ночь."
+      ],
+      "options": [
+        {
+          "text": "Вот детали.",
+          "next": "lamp2",
+          "if": {
+            "items": [
+              {
+                "item": "minecraft:echo_shard",
+                "count": 2
+              },
+              {
+                "item": "minecraft:prismarine_crystals",
+                "count": 8
+              },
+              {
+                "item": "minecraft:glowstone_dust",
+                "count": 4
+              }
+            ]
+          },
+          "actions": [
+            {
+              "type": "take_item",
+              "item": "minecraft:echo_shard",
+              "count": 2
+            },
+            {
+              "type": "take_item",
+              "item": "minecraft:prismarine_crystals",
+              "count": 8
+            },
+            {
+              "type": "take_item",
+              "item": "minecraft:glowstone_dust",
+              "count": 4
+            },
+            {
+              "type": "set_flag",
+              "flag": "os_lamp_started"
+            }
+          ]
+        },
+        {
+          "text": "Позже.",
+          "next": "hub"
+        }
+      ]
+    },
+    "lamp2": {
+      "text": "Лампа собрана. Ось настраивает. Приходи следующей ночью. Наладчица нужна, чтобы закрутить последний винт.",
+      "actions": [
+        {
+          "type": "sound",
+          "sound": "minecraft:block.amethyst_block.chime"
+        }
+      ],
+      "options": [
+        {
+          "text": "Хорошо.",
+          "next": "hub"
+        }
+      ]
+    },
+    "lamp_wait": {
+      "text": "Лампа гудит. Настройка идёт. Ночью, наладчица. Не раньше, чем пройдёт день.",
+      "options": [
+        {
+          "text": "…",
+          "next": "hub"
+        }
+      ]
+    },
+    "lamp_done": {
+      "text": [
+        "Последний винт. Щёлк.",
+        "Лампа поёт. Ось слышит дальние места: эхо под землёй, песню под водой, шёпот старых книг. Ось может показать дорогу. Любому из вас."
+      ],
+      "actions": [
+        {
+          "type": "set_flag",
+          "flag": "os_lamp_ready"
+        },
+        {
+          "type": "sound",
+          "sound": "minecraft:block.amethyst_block.resonate"
+        }
+      ],
+      "options": [
+        {
+          "text": "Покажи.",
+          "next": "lamp_menu"
+        }
+      ]
+    },
+    "lamp_menu": {
+      "text": "Куда?",
+      "options": [
+        {
+          "text": "К спящему городу глубин.",
+          "next": "lamp_menu",
+          "actions": [
+            {
+              "type": "give_structure_compass",
+              "structure": "storymod:ancient_cities",
+              "radius": 96,
+              "name": "Компас: спящий город"
+            }
+          ]
+        },
+        {
+          "text": "К храму стражей под водой.",
+          "next": "lamp_menu",
+          "actions": [
+            {
+              "type": "give_structure_compass",
+              "structure": "storymod:monuments",
+              "radius": 64,
+              "name": "Компас: храм стражей"
+            }
+          ]
+        },
+        {
+          "text": "К подземной библиотеке.",
+          "next": "lamp_menu",
+          "actions": [
+            {
+              "type": "give_structure_compass",
+              "structure": "storymod:strongholds",
+              "radius": 100,
+              "name": "Компас: подземная библиотека"
+            }
+          ]
+        },
+        {
+          "text": "К особняку в тёмном лесу.",
+          "next": "lamp_menu",
+          "actions": [
+            {
+              "type": "give_structure_compass",
+              "structure": "storymod:mansions",
+              "radius": 100,
+              "name": "Компас: особняк"
+            }
+          ]
+        },
+        {
+          "text": "Хватит.",
+          "next": "hub"
+        }
+      ]
+    },
+    "os_bell": {
+      "text": [
+        "Ось помнит обычай. В Хальде на рассвете звонили в колокол у круга. Чтобы позвать архивариуса.",
+        "Колокола здесь нет. Колокол можно поставить. Ось не знает, кто ответит. Архивариус давно… щёлк… давно."
+      ],
+      "actions": [
+        {
+          "type": "set_flag",
+          "flag": "os_bell_hint"
+        }
+      ],
+      "options": [
+        {
+          "text": "Интересно.",
+          "next": "hub"
+        }
+      ]
+    },
+    "lost_journal": {
+      "text": "Ось хранит копию. Ось хранит копии всего.",
+      "actions": [
+        {
+          "type": "give_item",
+          "item": "storymod:journal"
+        }
+      ],
+      "options": [
+        {
+          "text": "Спасибо.",
+          "next": "hub"
+        }
+      ]
+    },
+    "lost_eye": {
+      "text": "Око не теряется. Оно возвращается к тому, кого видит. Смотри: уже здесь.",
+      "actions": [
+        {
+          "type": "give_item",
+          "item": "storymod:white_eye"
+        }
+      ],
+      "options": [
+        {
+          "text": "…",
+          "next": "hub"
+        }
+      ]
+    },
+    "hints": {
+      "text": "Ось перечисляет. Какой Сердечник?",
+      "options": [
+        {
+          "text": "Сердечник Глубин",
+          "next": "h_depths",
+          "if": {
+            "not_flags": [
+              "found_core_depths"
+            ]
+          }
+        },
+        {
+          "text": "Сердечник Пламени",
+          "next": "h_flame",
+          "if": {
+            "not_flags": [
+              "found_core_flame"
+            ]
+          }
+        },
+        {
+          "text": "Сердечник Приливов",
+          "next": "h_tides",
+          "if": {
+            "flags": [
+              "os_repaired"
+            ],
+            "not_flags": [
+              "found_core_tides"
+            ]
+          }
+        },
+        {
+          "text": "Сердечник Пустоты",
+          "next": "h_void",
+          "if": {
+            "flags": [
+              "os_repaired"
+            ],
+            "not_flags": [
+              "found_core_void"
+            ]
+          }
+        },
+        {
+          "text": "А остальные?",
+          "next": "h_damaged",
+          "if": {
+            "not_flags": [
+              "os_repaired"
+            ]
+          }
+        },
+        {
+          "text": "Все четыре уже найдены.",
+          "next": "h_done",
+          "if": {
+            "flags": [
+              "finale_ready"
+            ]
+          }
+        },
+        {
+          "text": "Хватит.",
+          "next": "hub"
+        }
+      ]
+    },
+    "h_depths": {
+      "text": "Глубины. Очень глубоко. Ниже камня, ниже глубинного сланца. Там Орден строил город в тишине. Город спит. Город слушает. Не шуми. Сердечник лежит среди его сундуков. Не в каждом.",
+      "options": [
+        {
+          "text": "Понятно.",
+          "next": "hints"
+        }
+      ]
+    },
+    "h_flame": {
+      "text": "Пламя. Нижний мир. Крепости из тёмного кирпича хранят его в сундуках. Сокровищницы бастионов тоже. Огненные стражи не любят гостей. Ось советует зелье огнестойкости.",
+      "options": [
+        {
+          "text": "Понятно.",
+          "next": "hints"
+        }
+      ]
+    },
+    "h_tides": {
+      "text": "Приливы. Под водой, в храме стражей. Сердечник носит в себе Древний страж, самый старый из них. Победить стража, забрать Сердечник. Дышать под водой полезно.",
+      "options": [
+        {
+          "text": "Понятно.",
+          "next": "hints"
+        }
+      ]
+    },
+    "h_void": {
+      "text": "Пустота. За Краем. Сначала дракон. Потом дальние острова. Высокие пурпурные города хранят его в сокровищницах. Падать там далеко. Очень.",
+      "options": [
+        {
+          "text": "Понятно.",
+          "next": "hints"
+        }
+      ]
+    },
+    "h_done": {
+      "text": "Все четыре найдены. Ось… не уверен, что это хорошо. Ось не знает, почему не уверен.",
+      "options": [
+        {
+          "text": "…",
+          "next": "hub"
+        }
+      ]
+    },
+    "maker": {
+      "text": "Хозяин Вельд говорит: Вельд. Память Оси говорит… щёлк… данные повреждены. Ось не любит этот вопрос.",
+      "options": [
+        {
+          "text": "Ладно.",
+          "next": "hub"
+        }
+      ]
+    },
+    "schema": {
+      "text": "Ошибка. Ошибка. Сведения засекречены. Владелец ключа… не найден. Ключ… пахнет… щёлк. Ось не может ответить. Пока.",
+      "actions": [
+        {
+          "type": "set_flag",
+          "flag": "os_schema"
+        }
+      ],
+      "options": [
+        {
+          "text": "Пока?",
+          "next": "hub"
+        }
+      ]
+    },
+    "mem1": {
+      "text": [
+        "Пепельная. Пепел. Ли… Ли…",
+        "Щёлк. Восстановление памяти. Ключ принят: пепел.",
+        "Ось помнит. Ось собрала она. Лира, дочь Вельда. Перед последней ночью Горна она вложила в Ось то, что не успела сказать. И спрятала письмо. Для него."
+      ],
+      "actions": [
+        {
+          "type": "set_flag",
+          "flag": "os_memory"
+        },
+        {
+          "type": "sound",
+          "sound": "minecraft:block.amethyst_block.resonate"
+        }
+      ],
+      "options": [
+        {
+          "text": "Где письмо?",
+          "next": "letter_hint"
+        }
+      ]
+    },
+    "letter_hint": {
+      "text": "Письмо среди книг Ордена. Подземная библиотека, рядом с порталом за Край. Книг много. Одна — её. Лира делала копии и прятала их, одну даже в спящем городе глубин. Ищи. Отдай ему лично в руки.",
+      "options": [
+        {
+          "text": "Почему ты молчал раньше?",
+          "next": "mem2",
+          "if": {
+            "flags": [
+              "os_memory"
+            ]
+          }
+        },
+        {
+          "text": "Спасибо.",
+          "next": "hub"
+        }
+      ]
+    },
+    "mem2": {
+      "text": "Память была заперта. Ключ — встреча с ней. Лира не хотела, чтобы хозяин узнал раньше времени. Он бы не поверил. Он бы разобрал Ось на детали.",
+      "options": [
+        {
+          "text": "…",
+          "next": "hub"
+        }
+      ]
+    },
+    "epi_dawn": {
+      "text": "Солнце яркое. Ярче, чем в памяти Оси. Хозяина нет. Лиры нет. Ось осталась. Ось будет помнить их обоих. Это новое назначение.",
+      "options": [
+        {
+          "text": "…",
+          "next": null
+        }
+      ]
+    },
+    "epi_seal": {
+      "text": "Горн молчит. Хозяин ушёл. Она ушла. Солнце не гаснет. Ось будет стоять здесь и сторожить тишину.",
+      "options": [
+        {
+          "text": "…",
+          "next": null
+        }
+      ]
+    },
+    "epi_fight": {
+      "text": "Хозяин… Ось не понимает, почему внутри скрипит. Ось сломана? Нет. Это называется горе. Лира учила.",
+      "options": [
+        {
+          "text": "…",
+          "next": null
+        }
+      ]
+    },
+    "brass1": {
+      "text": [
+        "Ось работает. Ось скрипит. Внутри Оси старые шестерни Ордена, их точили ещё до Горна.",
+        "Где-то в мире люди снова научились делать механизмы. Латунь, валы, точные узлы. Ось чувствует, как они вращаются. Ось хочет такое сердце.",
+        "Нужно: точные механизмы, четыре. Латунные слитки, шестнадцать."
+      ],
+      "options": [
+        {
+          "text": "Вот всё, что нужно.",
+          "next": "brass2",
+          "if": {
+            "items": [
+              {
+                "item": "create:precision_mechanism",
+                "count": 4
+              },
+              {
+                "item": "create:brass_ingot",
+                "count": 16
+              }
+            ]
+          },
+          "actions": [
+            {
+              "type": "take_item",
+              "item": "create:precision_mechanism",
+              "count": 4
+            },
+            {
+              "type": "take_item",
+              "item": "create:brass_ingot",
+              "count": 16
+            },
+            {
+              "type": "set_flag",
+              "flag": "os_brass_started"
+            },
+            {
+              "type": "sound",
+              "sound": "minecraft:block.anvil.use"
+            }
+          ]
+        },
+        {
+          "text": "Поищу.",
+          "next": "hub"
+        }
+      ]
+    },
+    "brass2": {
+      "text": [
+        "Ось принимает. Ось соберёт себя заново. Это долго.",
+        "Приходи, когда солнце встанет второй раз. Утром. Ось любит утро: утром всё начинается."
+      ],
+      "options": [
+        {
+          "text": "Договорились.",
+          "next": "hub"
+        }
+      ]
+    },
+    "brass_wait": {
+      "text": "Ось собирает себя. Тик… тик-так… Ещё не ровно. Утром второго дня.",
+      "options": [
+        {
+          "text": "Ладно.",
+          "next": "hub"
+        }
+      ]
+    },
+    "brass_done": {
+      "text": [
+        "Тик. Тик. Ровно. Впервые за… Ось не знает, за сколько лет. Ровно.",
+        "Старое сердце Оси больше не нужно. Возьми его. Оно ещё помнит, как торопиться, и поделится с тобой."
+      ],
+      "actions": [
+        {
+          "type": "set_flag",
+          "flag": "os_brass_done"
+        },
+        {
+          "type": "give_item",
+          "item": "storymod:clockwork_heart"
+        },
+        {
+          "type": "sound",
+          "sound": "minecraft:block.note_block.chime"
+        }
+      ],
+      "options": [
+        {
+          "text": "Спасибо, Ось.",
+          "next": "hub"
+        }
+      ]
+    }
+  }
+}

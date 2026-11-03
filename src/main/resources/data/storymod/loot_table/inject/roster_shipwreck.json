@@ -1,0 +1,40 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Главный инженер:\nВельд из Хальды.\n\nПодмастерье и наладчица печатей:\nЛира, дочь Вельда.\n\nАрхивариус:\nИрмен Тихий.",
+                "Кузнецы сердца:\nОрвин, Тесса, Гальд.\n\nДопуск к сердцу Горна имеют только главный инженер и его подмастерье."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Список мастеров Горна",
+              "author": "Канцелярия Ордена",
+              "generation": 0
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{storymod_page:\"roster\"}"
+            }
+          ]
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.35
+        }
+      ]
+    }
+  ]
+}

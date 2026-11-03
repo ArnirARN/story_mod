@@ -1,0 +1,40 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Если Горн можно заставить брать, его можно заставить и отдавать. Повернуть поток вспять.\n\nНо для этого нужны двое: тот, кто сложил Горн, и тот, кто сложил печать.",
+                "Отец никогда не согласится. Он не сможет признать, что Горн был ошибкой.\n\nЕсли бы он только прочёл… Нет. Он не станет читать."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Незаконченная формула",
+              "author": "Л.",
+              "generation": 0
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{storymod_page:\"dawn\"}"
+            }
+          ]
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.3
+        }
+      ]
+    }
+  ]
+}

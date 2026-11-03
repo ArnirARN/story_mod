@@ -1,0 +1,227 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Год первый от зажжения.\n\nСегодня Орден Зенита зажёг Солнечный Горн. Магия и механика, слитые воедино: огонь, который не гаснет, и свет, который не кончается.",
+                "Наши города больше не знают ночи. Мастер Вельд говорит, что топлива Горну хватит навечно.\n\nЯ спросил, что это за топливо. Он улыбнулся и не ответил."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Хроника Ордена Зенита",
+              "author": "Архивариус Ирмен",
+              "generation": 0
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{storymod_page:\"founding\"}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Главный инженер:\nВельд из Хальды.\n\nПодмастерье и наладчица печатей:\nЛира, дочь Вельда.\n\nАрхивариус:\nИрмен Тихий.",
+                "Кузнецы сердца:\nОрвин, Тесса, Гальд.\n\nДопуск к сердцу Горна имеют только главный инженер и его подмастерье."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Список мастеров Горна",
+              "author": "Канцелярия Ордена",
+              "generation": 0
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{storymod_page:\"roster\"}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Третий год.\n\nМощность Горна выросла вдвое. За то же время полуденный свет за стенами города ослаб на одну десятую.\n\nСовпадение? Я повторила замеры.",
+                "Не совпадение.\n\nГорн не создаёт свет. Он его забирает. У солнца. Чем больше даёт Горн, тем меньше остаётся миру.",
+                "Отчёт отправлен главному инженеру.\n\nОтвет: «Расход приемлем».\n\nБольше ответов не было."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Отчёт о расходе света",
+              "author": "Наблюдатель Тесса",
+              "generation": 0
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{storymod_page:\"forge_truth\"}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Отец считает ночами. Я видела цифры. Он знает, что Горн пьёт солнце, и знает, сколько ему осталось.\n\nОн говорит: ещё немного, потом исправим.",
+                "За стенами гибнут поля. Люди уходят на юг, но юг тоже темнеет.\n\nЕсли отец не остановит Горн, это сделаю я. Я знаю, где его сердце. Я сама его настраивала."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Дневник подмастерья",
+              "author": "Л.",
+              "generation": 0
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{storymod_page:\"lira_diary\"}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Ночь на исходе третьего года. Горн вспыхнул так, что стало светло как днём. Потом раскололся.\n\nЧетыре огня ушли в небо: один вниз, один в пламя, один в море, один за край мира.",
+                "Пепел шёл неделю.\n\nГоворят, в ту ночь в сердце Горна была подмастерье главного инженера. Её не нашли.\n\nГлавный инженер ни с кем не говорит."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Последняя запись дозорного",
+              "author": "Неизвестен",
+              "generation": 0
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{storymod_page:\"breaking\"}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Кто держит печать, тот держит сон Горна.\n\nПечать держится, пока держится тот, кто её наложил. Тысячу лет. Может быть, чуть больше.",
+                "Когда печать истончится, Горн проснётся сам. Медленно.\n\nСолнце побледнеет.\nТени станут длиннее.\nПтицы замолчат."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Песнь печати",
+              "author": "Неизвестен",
+              "generation": 0
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{storymod_page:\"seal\"}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Всем мастерам.\n\nГорн не останавливать. Расход света утверждён. Жалобы с окраин не рассматривать.",
+                "Подмастерье Лиру от сердца Горна отстранить. Ключи наладчицы печатей изъять.\n\nКлючи изъять не удалось."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Последний приказ Ордена",
+              "author": "Совет Зенита",
+              "generation": 0
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{storymod_page:\"last_order\"}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Аметист держит звук, медь его ведёт, редстоун помнит.\n\nЕсли сложить их правильно, механизм проснётся даже после тысячи лет сна.",
+                "Нужно только дать ему время. Две ночи, не меньше. Механизмы, как и люди, не любят, когда их будят днём."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Заметки о механизмах",
+              "author": "Л.",
+              "generation": 0
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{storymod_page:\"lens\"}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Были среди нас те, кого слышал Край. Глаза их ловили свет, как у высоких, и высокие проходили мимо них, не оборачиваясь.",
+                "Горн их боялся: его свет не мог их взять. Мастер Вельд хотел их изучить.\n\nПодмастерье Лира прятала их от отца. Я не записал, куда."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Песнь проводников",
+              "author": "Ирмен Тихий",
+              "generation": 0
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{storymod_page:\"guides\"}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

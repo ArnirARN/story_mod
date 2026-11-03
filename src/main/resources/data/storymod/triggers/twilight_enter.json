@@ -1,0 +1,16 @@
+{
+  "once": "player",
+  "if": {
+    "dimension": "twilightforest:twilight_forest"
+  },
+  "actions": [
+    {
+      "type": "set_pflag",
+      "flag": "been_twilight"
+    },
+    {
+      "type": "message",
+      "text": "Вечные сумерки. Где-то далеко, на самом краю слуха, звонит колокол."
+    }
+  ]
+}

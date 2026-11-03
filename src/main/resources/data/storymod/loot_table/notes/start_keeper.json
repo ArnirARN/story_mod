@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Той, у кого руки помнят механизмы.\n\nКлюч старый, но крепкий. Возьми сломанную вещь в другую руку, дай ключу немного меди, и он сделает остальное.",
+                "Здесь давно ждут хорошего мастера. Кое-кто скрипит у старого круга камней и не может себя починить."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Той, чьи руки помнят",
+              "author": "—",
+              "generation": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

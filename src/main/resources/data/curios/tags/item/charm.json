@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "values": [
+    "storymod:guardian_scale",
+    "storymod:forge_ember",
+    "storymod:void_feather",
+    "storymod:clockwork_heart",
+    "storymod:zenith_shard",
+    "storymod:berserker_charm",
+    "storymod:stone_heart",
+    "storymod:storm_feather",
+    "storymod:end_mark",
+    "storymod:copper_oath"
+  ]
+}

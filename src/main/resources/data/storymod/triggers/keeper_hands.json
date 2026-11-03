@@ -1,0 +1,18 @@
+{
+  "once": "player",
+  "if": {
+    "role": "keeper",
+    "flags": [
+      "os_met"
+    ],
+    "not_flags": [
+      "os_repair_started"
+    ]
+  },
+  "actions": [
+    {
+      "type": "message",
+      "text": "Ты замечаешь, как у Оси заедает шестерня в плече и сбивается голос. Руки сами тянутся к инструменту."
+    }
+  ]
+}

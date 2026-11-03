@@ -1,0 +1,40 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Кто держит печать, тот держит сон Горна.\n\nПечать держится, пока держится тот, кто её наложил. Тысячу лет. Может быть, чуть больше.",
+                "Когда печать истончится, Горн проснётся сам. Медленно.\n\nСолнце побледнеет.\nТени станут длиннее.\nПтицы замолчат."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Песнь печати",
+              "author": "Неизвестен",
+              "generation": 0
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{storymod_page:\"seal\"}"
+            }
+          ]
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.35
+        }
+      ]
+    }
+  ]
+}

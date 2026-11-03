@@ -1,0 +1,24 @@
+{
+  "type": "neoforge:add_table",
+  "conditions": [
+    {
+      "condition": "storymod:mod_chest",
+      "namespaces": [
+        "twilightforest",
+        "aether",
+        "aether_genesis",
+        "betterdungeons",
+        "bettermineshafts",
+        "betterstrongholds",
+        "betterdeserttemples",
+        "t_and_t",
+        "irons_spellbooks",
+        "ars_nouveau",
+        "friendsandfoes",
+        "deeperdarker",
+        "naturalist"
+      ]
+    }
+  ],
+  "table": "storymod:inject/mod_chest_artifacts"
+}

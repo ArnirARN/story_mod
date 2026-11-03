@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "storymod:dusk_edge",
+    "storymod:light_thirst",
+    "storymod:void_chill",
+    "storymod:long_reach",
+    "storymod:shadow_step",
+    "storymod:sturdy"
+  ]
+}

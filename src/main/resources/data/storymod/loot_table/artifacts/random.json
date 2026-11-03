@@ -1,0 +1,46 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "storymod:zenith_ring"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "storymod:echo_pendant"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "storymod:guardian_scale"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "storymod:forge_ember"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "storymod:void_feather"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "storymod:order_medallion"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "storymod:berserker_charm"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "storymod:stone_heart"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "storymod:storm_feather"
+        }
+      ]
+    }
+  ]
+}
