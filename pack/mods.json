@@ -28,6 +28,10 @@
       "why": "Оружие"
     },
     {
+      "slug": "sophisticated-backpacks",
+      "why": "Рюкзаки"
+    },
+    {
       "slug": "yungs-better-dungeons",
       "why": "Структуры"
     },
@@ -74,6 +78,10 @@
     {
       "slug": "playeranimator",
       "why": "Нужен для Iron's Spells"
+    },
+    {
+      "slug": "sophisticated-core",
+      "why": "Нужен для рюкзаков"
     }
   ]
 }
