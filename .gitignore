@@ -12,3 +12,4 @@ runs/
 .project
 .settings/
 bin/
+__pycache__/

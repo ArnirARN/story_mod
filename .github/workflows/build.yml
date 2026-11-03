@@ -60,6 +60,19 @@ jobs:
           PACK_VERSION="$VER-${GITHUB_SHA::7}" python3 pack/build_pack.py storymod.jar "$NEO" out
           cat out/mods.md
           (cd out/server-mods && zip -q ../../server-mods.zip *.jar)
+          # Self-updating client (Prism instance) and server starter, both pointing at the packwiz pack.
+          PACK_URL="https://raw.githubusercontent.com/$GITHUB_REPOSITORY/pack/pack.toml"
+          curl -fsSL -o bootstrap.jar https://github.com/packwiz/packwiz-installer-bootstrap/releases/download/v0.0.3/packwiz-installer-bootstrap.jar
+          rm -rf kit && mkdir -p kit && cp -r pack/prism kit/prism && cp -r pack/server kit/server
+          mkdir -p kit/prism/.minecraft
+          cp bootstrap.jar kit/prism/.minecraft/packwiz-installer-bootstrap.jar
+          cp bootstrap.jar kit/server/packwiz-installer-bootstrap.jar
+          sed -i "s|__PACK_URL__|$PACK_URL|g; s|__NEO__|$NEO|g" kit/prism/* kit/server/start.*
+          (cd kit/prism && zip -qr ../../StoryMod-Prism.zip .)
+          # Try the pack with the real installer (server side) from the local files.
+          mkdir -p pwtest && (cd pwtest && timeout 300 java -jar ../bootstrap.jar -g -s server "file://$GITHUB_WORKSPACE/out/packwiz/pack.toml" 2>&1 | tail -15) || true
+          echo "Installer test placed $(ls pwtest/mods 2>/dev/null | wc -l) server mods; expected $(ls out/server-mods | wc -l) + storymod"
+          (cd kit/server && zip -qr ../../storymod-server.zip .)
           cp out/storymod.mrpack storymod.mrpack
       - name: Smoke test with every mod from the pack
         run: |
@@ -90,13 +103,21 @@ jobs:
           {
             echo "Свежая сборка для Minecraft 1.21.1, NeoForge $NEO."
             echo
-            echo "- **storymod.mrpack**: импортируйте в Modrinth App или Prism Launcher. Поставит Minecraft, NeoForge, мод и все моды ниже."
+            echo "- **StoryMod-Prism.zip**: импортируйте в Prism Launcher. При каждом запуске игры моды сами скачиваются и обновляются."
+            echo "- **storymod-server.zip**: сервер. Запустите start.bat или start.sh: он сам поставит NeoForge и при каждом запуске обновит серверные моды."
+            echo "- **storymod.mrpack**: импортируйте в Modrinth App или Prism Launcher. Поставит Minecraft, NeoForge, мод и все моды ниже, но без автообновления."
             echo "- **storymod.jar**: только сам мод (Curios уже внутри)."
             echo "- **server-mods.zip**: все моды для сервера, распакуйте в папку mods рядом с storymod.jar."
             echo
             cat out/mods.md
           } > notes.md
+          # Publish the packwiz pack to the "pack" branch; clients and servers update from it on start.
+          cd out/packwiz
+          git init -q && git checkout -q -b pack && git add -A
+          git -c user.name="github-actions" -c user.email="github-actions@users.noreply.github.com" commit -qm "Pack ${GITHUB_SHA::7}"
+          git push -qf "https://x-access-token:${GH_TOKEN}@github.com/$GITHUB_REPOSITORY.git" pack
+          cd ../..
           gh release delete latest --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag || true
-          gh release create latest storymod.jar storymod.mrpack server-mods.zip --repo "$GITHUB_REPOSITORY" --prerelease \
+          gh release create latest StoryMod-Prism.zip storymod-server.zip storymod.mrpack storymod.jar server-mods.zip --repo "$GITHUB_REPOSITORY" --prerelease \
             --target "${{ github.event.pull_request.head.sha || github.sha }}" \
             --title "Последняя сборка" --notes-file notes.md
