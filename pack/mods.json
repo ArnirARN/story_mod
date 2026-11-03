@@ -1,0 +1,21 @@
+{
+  "_comment": "Mods added to the modpack. CI resolves the newest NeoForge 1.21.1 build of each on Modrinth together with its required dependencies.",
+  "minecraft": "1.21.1",
+  "loader": "neoforge",
+  "mods": [
+    {"slug": "create", "why": "Механизмы"},
+    {"slug": "aether", "why": "Измерение"},
+    {"slug": "the-twilight-forest", "why": "Измерение"},
+    {"slug": "ars-nouveau", "why": "Магия"},
+    {"slug": "irons-spells-n-spellbooks", "why": "Магия и оружие"},
+    {"slug": "simply-swords", "why": "Оружие"},
+    {"slug": "yungs-better-dungeons", "why": "Структуры"},
+    {"slug": "yungs-better-mineshafts", "why": "Структуры"},
+    {"slug": "yungs-better-strongholds", "why": "Структуры"},
+    {"slug": "towns-and-towers", "why": "Структуры"},
+    {"slug": "friends-and-foes", "why": "Существа"},
+    {"slug": "naturalist", "why": "Существа"},
+    {"slug": "jei", "why": "Удобство: рецепты"},
+    {"slug": "jade", "why": "Удобство: подсказки"}
+  ]
+}

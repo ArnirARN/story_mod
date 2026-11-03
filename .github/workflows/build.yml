@@ -48,24 +48,55 @@ jobs:
           if grep -iE "storymod" "$LOG" | grep -iE "error|exception|couldn't|failed"; then
             echo "Story data errors found"; exit 1
           fi
-      - name: Publish the jar as the "latest" release
+      - name: Build the modpack (mods resolved on Modrinth)
+        run: |
+          cp build/libs/storymod-*.jar storymod.jar
+          unzip -l storymod.jar | grep -q "META-INF/jarjar/.*curios" || { echo "Curios is not bundled"; exit 1; }
+          NEO=$(curl -sf https://maven.neoforged.net/releases/net/neoforged/neoforge/maven-metadata.xml \
+            | grep -oE '<version>21\.1\.[0-9]+</version>' | sed -E 's/<[^>]+>//g' | sort -t. -k3 -n | tail -1)
+          echo "Newest NeoForge 21.1: $NEO"; test -n "$NEO"
+          echo "NEO=$NEO" >> "$GITHUB_ENV"
+          VER=$(grep '^mod_version=' gradle.properties | cut -d= -f2)
+          PACK_VERSION="$VER-${GITHUB_SHA::7}" python3 pack/build_pack.py storymod.jar "$NEO" out
+          cat out/mods.md
+          (cd out/server-mods && zip -q ../../server-mods.zip *.jar)
+          cp out/storymod.mrpack storymod.mrpack
+      - name: Smoke test with every mod from the pack
+        run: |
+          rm -rf run/world run/logs run/mods
+          mkdir -p run/mods
+          cp out/server-mods/*.jar run/mods/
+          timeout 900 ./gradlew runServer -PnoCurios -Pneo_version="$NEO" --no-daemon > server-mods.out 2>&1 &
+          for i in $(seq 1 880); do
+            if grep -qE 'Done \(|Crash report|Failed to start|ModLoadingException' run/logs/latest.log server-mods.out 2>/dev/null; then break; fi
+            sleep 1
+          done
+          sleep 5
+          pkill -f 'net.neoforged' || true
+          LOG=run/logs/latest.log
+          if ! grep -q 'Done (' "$LOG"; then
+            grep -iE "error|exception|missing|requires" "$LOG" server-mods.out | grep -v DEBUG | head -80
+            exit 1
+          fi
+          grep -qE "Loaded [1-9][0-9]* story dialogues" "$LOG"
+          if grep -iE "storymod" "$LOG" | grep -iE "error|exception|couldn't|failed"; then
+            echo "Story data errors with mods"; exit 1
+          fi
+      - name: Publish the "latest" release
         if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          cp build/libs/storymod-*.jar storymod.jar
-          unzip -l storymod.jar | grep -q "META-INF/jarjar/.*curios" || { echo "Curios is not bundled"; exit 1; }
-          # One-click modpack for Modrinth App / Prism Launcher: installs Minecraft, NeoForge and the mod.
-          NEO=$(grep '^neo_version=' gradle.properties | cut -d= -f2)
-          MC=$(grep '^minecraft_version=' gradle.properties | cut -d= -f2)
-          VER=$(grep '^mod_version=' gradle.properties | cut -d= -f2)
-          rm -rf pack && mkdir -p pack/overrides/mods
-          cp storymod.jar pack/overrides/mods/storymod.jar
-          printf '{"formatVersion":1,"game":"minecraft","versionId":"%s-%s","name":"Story Mod","summary":"Сюжетный мод с NeoForge","files":[],"dependencies":{"minecraft":"%s","neoforge":"%s"}}' \
-            "$VER" "${GITHUB_SHA::7}" "$MC" "$NEO" > pack/modrinth.index.json
-          (cd pack && zip -qr ../storymod.mrpack modrinth.index.json overrides)
+          {
+            echo "Свежая сборка для Minecraft 1.21.1, NeoForge $NEO."
+            echo
+            echo "- **storymod.mrpack**: импортируйте в Modrinth App или Prism Launcher. Поставит Minecraft, NeoForge, мод и все моды ниже."
+            echo "- **storymod.jar**: только сам мод (Curios уже внутри)."
+            echo "- **server-mods.zip**: все моды для сервера, распакуйте в папку mods рядом с storymod.jar."
+            echo
+            cat out/mods.md
+          } > notes.md
           gh release delete latest --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag || true
-          gh release create latest storymod.jar storymod.mrpack --repo "$GITHUB_REPOSITORY" --prerelease \
+          gh release create latest storymod.jar storymod.mrpack server-mods.zip --repo "$GITHUB_REPOSITORY" --prerelease \
             --target "${{ github.event.pull_request.head.sha || github.sha }}" \
-            --title "Последняя сборка" \
-            --notes "Свежая сборка мода для Minecraft 1.21.1 (NeoForge 21.1.x). Curios уже внутри. storymod.mrpack: импортируйте в Modrinth App или Prism Launcher, NeoForge поставится сам. storymod.jar: положите в папку mods на сервере (и у игроков, если ставите вручную)."
+            --title "Последняя сборка" --notes-file notes.md
