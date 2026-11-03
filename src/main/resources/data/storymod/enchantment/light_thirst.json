@@ -36,11 +36,7 @@
         },
         "requirements": {
           "condition": "minecraft:random_chance",
-          "chance": {
-            "type": "minecraft:linear",
-            "base": 0.2,
-            "per_level_above_first": 0.1
-          }
+          "chance": 0.3
         }
       }
     ]
