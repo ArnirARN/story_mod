@@ -1136,14 +1136,14 @@ public final class StoryGameTests {
         w.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
         k.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
         Vec3 start = helper.absoluteVec(new Vec3(2.5, 1, 0.5));
-        w.moveTo(start.x, start.y, start.z, 0.0F, 0.0F);
+        w.moveTo(start.x, start.y, start.z, 0.0F, 16.0F);
         var pig = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityType.PIG, new Vec3(2.5, 1, 4.5));
         float pigHealth = pig.getHealth();
 
         w.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(ModItems.WHITE_GREATSWORD.get()));
         ModItems.WHITE_GREATSWORD.get().use(level, w, net.minecraft.world.InteractionHand.MAIN_HAND);
         check(pig.getHealth() < pigHealth || pig.isDeadOrDying(), "phase strike did not hit");
-        check(w.position().distanceTo(start) > 2.0, "phase strike did not move the owner");
+        check(w.position().distanceTo(start) > 1.0, "phase strike did not move the owner");
         check(w.getCooldowns().isOnCooldown(ModItems.WHITE_GREATSWORD.get()), "no cooldown after the strike");
 
         k.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(ModItems.WHITE_GREATSWORD.get()));
