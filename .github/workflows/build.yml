@@ -116,8 +116,34 @@ jobs:
           git init -q && git checkout -q -b pack && git add -A
           git -c user.name="github-actions" -c user.email="github-actions@users.noreply.github.com" commit -qm "Pack ${GITHUB_SHA::7}"
           git push -qf "https://x-access-token:${GH_TOKEN}@github.com/$GITHUB_REPOSITORY.git" pack
+          echo "PACK_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
           cd ../..
           gh release delete latest --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag || true
           gh release create latest StoryMod-Prism.zip storymod-server.zip storymod.mrpack storymod.jar server-mods.zip --repo "$GITHUB_REPOSITORY" --prerelease \
             --target "${{ github.event.pull_request.head.sha || github.sha }}" \
             --title "Последняя сборка" --notes-file notes.md
+      - name: End-to-end - a real server with only storymod.jar downloads the pack and starts
+        if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+        run: |
+          mkdir -p e2e/mods e2e/config && cd e2e
+          curl -fsSL -o installer.jar "https://maven.neoforged.net/releases/net/neoforged/neoforge/$NEO/neoforge-$NEO-installer.jar"
+          java -jar installer.jar --installServer > install.log 2>&1
+          echo "eula=true" > eula.txt
+          printf 'max-tick-time=-1\nonline-mode=false\n' > server.properties
+          echo "-Xmx6G" > user_jvm_args.txt
+          cp ../storymod.jar mods/storymod.jar
+          # Pinned to the pack commit so a cached branch file cannot get in the way.
+          printf 'enabled=true\npack_url=https://raw.githubusercontent.com/%s/%s/pack.toml\n' "$GITHUB_REPOSITORY" "$PACK_COMMIT" > config/storymod-pack.properties
+          timeout 600 ./run.sh nogui > first.out 2>&1 || true
+          grep -E "Pack sync|Сборка обновлена|pack" logs/latest.log | tail -5 || true
+          echo "Mods after the first start: $(ls mods | wc -l)"
+          test "$(ls mods/*.jar | wc -l)" -ge 20
+          (timeout 600 ./run.sh nogui > second.out 2>&1 &)
+          for i in $(seq 1 580); do
+            if grep -qE 'Done \(|Crash report|ModLoadingException' logs/latest.log 2>/dev/null; then break; fi
+            sleep 1
+          done
+          pkill -f 'neoforge' || true
+          grep -E "Pack sync finished|Story integrations" logs/latest.log || true
+          grep -q 'Done (' logs/latest.log || { grep -iE "error|exception|requires" logs/latest.log | head -40; exit 1; }
+          grep -q "Pack sync finished: 0 file" logs/latest.log
