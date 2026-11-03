@@ -134,6 +134,14 @@
     {
       "slug": "farmers-delight",
       "why": "Еда и готовка"
+    },
+    {
+      "slug": "l_enders-cataclysm",
+      "why": "Боссы"
+    },
+    {
+      "slug": "mowzies-mobs",
+      "why": "Боссы и существа"
     }
   ]
 }
