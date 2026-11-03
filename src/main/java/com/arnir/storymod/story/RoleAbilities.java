@@ -133,10 +133,14 @@ public final class RoleAbilities {
         }
         flat = flat.normalize();
         Vec3 from = player.position();
-        for (double dist : new double[]{1.6, 2.4, 1.0}) {
-            Vec3 spot = target.position().subtract(flat.scale(dist + target.getBbWidth() / 2));
+        Vec3 side = new Vec3(-flat.z, 0, flat.x);
+        // Behind first, then to either side, then a little further back.
+        Vec3[] offsets = {flat.scale(-1.6), flat.scale(-1.0), side.scale(1.6), side.scale(-1.6), flat.scale(-2.4)};
+        for (Vec3 off : offsets) {
+            Vec3 spot = target.position().add(off.normalize().scale(off.length() + target.getBbWidth() / 2));
             if (player.level().noCollision(player, player.getBoundingBox().move(spot.subtract(from)))) {
-                float yaw = (float) Math.toDegrees(Math.atan2(-flat.x, flat.z));
+                Vec3 face = target.position().subtract(spot);
+                float yaw = (float) Math.toDegrees(Math.atan2(-face.x, face.z));
                 player.teleportTo((ServerLevel) player.level(), spot.x, spot.y, spot.z, yaw, player.getXRot());
                 ServerLevel level = (ServerLevel) player.level();
                 level.sendParticles(ParticleTypes.REVERSE_PORTAL, from.x, from.y + 1, from.z, 25, 0.3, 0.6, 0.3, 0.05);

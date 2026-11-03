@@ -1172,7 +1172,9 @@ public final class StoryGameTests {
         ServerLevel level = helper.getLevel();
         ServerPlayer w = player(helper, PlayerRoles.WANDERER);
         ServerPlayer k = player(helper, PlayerRoles.KEEPER);
-        var zombie = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityType.ZOMBIE, new Vec3(2.5, 1, 1.5));
+        var zombie = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityType.ZOMBIE, new Vec3(2.5, 1, 2.0));
+        zombie.setYRot(0.0F);
+        zombie.setYHeadRot(0.0F);
         var hit = level.damageSources().mobAttack(zombie);
         float old = com.arnir.storymod.story.RoleAbilities.counterChance;
         com.arnir.storymod.story.RoleAbilities.counterChance = 1.0F;
