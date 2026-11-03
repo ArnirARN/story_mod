@@ -42,6 +42,9 @@ public record Action(String type, JsonObject args) {
         }
         for (JsonElement e : element.getAsJsonArray()) {
             JsonObject obj = e.getAsJsonObject();
+            if (obj.has("item")) {
+                Inventories.REFERENCED.add(obj.get("item").getAsString());
+            }
             out.add(new Action(obj.get("type").getAsString(), obj));
         }
         return out;

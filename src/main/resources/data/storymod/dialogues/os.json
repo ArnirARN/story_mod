@@ -28,6 +28,26 @@
     {
       "if": {
         "flags": [
+          "os_brass_started"
+        ],
+        "not_flags": [
+          "os_brass_done"
+        ],
+        "role": "keeper",
+        "days_since": {
+          "flag": "os_brass_started",
+          "days": 2
+        },
+        "time": {
+          "from": 0,
+          "to": 6000
+        }
+      },
+      "node": "brass_done"
+    },
+    {
+      "if": {
+        "flags": [
           "os_repair_started"
         ],
         "not_flags": [
@@ -418,6 +438,34 @@
                 }
               ]
             }
+          }
+        },
+        {
+          "text": "Ось, тебе не нужны новые шестерни?",
+          "next": "brass1",
+          "if": {
+            "role": "keeper",
+            "flags": [
+              "os_repaired"
+            ],
+            "not_flags": [
+              "os_brass_started"
+            ],
+            "mods": [
+              "create"
+            ]
+          }
+        },
+        {
+          "text": "Как новое сердце?",
+          "next": "brass_wait",
+          "if": {
+            "flags": [
+              "os_brass_started"
+            ],
+            "not_flags": [
+              "os_brass_done"
+            ]
           }
         },
         {
@@ -842,6 +890,102 @@
         {
           "text": "…",
           "next": null
+        }
+      ]
+    },
+    "brass1": {
+      "text": [
+        "Ось работает. Ось скрипит. Внутри Оси старые шестерни Ордена, их точили ещё до Горна.",
+        "Где-то в мире люди снова научились делать механизмы. Латунь, валы, точные узлы. Ось чувствует, как они вращаются. Ось хочет такое сердце.",
+        "Нужно: точные механизмы, четыре. Латунные слитки, шестнадцать."
+      ],
+      "options": [
+        {
+          "text": "Вот всё, что нужно.",
+          "next": "brass2",
+          "if": {
+            "items": [
+              {
+                "item": "create:precision_mechanism",
+                "count": 4
+              },
+              {
+                "item": "create:brass_ingot",
+                "count": 16
+              }
+            ]
+          },
+          "actions": [
+            {
+              "type": "take_item",
+              "item": "create:precision_mechanism",
+              "count": 4
+            },
+            {
+              "type": "take_item",
+              "item": "create:brass_ingot",
+              "count": 16
+            },
+            {
+              "type": "set_flag",
+              "flag": "os_brass_started"
+            },
+            {
+              "type": "sound",
+              "sound": "minecraft:block.anvil.use"
+            }
+          ]
+        },
+        {
+          "text": "Поищу.",
+          "next": "hub"
+        }
+      ]
+    },
+    "brass2": {
+      "text": [
+        "Ось принимает. Ось соберёт себя заново. Это долго.",
+        "Приходи, когда солнце встанет второй раз. Утром. Ось любит утро: утром всё начинается."
+      ],
+      "options": [
+        {
+          "text": "Договорились.",
+          "next": "hub"
+        }
+      ]
+    },
+    "brass_wait": {
+      "text": "Ось собирает себя. Тик… тик-так… Ещё не ровно. Утром второго дня.",
+      "options": [
+        {
+          "text": "Ладно.",
+          "next": "hub"
+        }
+      ]
+    },
+    "brass_done": {
+      "text": [
+        "Тик. Тик. Ровно. Впервые за… Ось не знает, за сколько лет. Ровно.",
+        "Старое сердце Оси больше не нужно. Возьми его. Оно ещё помнит, как торопиться, и поделится с тобой."
+      ],
+      "actions": [
+        {
+          "type": "set_flag",
+          "flag": "os_brass_done"
+        },
+        {
+          "type": "give_item",
+          "item": "storymod:clockwork_heart"
+        },
+        {
+          "type": "sound",
+          "sound": "minecraft:block.note_block.chime"
+        }
+      ],
+      "options": [
+        {
+          "text": "Спасибо, Ось.",
+          "next": "hub"
         }
       ]
     }

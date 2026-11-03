@@ -29,6 +29,7 @@ import java.util.function.BiPredicate;
  *   "dimension": "minecraft:overworld",
  *   "near_anchor": 6,                            // within N blocks of the old stone circle
  *   "advancement": "minecraft:end/root",
+ *   "mods": ["create"],                          // all these mods are installed
  *   "role_near": {"role": "keeper", "radius": 12},  // a player with this role stands nearby (or is the player)
  *   "not": {...},                                // the nested condition fails
  *   "any": [ {...}, {...} ]                      // at least one nested condition passes
@@ -75,6 +76,7 @@ public final class Condition {
             for (JsonElement e : obj.getAsJsonArray("items")) {
                 JsonObject o = e.getAsJsonObject();
                 String item = o.get("item").getAsString();
+                Inventories.REFERENCED.add(item);
                 int count = o.has("count") ? o.get("count").getAsInt() : 1;
                 parts.add((p, s) -> Inventories.count(p, item) >= count);
             }
@@ -118,6 +120,9 @@ public final class Condition {
                 return anchor != null && p.level().dimension() == net.minecraft.world.level.Level.OVERWORLD
                         && p.blockPosition().distSqr(anchor) <= radius * radius;
             });
+        }
+        for (String mod : strings(obj, "mods")) {
+            parts.add((p, s) -> net.neoforged.fml.ModList.get().isLoaded(mod));
         }
         if (obj.has("advancement")) {
             ResourceLocation id = ResourceLocation.parse(obj.get("advancement").getAsString());

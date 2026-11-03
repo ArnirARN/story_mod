@@ -1005,4 +1005,72 @@ public final class StoryGameTests {
         }
         helper.succeed();
     }
+
+    // ------------------------------------------------------------------ other mods
+
+    @GameTest(template = T, batch = "story_30")
+    public static void modQuestsStayHiddenWithoutTheirMods(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        state.set("veld_met");
+        state.set("os_met");
+        state.set("os_repaired");
+        state.set("irmen_met");
+        state.set("mira_here");
+        ServerPlayer k = player(helper, PlayerRoles.KEEPER);
+        ServerPlayer w = player(helper, PlayerRoles.WANDERER);
+        state.setPersonal(k.getUUID(), "mira_met");
+
+        StoryNpc os = npc(helper, "os");
+        expectNode(talk(k, os), "hub");
+        check(!hasOption(k, "новые шестерни"), "mechanism quest offered without its mod");
+        DialogueSessions.end(k);
+
+        StoryNpc mira = npc(helper, "mira");
+        expectNode(talk(k, mira), "hub");
+        check(!hasOption(k, "других мирах"), "rumours about other worlds without those mods");
+        DialogueSessions.end(k);
+
+        StoryNpc irmen = npc(helper, "irmen");
+        expectNode(talk(w, irmen), "hub");
+        check(!hasOption(w, "магии"), "magic quest offered without a magic mod");
+        check(!hasOption(w, "острова"), "sky islands option before going there");
+        DialogueSessions.end(w);
+
+        // Someone who did reach another world can still talk about it; the hand-in stays hidden without the items.
+        state.setPersonal(w.getUUID(), "been_aether");
+        expectNode(talk(w, irmen), "hub");
+        expectNode(say(w, "острова над облаками"), "aether1");
+        check(state.has("irmen_aether"), "sky quest not started");
+        expectNode(say(w, "спокойно"), "aether_w");
+        say(w, "…");
+        check(!hasOption(w, "Вот осколки"), "hand-in offered without the items");
+        DialogueSessions.end(w);
+        leave(helper, w, k);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_31")
+    public static void storyDataNamesOnlyRealItemsAndModChestsMatch(GameTestHelper helper) {
+        List<String> unknown = Inventories.unknownReferencedItems();
+        check(unknown.isEmpty(), "story data mentions unknown items: " + unknown);
+        check(Inventories.REFERENCED.contains("create:brass_ingot"), "mod items are not tracked");
+        List<String> ns = List.of("twilightforest", "betterdungeons");
+        check(com.arnir.storymod.loot.ModChestCondition.matches(ns, ResourceLocation.parse("twilightforest:chests/hedge_maze")), "mod chest not matched");
+        check(com.arnir.storymod.loot.ModChestCondition.matches(ns, ResourceLocation.parse("betterdungeons:skeleton_dungeon/chests/common")), "nested chest not matched");
+        check(!com.arnir.storymod.loot.ModChestCondition.matches(ns, ResourceLocation.parse("minecraft:chests/simple_dungeon")), "vanilla chest matched");
+        check(!com.arnir.storymod.loot.ModChestCondition.matches(ns, ResourceLocation.parse("twilightforest:entities/naga")), "mob drops matched");
+
+        freshState(helper);
+        ServerPlayer p = player(helper, "");
+        give(p, new ItemStack(ModItems.CLOCKWORK_HEART.get()));
+        give(p, new ItemStack(ModItems.ZENITH_SHARD.get()));
+        com.arnir.storymod.story.StoryEvents.tickItems(p);
+        check(p.hasEffect(net.minecraft.world.effect.MobEffects.DIG_SPEED), "clockwork heart gives no haste");
+        check(!p.hasEffect(net.minecraft.world.effect.MobEffects.JUMP), "zenith shard works without sprinting");
+        p.setSprinting(true);
+        com.arnir.storymod.story.StoryEvents.tickItems(p);
+        check(p.hasEffect(net.minecraft.world.effect.MobEffects.JUMP), "zenith shard gives no jump while sprinting");
+        leave(helper, p);
+        helper.succeed();
+    }
 }

@@ -18,6 +18,27 @@ public final class Inventories {
     private Inventories() {
     }
 
+    /** Every item id mentioned by story data; checked against the registry when the server starts. */
+    public static final java.util.Set<String> REFERENCED = java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    /** Item ids from installed mods (or vanilla) that do not exist: typos in story data. */
+    public static java.util.List<String> unknownReferencedItems() {
+        java.util.List<String> out = new java.util.ArrayList<>();
+        for (String id : REFERENCED) {
+            ResourceLocation rl = ResourceLocation.tryParse(id);
+            if (rl == null) {
+                out.add(id);
+                continue;
+            }
+            boolean ownerLoaded = rl.getNamespace().equals("minecraft") || net.neoforged.fml.ModList.get().isLoaded(rl.getNamespace());
+            if (ownerLoaded && !BuiltInRegistries.ITEM.containsKey(rl)) {
+                out.add(id);
+            }
+        }
+        java.util.Collections.sort(out);
+        return out;
+    }
+
     public static Item item(String id) {
         return BuiltInRegistries.ITEM.get(ResourceLocation.parse(id));
     }

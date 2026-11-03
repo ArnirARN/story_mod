@@ -67,6 +67,12 @@ public final class ModItems {
     public static final DeferredItem<ArtifactItem> ORDER_MEDALLION = artifact("order_medallion", MobEffects.LUCK, 0,
             p -> true);
 
+    // Quest rewards (not in the random pool).
+    public static final DeferredItem<ArtifactItem> CLOCKWORK_HEART = artifact("clockwork_heart", MobEffects.DIG_SPEED, 0,
+            p -> true);
+    public static final DeferredItem<ArtifactItem> ZENITH_SHARD = artifact("zenith_shard", MobEffects.JUMP, 1,
+            p -> p.isSprinting());
+
     public static final List<String> ARTIFACT_IDS = List.of("zenith_ring", "echo_pendant", "guardian_scale",
             "forge_ember", "void_feather", "order_medallion");
 

@@ -20,6 +20,7 @@ public class StoryMod {
     public StoryMod(IEventBus modBus, ModContainer container) {
         ModItems.ITEMS.register(modBus);
         ModEntities.ENTITIES.register(modBus);
+        com.arnir.storymod.loot.ModChestCondition.TYPES.register(modBus);
         modBus.addListener(StoryMod::onAttributes);
         modBus.addListener(ModNetwork::register);
     }

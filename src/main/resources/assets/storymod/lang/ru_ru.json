@@ -16,6 +16,8 @@
   "item.storymod.forge_ember": "Уголь Горна",
   "item.storymod.void_feather": "Перо Пустоты",
   "item.storymod.order_medallion": "Медальон Ордена",
+  "item.storymod.clockwork_heart": "Заводное сердце",
+  "item.storymod.zenith_shard": "Осколок Зенита",
   "item.storymod.dawn_star.desc": "Тёплая, как утро, которого могло не быть.",
   "entity.storymod.story_npc": "Персонаж",
   "item.storymod.white_eye.desc": "Смотрит туда же, куда и ты.",
@@ -38,6 +40,10 @@
   "item.storymod.void_feather.effect": "Пригнись в падении: плавное падение.",
   "item.storymod.order_medallion.desc": "Знак Ордена Зенита.",
   "item.storymod.order_medallion.effect": "Всегда: удача.",
+  "item.storymod.clockwork_heart.desc": "Всё ещё тикает. Помнит, как торопиться.",
+  "item.storymod.clockwork_heart.effect": "Всегда: спешка.",
+  "item.storymod.zenith_shard.desc": "Светится сам, как камень над облаками.",
+  "item.storymod.zenith_shard.effect": "На бегу: прыгаешь выше.",
   "item.storymod.white_pearl.effect2": "С собой или на шее: иногда уходит от стрел, жемчуг Края не ранит, в темноте быстрее.",
   "item.storymod.white_pearl.holding": "Внутри: %s"
 }

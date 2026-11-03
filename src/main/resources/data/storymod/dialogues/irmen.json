@@ -132,6 +132,220 @@
           }
         },
         {
+          "text": "Я видел острова над облаками.",
+          "next": "aether1",
+          "if": {
+            "pflags": [
+              "been_aether"
+            ],
+            "not_flags": [
+              "irmen_aether"
+            ]
+          }
+        },
+        {
+          "text": "Вот осколки амброзия и занит.",
+          "next": "aether_done",
+          "if": {
+            "flags": [
+              "irmen_aether"
+            ],
+            "not_flags": [
+              "irmen_aether_done"
+            ],
+            "items": [
+              {
+                "item": "aether:ambrosium_shard",
+                "count": 16
+              },
+              {
+                "item": "aether:zanite_gemstone",
+                "count": 8
+              }
+            ]
+          },
+          "actions": [
+            {
+              "type": "take_item",
+              "item": "aether:ambrosium_shard",
+              "count": 16
+            },
+            {
+              "type": "take_item",
+              "item": "aether:zanite_gemstone",
+              "count": 8
+            },
+            {
+              "type": "set_flag",
+              "flag": "irmen_aether_done"
+            },
+            {
+              "type": "give_item",
+              "item": "storymod:zenith_shard"
+            }
+          ]
+        },
+        {
+          "text": "Почему мне на тех островах так спокойно?",
+          "next": "aether_w",
+          "if": {
+            "role": "wanderer",
+            "pflags": [
+              "been_aether"
+            ],
+            "flags": [
+              "irmen_aether"
+            ],
+            "not_pflags": [
+              "irmen_aether_w"
+            ]
+          }
+        },
+        {
+          "text": "Я был в лесу, где всегда сумерки.",
+          "next": "tw1",
+          "if": {
+            "pflags": [
+              "been_twilight"
+            ],
+            "not_flags": [
+              "irmen_twilight"
+            ]
+          }
+        },
+        {
+          "text": "Вот чешуя змея.",
+          "next": "tw_done",
+          "if": {
+            "flags": [
+              "irmen_twilight"
+            ],
+            "not_flags": [
+              "irmen_twilight_done"
+            ],
+            "items": [
+              {
+                "item": "twilightforest:naga_scale",
+                "count": 4
+              }
+            ]
+          },
+          "actions": [
+            {
+              "type": "take_item",
+              "item": "twilightforest:naga_scale",
+              "count": 4
+            },
+            {
+              "type": "set_flag",
+              "flag": "irmen_twilight_done"
+            },
+            {
+              "type": "give_item",
+              "item": "storymod:twilight_amulet"
+            },
+            {
+              "type": "give_loot",
+              "table": "storymod:artifacts/notes"
+            }
+          ]
+        },
+        {
+          "text": "Люди снова учатся магии. Ты знаешь об этом?",
+          "next": "magic1",
+          "if": {
+            "not_flags": [
+              "irmen_magic"
+            ],
+            "any": [
+              {
+                "mods": [
+                  "ars_nouveau"
+                ]
+              },
+              {
+                "mods": [
+                  "irons_spellbooks"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "text": "Вот камни источника.",
+          "next": "magic_done",
+          "if": {
+            "flags": [
+              "irmen_magic"
+            ],
+            "not_flags": [
+              "irmen_magic_done"
+            ],
+            "items": [
+              {
+                "item": "ars_nouveau:source_gem",
+                "count": 8
+              }
+            ]
+          },
+          "actions": [
+            {
+              "type": "take_item",
+              "item": "ars_nouveau:source_gem",
+              "count": 8
+            },
+            {
+              "type": "set_flag",
+              "flag": "irmen_magic_done"
+            },
+            {
+              "type": "give_loot",
+              "table": "storymod:artifacts/notes"
+            },
+            {
+              "type": "give_loot",
+              "table": "storymod:artifacts/random"
+            }
+          ]
+        },
+        {
+          "text": "Вот магические эссенции.",
+          "next": "magic_done",
+          "if": {
+            "flags": [
+              "irmen_magic"
+            ],
+            "not_flags": [
+              "irmen_magic_done"
+            ],
+            "items": [
+              {
+                "item": "irons_spellbooks:arcane_essence",
+                "count": 16
+              }
+            ]
+          },
+          "actions": [
+            {
+              "type": "take_item",
+              "item": "irons_spellbooks:arcane_essence",
+              "count": 16
+            },
+            {
+              "type": "set_flag",
+              "flag": "irmen_magic_done"
+            },
+            {
+              "type": "give_loot",
+              "table": "storymod:artifacts/notes"
+            },
+            {
+              "type": "give_loot",
+              "table": "storymod:artifacts/random"
+            }
+          ]
+        },
+        {
           "text": "Мне пора.",
           "next": null
         }
@@ -237,6 +451,122 @@
               "type": "despawn_self"
             }
           ]
+        }
+      ]
+    },
+    "aether1": {
+      "text": [
+        "Острова над облаками… Значит, они настоящие.",
+        "Орден звался Орденом Зенита не ради красивого слова. Первые из нас искали путь к свету выше неба. Говорили, там камень светится сам, а золото растёт янтарём на деревьях.",
+        "Принеси оттуда шестнадцать осколков амброзия и восемь занитов. Я соберу то, что первые мастера мечтали унести с собой."
+      ],
+      "actions": [
+        {
+          "type": "set_flag",
+          "flag": "irmen_aether"
+        }
+      ],
+      "options": [
+        {
+          "text": "Почему мне там так спокойно?",
+          "next": "aether_w",
+          "if": {
+            "role": "wanderer"
+          }
+        },
+        {
+          "text": "Принесу.",
+          "next": "hub"
+        }
+      ]
+    },
+    "aether_w": {
+      "text": [
+        "Потому что свет там чистый, без пепла.",
+        "Некоторые рождаются ближе к свету, чем к земле. Или ближе к краю мира. Я давно перестал различать, это почти одно и то же."
+      ],
+      "actions": [
+        {
+          "type": "set_pflag",
+          "flag": "irmen_aether_w"
+        }
+      ],
+      "options": [
+        {
+          "text": "…",
+          "next": "hub"
+        }
+      ]
+    },
+    "aether_done": {
+      "text": [
+        "Свет, который не нужно поддерживать. Он просто есть. Горну бы такой…",
+        "Держи. Осколок Зенита. На бегу он тянет вверх, как будто небо зовёт обратно."
+      ],
+      "options": [
+        {
+          "text": "Спасибо, Ирмен.",
+          "next": "hub"
+        }
+      ]
+    },
+    "tw1": {
+      "text": [
+        "Вечные сумерки… Орден отправлял туда разведчиков, когда свет Горна впервые дрогнул. Вернулись не все.",
+        "Они писали о змее под землёй, о чешуе, которую не берут ни огонь, ни время. Принеси четыре таких чешуи, и я отдам то, что разведчики оставили мне на хранение."
+      ],
+      "actions": [
+        {
+          "type": "set_flag",
+          "flag": "irmen_twilight"
+        }
+      ],
+      "options": [
+        {
+          "text": "Хорошо.",
+          "next": "hub"
+        }
+      ]
+    },
+    "tw_done": {
+      "text": [
+        "Значит, змей всё ещё там. Разведчики бы не поверили.",
+        "Вот их амулет и их последняя запись. Амулет любит темноту, как и тот лес."
+      ],
+      "options": [
+        {
+          "text": "Спасибо.",
+          "next": "hub"
+        }
+      ]
+    },
+    "magic1": {
+      "text": [
+        "Магии не бывает новой. Её просто находят заново.",
+        "Источник, эссенции, книги заклинаний… Орден называл это светом в бутылке. Принеси восемь камней источника или шестнадцать магических эссенций, и я покажу, куда такой свет утекал раньше."
+      ],
+      "actions": [
+        {
+          "type": "set_flag",
+          "flag": "irmen_magic"
+        }
+      ],
+      "options": [
+        {
+          "text": "Хорошо.",
+          "next": "hub"
+        }
+      ]
+    },
+    "magic_done": {
+      "text": [
+        "Чувствуешь, как он тянется к Горну даже отсюда? Свет помнит дорогу домой.",
+        "Возьми записи и вещицу из старых запасов. Свет нельзя запереть навсегда, но можно хотя бы знать, где он был."
+      ],
+      "options": [
+        {
+          "text": "Спасибо.",
+          "next": "hub"
         }
       ]
     }

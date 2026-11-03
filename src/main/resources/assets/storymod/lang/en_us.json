@@ -16,6 +16,8 @@
   "item.storymod.forge_ember": "Forge Ember",
   "item.storymod.void_feather": "Void Feather",
   "item.storymod.order_medallion": "Order Medallion",
+  "item.storymod.clockwork_heart": "Clockwork Heart",
+  "item.storymod.zenith_shard": "Zenith Shard",
   "item.storymod.dawn_star.desc": "Warm, like a morning that almost never came.",
   "entity.storymod.story_npc": "Character",
   "item.storymod.white_eye.desc": "It looks where you look.",
@@ -38,6 +40,10 @@
   "item.storymod.void_feather.effect": "Sneak while falling: slow falling.",
   "item.storymod.order_medallion.desc": "A sign of the Order of Zenith.",
   "item.storymod.order_medallion.effect": "Always: luck.",
+  "item.storymod.clockwork_heart.desc": "Still ticking. It remembers how to hurry.",
+  "item.storymod.clockwork_heart.effect": "Always: haste.",
+  "item.storymod.zenith_shard.desc": "Glows on its own, like stone above the clouds.",
+  "item.storymod.zenith_shard.effect": "While sprinting: higher jumps.",
   "item.storymod.white_pearl.effect2": "Carried or worn: sometimes slips away from arrows, ender pearls do not hurt, faster in darkness.",
   "item.storymod.white_pearl.holding": "Holding: %s"
 }

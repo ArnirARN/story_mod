@@ -1,0 +1,17 @@
+{
+  "once": "player",
+  "if": {
+    "not_role": "wanderer",
+    "dimension": "aether:the_aether"
+  },
+  "actions": [
+    {
+      "type": "set_pflag",
+      "flag": "been_aether"
+    },
+    {
+      "type": "message",
+      "text": "Острова над облаками. В архивах Ордена о таком наверняка писали."
+    }
+  ]
+}

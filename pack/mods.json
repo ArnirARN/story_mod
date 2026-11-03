@@ -3,19 +3,77 @@
   "minecraft": "1.21.1",
   "loader": "neoforge",
   "mods": [
-    {"slug": "create", "why": "Механизмы"},
-    {"slug": "aether", "why": "Измерение"},
-    {"slug": "the-twilight-forest", "why": "Измерение"},
-    {"slug": "ars-nouveau", "why": "Магия"},
-    {"slug": "irons-spells-n-spellbooks", "why": "Магия и оружие"},
-    {"slug": "simply-swords", "why": "Оружие"},
-    {"slug": "yungs-better-dungeons", "why": "Структуры"},
-    {"slug": "yungs-better-mineshafts", "why": "Структуры"},
-    {"slug": "yungs-better-strongholds", "why": "Структуры"},
-    {"slug": "towns-and-towers", "why": "Структуры"},
-    {"slug": "friends-and-foes", "why": "Существа"},
-    {"slug": "naturalist", "why": "Существа"},
-    {"slug": "jei", "why": "Удобство: рецепты"},
-    {"slug": "jade", "why": "Удобство: подсказки"}
+    {
+      "slug": "create",
+      "why": "Механизмы"
+    },
+    {
+      "slug": "aether",
+      "why": "Измерение"
+    },
+    {
+      "slug": "deeper-and-darker",
+      "why": "Измерение"
+    },
+    {
+      "slug": "ars-nouveau",
+      "why": "Магия"
+    },
+    {
+      "slug": "irons-spells-n-spellbooks",
+      "why": "Магия и оружие"
+    },
+    {
+      "slug": "simply-swords",
+      "why": "Оружие"
+    },
+    {
+      "slug": "yungs-better-dungeons",
+      "why": "Структуры"
+    },
+    {
+      "slug": "yungs-better-mineshafts",
+      "why": "Структуры"
+    },
+    {
+      "slug": "yungs-better-strongholds",
+      "why": "Структуры"
+    },
+    {
+      "slug": "towns-and-towers",
+      "why": "Структуры"
+    },
+    {
+      "slug": "naturalist",
+      "why": "Существа"
+    },
+    {
+      "slug": "jei",
+      "why": "Удобство: рецепты"
+    },
+    {
+      "slug": "jade",
+      "why": "Удобство: подсказки"
+    },
+    {
+      "slug": "friends-and-foes-forge",
+      "why": "Существа"
+    },
+    {
+      "slug": "curios",
+      "why": "Слоты для артефактов (нужен магии)"
+    },
+    {
+      "slug": "geckolib",
+      "why": "Нужен для магии"
+    },
+    {
+      "slug": "irons-lib",
+      "why": "Нужен для Iron's Spells"
+    },
+    {
+      "slug": "playeranimator",
+      "why": "Нужен для Iron's Spells"
+    }
   ]
 }

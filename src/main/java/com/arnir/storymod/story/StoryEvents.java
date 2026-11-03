@@ -50,6 +50,21 @@ public final class StoryEvents {
         event.addListener(com.arnir.storymod.dialogue.JournalManager.INSTANCE);
     }
 
+    /** Reports typos in item ids used by story data (only for mods that are installed). */
+    @SubscribeEvent
+    public static void onServerStarted(net.neoforged.neoforge.event.server.ServerStartedEvent event) {
+        for (String id : Inventories.unknownReferencedItems()) {
+            StoryMod.LOGGER.error("storymod: story data mentions an unknown item {}", id);
+        }
+        List<String> active = new java.util.ArrayList<>();
+        for (String mod : List.of("create", "aether", "twilightforest", "deeperdarker", "ars_nouveau", "irons_spellbooks", "curios")) {
+            if (net.neoforged.fml.ModList.get().isLoaded(mod)) {
+                active.add(mod);
+            }
+        }
+        StoryMod.LOGGER.info("Story integrations active: {}", active);
+    }
+
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
         StoryCommand.register(event.getDispatcher());
