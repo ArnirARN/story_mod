@@ -2,8 +2,13 @@
   "type": "neoforge:add_table",
   "conditions": [
     {
-      "condition": "neoforge:loot_table_id",
-      "loot_table_id": "minecraft:chests/igloo_chest"
+      "condition": "minecraft:any_of",
+      "terms": [
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:chests/igloo_chest"
+        }
+      ]
     }
   ],
   "table": "storymod:inject/lira_diary_igloo"

@@ -21,4 +21,10 @@ if (-not ((Test-Path eula.txt) -and (Select-String -Quiet 'eula=true' eula.txt))
 
 Write-Host "Обновляю моды..."
 java -jar packwiz-installer-bootstrap.jar -g -s server $PackUrl
-& .\run.bat nogui
+# The story mod stops the server after it updates itself; start it again in that case.
+while ($true) {
+    Remove-Item storymod-restart.flag -ErrorAction SilentlyContinue
+    & .\run.bat nogui
+    if (Test-Path storymod-restart.flag) { Write-Host "Сборка обновилась, перезапускаю сервер..."; continue }
+    break
+}

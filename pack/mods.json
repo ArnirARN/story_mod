@@ -1,5 +1,5 @@
 {
-  "_comment": "Mods added to the modpack. CI resolves the newest NeoForge 1.21.1 build of each on Modrinth together with its required dependencies.",
+  "_comment": "Mods added to the modpack. CI resolves each on Modrinth with its required dependencies; versions are pinned in mods.lock.json.",
   "minecraft": "1.21.1",
   "loader": "neoforge",
   "mods": [
@@ -9,10 +9,6 @@
     },
     {
       "slug": "aether",
-      "why": "Измерение"
-    },
-    {
-      "slug": "deeper-and-darker",
       "why": "Измерение"
     },
     {
@@ -82,6 +78,62 @@
     {
       "slug": "sophisticated-core",
       "why": "Нужен для рюкзаков"
+    },
+    {
+      "slug": "ferrite-core",
+      "why": "Оптимизация памяти"
+    },
+    {
+      "slug": "modernfix",
+      "why": "Оптимизация загрузки"
+    },
+    {
+      "slug": "sodium",
+      "why": "Оптимизация графики"
+    },
+    {
+      "slug": "immediatelyfast",
+      "why": "Оптимизация графики"
+    },
+    {
+      "slug": "entityculling",
+      "why": "Оптимизация графики"
+    },
+    {
+      "slug": "spark",
+      "why": "Поиск лагов"
+    },
+    {
+      "slug": "chunky",
+      "why": "Прогенерация мира"
+    },
+    {
+      "slug": "xaeros-minimap",
+      "why": "Миникарта"
+    },
+    {
+      "slug": "xaeros-world-map",
+      "why": "Карта мира"
+    },
+    {
+      "slug": "waystones",
+      "why": "Точки быстрого перемещения"
+    },
+    {
+      "slug": "simple-backups",
+      "why": "Резервные копии мира"
+    },
+    {
+      "slug": "appleskin",
+      "why": "Сытость на экране"
+    },
+    {
+      "slug": "mouse-tweaks",
+      "why": "Удобный инвентарь"
+    },
+    {
+      "slug": "farmers-delight",
+      "why": "Еда и готовка"
     }
   ]
 }

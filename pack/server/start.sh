@@ -22,4 +22,10 @@ fi
 
 echo "Обновляю моды..."
 java -jar packwiz-installer-bootstrap.jar -g -s server "$PACK_URL"
-exec ./run.sh nogui
+# The story mod stops the server after it updates itself; start it again in that case.
+while true; do
+  rm -f storymod-restart.flag
+  ./run.sh nogui || true
+  if [ -f storymod-restart.flag ]; then echo "Сборка обновилась, перезапускаю сервер..."; continue; fi
+  break
+done

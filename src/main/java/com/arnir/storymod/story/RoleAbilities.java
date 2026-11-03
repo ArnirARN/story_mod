@@ -41,6 +41,15 @@ public final class RoleAbilities {
         }
     }
 
+    private record ModAttr(ResourceLocation attribute, String id, String role, double amount) {
+    }
+
+    private static final List<ModAttr> MOD_ATTRS = List.of(
+            new ModAttr(ResourceLocation.fromNamespaceAndPath("irons_spellbooks", "ender_spell_power"), "wanderer_ender_magic", PlayerRoles.WANDERER, 0.20),
+            new ModAttr(ResourceLocation.fromNamespaceAndPath("irons_spellbooks", "cooldown_reduction"), "wanderer_quick_casts", PlayerRoles.WANDERER, 0.10),
+            new ModAttr(ResourceLocation.fromNamespaceAndPath("irons_spellbooks", "spell_resist"), "keeper_spell_resist", PlayerRoles.KEEPER, 0.15),
+            new ModAttr(ResourceLocation.fromNamespaceAndPath("irons_spellbooks", "nature_spell_power"), "keeper_nature_magic", PlayerRoles.KEEPER, 0.10));
+
     private static final List<Mod> ALL = List.of(
             new Mod(Attributes.ENTITY_INTERACTION_RANGE, "wanderer_reach", 1.0, AttributeModifier.Operation.ADD_VALUE),
             new Mod(Attributes.BLOCK_INTERACTION_RANGE, "wanderer_block_reach", 1.0, AttributeModifier.Operation.ADD_VALUE),
@@ -96,6 +105,22 @@ public final class RoleAbilities {
                 inst.addOrUpdateTransientModifier(new AttributeModifier(mod.key(), mod.amount(), mod.op()));
             } else if (inst.hasModifier(mod.key())) {
                 inst.removeModifier(mod.key());
+            }
+        }
+        // Powers that lean on other mods' attributes (Iron's Spells): the wanderer is at home with ender magic,
+        // the keeper shrugs off spells. Skipped when the mod is not installed.
+        for (ModAttr extra : MOD_ATTRS) {
+            var holder = net.minecraft.core.registries.BuiltInRegistries.ATTRIBUTE.getHolder(
+                    net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.ATTRIBUTE, extra.attribute()));
+            AttributeInstance inst = holder.isEmpty() ? null : player.getAttribute(holder.get());
+            if (inst == null) {
+                continue;
+            }
+            ResourceLocation key = StoryMod.id("role/" + extra.id());
+            if (extra.role().equals(role)) {
+                inst.addOrUpdateTransientModifier(new AttributeModifier(key, extra.amount(), AttributeModifier.Operation.ADD_VALUE));
+            } else if (inst.hasModifier(key)) {
+                inst.removeModifier(key);
             }
         }
         if (player.getHealth() > player.getMaxHealth()) {

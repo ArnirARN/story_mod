@@ -3,6 +3,9 @@
 usage: build_pack.py <storymod.jar> <neoforge version> <out dir>
 Writes <out>/storymod.mrpack, <out>/server-mods/*.jar and <out>/mods.md (a readable list).
 Mods that have no NeoForge 1.21.1 build are reported and skipped.
+Versions listed in pack/mods.lock.json are kept as they are, so a running world is not broken by a surprise update;
+new mods take their newest build. The resolved versions are written to <out>/mods.lock.json: copy it over
+pack/mods.lock.json to pin them, delete an entry from it to update that mod.
 """
 import hashlib, json, os, sys, urllib.parse, urllib.request, zipfile
 
@@ -28,6 +31,8 @@ def main():
     mc, loader = cfg["minecraft"], cfg["loader"]
     q = "?loaders=" + urllib.parse.quote(json.dumps([loader])) + "&game_versions=" + urllib.parse.quote(json.dumps([mc]))
 
+    lock_path = os.path.join(os.path.dirname(__file__), "mods.lock.json")
+    lock = json.load(open(lock_path, encoding="utf-8")) if os.path.exists(lock_path) else {}
     resolved = {}   # project id -> (project, version, file, reason)
     missing = []
 
@@ -39,12 +44,20 @@ def main():
             return
         if project["id"] in resolved:
             return
-        versions = get(f"{API}/project/{project['id']}/version{q}")
-        if not versions:
-            missing.append(f"{project['title']} (нет версии для {loader} {mc})")
-            return
-        releases = [v for v in versions if v["version_type"] == "release"] or versions
-        version = releases[0]
+        version = None
+        pinned = lock.get(project["slug"])
+        if pinned:
+            try:
+                version = get(f"{API}/version/{pinned}")
+            except Exception as e:  # noqa: BLE001
+                print(f"! pinned version of {project['slug']} is gone ({e}), taking the newest")
+        if version is None:
+            versions = get(f"{API}/project/{project['id']}/version{q}")
+            if not versions:
+                missing.append(f"{project['title']} (нет версии для {loader} {mc})")
+                return
+            releases = [v for v in versions if v["version_type"] == "release"] or versions
+            version = releases[0]
         file = next((f for f in version["files"] if f["primary"]), version["files"][0])
         reason = why if not wanted_by else f"нужен для {wanted_by}"
         resolved[project["id"]] = (project, version, file, reason)
@@ -59,7 +72,7 @@ def main():
     os.makedirs(os.path.join(out, "server-mods"), exist_ok=True)
     files, lines, pw = [], [], []
     for project, version, file, reason in resolved.values():
-        env = {"client": "required" if project["client_side"] != "unsupported" else "unsupported",
+        env = {"client": "required",  # single player and LAN run the server inside the client
                "server": "required" if project["server_side"] != "unsupported" else "unsupported"}
         files.append({"path": f"mods/{file['filename']}", "hashes": {"sha1": file["hashes"]["sha1"], "sha512": file["hashes"]["sha512"]},
                       "env": env, "downloads": [file["url"]], "fileSize": file["size"]})
@@ -68,7 +81,9 @@ def main():
             download(file["url"], target)
             if hashlib.sha1(open(target, "rb").read()).hexdigest() != file["hashes"]["sha1"]:
                 sys.exit(f"hash mismatch for {file['filename']}")
-        pw_side = "both" if env["client"] == env["server"] == "required" else ("client" if env["server"] != "required" else "server")
+        # Mods marked server-only (world generation, structures) are still needed by the client for single player and LAN,
+        # where the server runs inside the game. Only mods that cannot run on a server stay client-only.
+        pw_side = "client" if env["server"] != "required" else "both"
         pw.append((project, version, file, pw_side))
         side = "клиент и сервер" if env["client"] == env["server"] == "required" else ("только клиент" if env["server"] != "required" else "только сервер")
         lines.append(f"| [{project['title']}](https://modrinth.com/mod/{project['slug']}) | {version['version_number']} | {reason} | {side} |")
@@ -84,6 +99,8 @@ def main():
         if missing:
             f.write("\nПропущены: " + "; ".join(missing) + "\n")
     write_packwiz(os.path.join(out, "packwiz"), jar, mc, neo, pw)
+    with open(os.path.join(out, "mods.lock.json"), "w", encoding="utf-8") as f:
+        json.dump({p["slug"]: v["id"] for p, v, _, _ in resolved.values()}, f, indent=1, sort_keys=True)
     print("missing:", missing)
     print(len(files), "mods in the pack")
 

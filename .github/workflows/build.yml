@@ -124,7 +124,7 @@ jobs:
           echo "PACK_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
           cd ../..
           gh release delete latest --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag || true
-          gh release create latest StoryMod-Prism.zip storymod-server.zip storymod.mrpack storymod.jar server-mods.zip --repo "$GITHUB_REPOSITORY" --prerelease \
+          gh release create latest StoryMod-Prism.zip storymod-server.zip storymod.mrpack storymod.jar server-mods.zip out/mods.lock.json --repo "$GITHUB_REPOSITORY" --prerelease \
             --title "Последняя сборка" --notes-file notes.md
       - name: End-to-end - a real server with only storymod.jar downloads the pack and starts
         if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'

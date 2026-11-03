@@ -98,6 +98,12 @@ public final class PackSync {
                 StoryMod.LOGGER.warn("Сборка обновлена: {}. Сервер остановлен, запустите его снова.", detail);
                 StoryMod.LOGGER.warn("The mod pack was updated: {}. Start the server again.", detail);
                 StoryMod.LOGGER.warn("==================================================================");
+                try {
+                    // The start scripts see this file and start the server again by themselves.
+                    java.nio.file.Files.writeString(FMLPaths.GAMEDIR.get().resolve("storymod-restart.flag"), detail);
+                } catch (java.io.IOException ignored) {
+                    // Without the flag the server simply stays stopped.
+                }
                 System.exit(0);
             }
         } else {

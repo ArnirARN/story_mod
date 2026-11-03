@@ -2,8 +2,13 @@
   "type": "neoforge:add_table",
   "conditions": [
     {
-      "condition": "neoforge:loot_table_id",
-      "loot_table_id": "minecraft:chests/village/village_plains_house"
+      "condition": "minecraft:any_of",
+      "terms": [
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:chests/village/village_plains_house"
+        }
+      ]
     }
   ],
   "table": "storymod:inject/lira_diary_plains"

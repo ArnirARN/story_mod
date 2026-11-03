@@ -1320,4 +1320,25 @@ public final class StoryGameTests {
         leave(helper, w);
         helper.succeed();
     }
+
+    @GameTest(template = T, batch = "story_40")
+    public static void storyLootReachesReplacedStructuresAndStaysHidden(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        // YUNG's strongholds and dungeons use their own chest tables; story loot must reach them too.
+        for (String table : List.of("betterstrongholds:chests/common", "betterdungeons:zombie_dungeon/chests/common")) {
+            boolean found = false;
+            for (int i = 0; i < 400 && !found; i++) {
+                LootParams params = new LootParams.Builder(level).withParameter(LootContextParams.ORIGIN, Vec3.ZERO).create(LootContextParamSets.CHEST);
+                var ctx = new net.minecraft.world.level.storage.loot.LootContext.Builder(params).create(java.util.Optional.empty());
+                var loot = net.neoforged.neoforge.common.CommonHooks.modifyLoot(ResourceLocation.parse(table),
+                        new it.unimi.dsi.fastutil.objects.ObjectArrayList<>(), ctx);
+                found = loot.stream().anyMatch(st -> st.is(Items.WRITTEN_BOOK) || st.getItem().builtInRegistryHolder().key().location().getNamespace().equals("storymod"));
+            }
+            check(found, "no story loot in " + table);
+        }
+        var hidden = net.minecraft.tags.TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "hidden_from_recipe_viewers"));
+        check(new ItemStack(ModItems.END_MARK.get()).is(hidden) && new ItemStack(ModItems.CORE_VOID.get()).is(hidden), "story items are visible in recipe viewers");
+        check(!new ItemStack(Items.DIAMOND).is(hidden), "vanilla items hidden");
+        helper.succeed();
+    }
 }
