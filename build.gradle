@@ -60,6 +60,9 @@ configurations {
 dependencies {
     // Optional: lets artifacts be worn in Curios slots. The mod works without Curios.
     compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
+    // Bundled inside the mod jar (jar-in-jar), so players do not have to install Curios themselves.
+    // If they install a newer Curios separately, NeoForge loads the newer one.
+    jarJar "top.theillusivec4.curios:curios-neoforge:${curios_version}"
     // Game tests run without it (-PnoCurios): Curios syncs to mock test players, which cannot receive packets.
     if (!project.hasProperty('noCurios')) {
         localRuntime "top.theillusivec4.curios:curios-neoforge:${curios_version}"
