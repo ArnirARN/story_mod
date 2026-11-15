@@ -142,6 +142,13 @@ public final class Underside {
                     level.setBlock(p, y == 0 ? ground[Math.floorMod(dx * 31 + dz * 17 + dx * dz, ground.length)]
                             : Blocks.BLACKSTONE.defaultBlockState(), 2);
                 }
+                // Open sky above the island (matters only where the host level is not empty).
+                for (int y = 1; y <= 24; y++) {
+                    BlockPos p = CENTER.offset(dx, y, dz);
+                    if (!level.getBlockState(p).isAir()) {
+                        level.setBlock(p, Blocks.AIR.defaultBlockState(), 2);
+                    }
+                }
                 // White ash drifts.
                 if (Math.floorMod(dx * 7 + dz * 11 + dx * dz * 3, 13) == 0 && d < RADIUS - 1) {
                     level.setBlock(CENTER.offset(dx, 0, dz), Blocks.WHITE_CONCRETE_POWDER.defaultBlockState(), 2);
