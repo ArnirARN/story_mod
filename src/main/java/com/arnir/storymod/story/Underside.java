@@ -106,10 +106,8 @@ public final class Underside {
         if (player.isShiftKeyDown() && player.blockPosition().distSqr(EXIT) <= 2 * 2) {
             leave(player);
         }
-        ServerLevel level = player.serverLevel();
-        if (level.getGameTime() % 40 == 0) {
-            ensureCast(level, s);
-        }
+        // Called every couple of seconds; puts back anyone the island lost.
+        ensureCast(player.serverLevel(), s);
     }
 
     public static void ensureArena(ServerLevel level) {
