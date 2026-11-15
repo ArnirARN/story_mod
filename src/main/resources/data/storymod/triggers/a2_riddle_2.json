@@ -1,0 +1,35 @@
+{
+  "once": "world",
+  "if": {
+    "min_y": 190,
+    "dimension": "minecraft:overworld",
+    "time": {
+      "from": 16500,
+      "to": 19500
+    },
+    "role": "wanderer",
+    "flags": [
+      "letter_2"
+    ]
+  },
+  "actions": [
+    {
+      "type": "set_flag",
+      "flag": "lullaby_2"
+    },
+    {
+      "type": "sound",
+      "sound": "minecraft:block.amethyst_block.resonate"
+    },
+    {
+      "type": "title",
+      "text": "Строка колыбельной",
+      "subtitle": "выше облаков звёзды не спят — они стерегут,"
+    },
+    {
+      "type": "message",
+      "text": "Ты вдруг вспоминаешь строку, которую никогда не учил: «выше облаков звёзды не спят — они стерегут,»",
+      "color": "white"
+    }
+  ]
+}

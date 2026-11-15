@@ -31,7 +31,9 @@ import java.util.List;
 /**
  * Something a dialogue node, option or trigger does. Types:
  * set_flag, clear_flag, set_pflag, clear_pflag, title, give_structure_compass, give_item, give_item_all, take_item, give_loot, spawn_npc, despawn_self,
- * despawn_character, become_boss, broadcast, message, effect, sound, lightning.
+ * despawn_character, become_boss, broadcast, message, effect, sound, lightning,
+ * give_item_role, counter_add, star_fall, break_lantern, spawn_echoes, seam_up, teleport_underside, leave_underside,
+ * set_time, effect_all, make_boss.
  */
 public record Action(String type, JsonObject args) {
 
@@ -90,9 +92,46 @@ public record Action(String type, JsonObject args) {
             }
             case "spawn_npc" -> {
                 int distance = num("distance", 3);
-                BlockPos pos = StoryEvents.groundNear(level, player.blockPosition(), distance);
-                StoryNpc.spawn(level, str("character", "veld"), pos, player.getYRot() + 180.0F);
+                if ("anchor".equals(str("at", "")) && state.anchor() != null) {
+                    ServerLevel overworld = level.getServer().overworld();
+                    BlockPos base = state.anchor().offset(num("dx", 0), 0, num("dz", 0));
+                    StoryNpc.spawn(overworld, str("character", "veld"), StoryEvents.groundNear(overworld, base, distance),
+                            (float) num("yaw", 0));
+                } else {
+                    BlockPos pos = StoryEvents.groundNear(level, player.blockPosition(), distance);
+                    StoryNpc.spawn(level, str("character", "veld"), pos, player.getYRot() + 180.0F);
+                }
             }
+            case "make_boss" -> {
+                String character = str("character", "");
+                for (StoryNpc other : level.getEntities(com.arnir.storymod.registry.ModEntities.STORY_NPC.get(),
+                        e -> e.getCharacter().equals(character) && e.isAlive())) {
+                    other.becomeBoss();
+                }
+            }
+            case "give_item_role" -> {
+                for (ServerPlayer p : level.getServer().getPlayerList().getPlayers()) {
+                    if (state.role(p.getUUID()).equals(str("role", ""))) {
+                        give(p, new ItemStack(Inventories.item(str("item", "minecraft:air")), num("count", 1)));
+                    }
+                }
+            }
+            case "counter_add" -> state.addCounter(str("counter", ""), num("amount", 1));
+            case "star_fall" -> com.arnir.storymod.story.ActTwo.dropStarNow(level.getServer(), player,
+                    str("at", "player"), num("distance", 24), args.has("big") && args.get("big").getAsBoolean());
+            case "break_lantern" -> com.arnir.storymod.story.ActTwo.breakRandomLantern(level.getServer());
+            case "spawn_echoes" -> com.arnir.storymod.story.ActTwo.spawnEchoes(level, player.blockPosition(), num("count", 3), num("distance", 8));
+            case "seam_up" -> com.arnir.storymod.story.ActTwo.raiseSeam(level.getServer());
+            case "teleport_underside" -> com.arnir.storymod.story.Underside.enter(player);
+            case "leave_underside" -> com.arnir.storymod.story.Underside.leave(player);
+            case "set_time" -> level.getServer().overworld().setDayTime(
+                    level.getServer().overworld().getDayTime() / 24000L * 24000L + num("time", 13000));
+            case "effect_all" -> BuiltInRegistries.MOB_EFFECT.getHolder(ResourceLocation.parse(str("effect", "minecraft:glowing")))
+                    .ifPresent(effect -> {
+                        for (ServerPlayer p : level.getServer().getPlayerList().getPlayers()) {
+                            p.addEffect(new MobEffectInstance(effect, num("duration", 200), num("amplifier", 0)));
+                        }
+                    });
             case "despawn_self" -> {
                 if (npc != null) {
                     StoryState.get(level.getServer()).bumpGeneration(npc.getCharacter());

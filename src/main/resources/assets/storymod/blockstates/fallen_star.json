@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "hot=true": {
+      "model": "storymod:block/fallen_star_hot"
+    },
+    "hot=false": {
+      "model": "storymod:block/fallen_star"
+    }
+  }
+}

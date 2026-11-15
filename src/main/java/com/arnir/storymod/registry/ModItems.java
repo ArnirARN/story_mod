@@ -107,8 +107,36 @@ public final class ModItems {
     public static final DeferredItem<ArtifactItem> ZENITH_SHARD = artifact("zenith_shard", MobEffects.JUMP, 1,
             p -> p.isSprinting());
 
+    // Second season: falling stars and the silence behind the sky.
+    public static final DeferredItem<com.arnir.storymod.item.LoreItem> STAR_SHARD = ITEMS.register("star_shard",
+            () -> new com.arnir.storymod.item.LoreItem(new Item.Properties().rarity(Rarity.UNCOMMON).fireResistant(), false));
+    public static final DeferredItem<com.arnir.storymod.item.LoreItem> STAR_CORE = ITEMS.register("star_core",
+            () -> new com.arnir.storymod.item.LoreItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant(), true));
+    public static final DeferredItem<com.arnir.storymod.item.StarEyepieceItem> STAR_EYEPIECE = ITEMS.register("star_eyepiece",
+            () -> new com.arnir.storymod.item.StarEyepieceItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
+    public static final DeferredItem<com.arnir.storymod.item.QuietDrinkItem> QUIET_TEA = ITEMS.register("quiet_tea",
+            () -> new com.arnir.storymod.item.QuietDrinkItem(new Item.Properties().stacksTo(16), false));
+    public static final DeferredItem<com.arnir.storymod.item.QuietDrinkItem> QUIET_TINCTURE = ITEMS.register("quiet_tincture",
+            () -> new com.arnir.storymod.item.QuietDrinkItem(new Item.Properties().stacksTo(4).rarity(Rarity.RARE), true));
+    public static final DeferredItem<com.arnir.storymod.item.LoreItem> ILVA_THREAD = ITEMS.register("ilva_thread",
+            () -> new com.arnir.storymod.item.LoreItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant(), true));
+    public static final DeferredItem<com.arnir.storymod.item.LoomShuttleItem> LOOM_SHUTTLE = ITEMS.register("loom_shuttle",
+            () -> new com.arnir.storymod.item.LoomShuttleItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant()));
+    public static final DeferredItem<ArtifactItem> SILENT_BELL = artifact("silent_bell", MobEffects.INVISIBILITY, 0,
+            p -> p.isShiftKeyDown() && p.level().getDayTime() % 24000L >= 13000L && p.level().getDayTime() % 24000L <= 23000L);
+    public static final DeferredItem<ArtifactItem> COMET_TAIL = artifact("comet_tail", MobEffects.MOVEMENT_SPEED, 1,
+            p -> p.level().dimension() == Level.OVERWORLD && p.level().getDayTime() % 24000L >= 13000L
+                    && p.level().getDayTime() % 24000L <= 23000L);
+    public static final DeferredItem<ArtifactItem> SEAM_NEEDLE = artifact("seam_needle", MobEffects.DAMAGE_RESISTANCE, 1,
+            p -> p.getHealth() <= p.getMaxHealth() * 0.25F);
+    public static final DeferredItem<net.minecraft.world.item.BlockItem> STAR_LANTERN = ITEMS.registerSimpleBlockItem("star_lantern",
+            ModBlocks.STAR_LANTERN);
+    public static final DeferredItem<net.minecraft.world.item.BlockItem> FALLEN_STAR = ITEMS.registerSimpleBlockItem("fallen_star",
+            ModBlocks.FALLEN_STAR);
+
     public static final List<String> ARTIFACT_IDS = List.of("zenith_ring", "echo_pendant", "guardian_scale",
-            "forge_ember", "void_feather", "order_medallion", "berserker_charm", "stone_heart", "storm_feather");
+            "forge_ember", "void_feather", "order_medallion", "berserker_charm", "stone_heart", "storm_feather",
+            "silent_bell", "comet_tail", "seam_needle");
 
     private static DeferredItem<ArtifactItem> artifact(String name, net.minecraft.core.Holder<net.minecraft.world.effect.MobEffect> effect,
                                                        int amplifier, java.util.function.Predicate<net.minecraft.server.level.ServerPlayer> when) {

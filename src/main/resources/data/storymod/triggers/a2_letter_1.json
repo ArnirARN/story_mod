@@ -1,0 +1,31 @@
+{
+  "once": "world",
+  "if": {
+    "role": "wanderer",
+    "time": {
+      "from": 0,
+      "to": 3000
+    },
+    "flags": [
+      "act2_start"
+    ],
+    "days_since": {
+      "flag": "act2_start",
+      "days": 1
+    }
+  },
+  "actions": [
+    {
+      "type": "give_loot",
+      "table": "storymod:notes/ilva_1"
+    },
+    {
+      "type": "set_flag",
+      "flag": "letter_1"
+    },
+    {
+      "type": "message",
+      "text": "Утром ты находишь у изголовья письмо без подписи. Никто не видел, кто его принёс."
+    }
+  ]
+}

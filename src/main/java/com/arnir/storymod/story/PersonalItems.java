@@ -26,12 +26,14 @@ public final class PersonalItems {
     public static Set<Item> personal() {
         return Set.of(ModItems.WHITE_PEARL.get(), ModItems.WHITE_GREATSWORD.get(), ModItems.KEEPER_HAMMER.get(),
                 ModItems.KEEPER_WRENCH.get(), ModItems.WHITE_EYE.get(), ModItems.JOURNAL.get(),
-                ModItems.END_MARK.get(), ModItems.COPPER_OATH.get());
+                ModItems.END_MARK.get(), ModItems.COPPER_OATH.get(), ModItems.ILVA_THREAD.get(), ModItems.LOOM_SHUTTLE.get(),
+                ModItems.STAR_EYEPIECE.get());
     }
 
     /** Bound items cannot be thrown away at all. */
     public static boolean isBound(ItemStack stack) {
-        return stack.is(ModItems.WHITE_PEARL.get()) || stack.is(ModItems.END_MARK.get()) || stack.is(ModItems.COPPER_OATH.get());
+        return stack.is(ModItems.WHITE_PEARL.get()) || stack.is(ModItems.END_MARK.get()) || stack.is(ModItems.COPPER_OATH.get())
+                || stack.is(ModItems.ILVA_THREAD.get());
     }
 
     public static boolean isPersonal(ItemStack stack) {

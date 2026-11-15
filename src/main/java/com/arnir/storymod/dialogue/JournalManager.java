@@ -66,7 +66,10 @@ public class JournalManager extends SimpleJsonResourceReloadListener {
                 String text = entry.text()
                         .replace("{player}", player.getGameProfile().getName())
                         .replace("{cores}", String.valueOf(com.arnir.storymod.story.StoryEvents.coresFound(state)))
-                        .replace("{pages}", String.valueOf(state.countWithPrefix("page_")));
+                        .replace("{pages}", String.valueOf(state.countWithPrefix("page_")))
+                        .replace("{seam}", com.arnir.storymod.story.ActTwo.seamName(state))
+                        .replace("{lanterns}", String.valueOf(com.arnir.storymod.story.ActTwo.lanternsAroundCircle(state)))
+                        .replace("{stars}", String.valueOf(state.counter("stars_fallen")));
                 pages.add(entry.title().isEmpty() ? text : "§l" + entry.title() + "§r\n\n" + text);
             }
         }

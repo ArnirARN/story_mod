@@ -32,6 +32,13 @@ public class StoryState extends SavedData {
     /** Story roles of players ("wanderer", "keeper"). */
     private final Map<UUID, String> roles = new HashMap<>();
     private BlockPos anchor;
+    /** Named counters (stars fallen, waves survived...). */
+    private final Map<String, Integer> counters = new HashMap<>();
+    /** Star lanterns standing in the overworld. */
+    private final Set<BlockPos> lanterns = new java.util.HashSet<>();
+    /** The next falling star: game time of impact (0 = none planned) and where it lands. */
+    private long nextStarTime;
+    private BlockPos nextStarPos;
     private transient MinecraftServer server;
 
     public static StoryState get(MinecraftServer server) {
@@ -75,6 +82,17 @@ public class StoryState extends SavedData {
         for (String key : roleTag.getAllKeys()) {
             state.roles.put(UUID.fromString(key), roleTag.getString(key));
         }
+        CompoundTag counterTag = tag.getCompound("Counters");
+        for (String key : counterTag.getAllKeys()) {
+            state.counters.put(key, counterTag.getInt(key));
+        }
+        for (long packed : tag.getLongArray("Lanterns")) {
+            state.lanterns.add(BlockPos.of(packed));
+        }
+        state.nextStarTime = tag.getLong("NextStarTime");
+        if (tag.contains("NextStarPos")) {
+            state.nextStarPos = BlockPos.of(tag.getLong("NextStarPos"));
+        }
         return state;
     }
 
@@ -104,6 +122,14 @@ public class StoryState extends SavedData {
         CompoundTag roleTag = new CompoundTag();
         roles.forEach((uuid, role) -> roleTag.putString(uuid.toString(), role));
         tag.put("Roles", roleTag);
+        CompoundTag counterTag = new CompoundTag();
+        counters.forEach(counterTag::putInt);
+        tag.put("Counters", counterTag);
+        tag.putLongArray("Lanterns", lanterns.stream().mapToLong(BlockPos::asLong).toArray());
+        tag.putLong("NextStarTime", nextStarTime);
+        if (nextStarPos != null) {
+            tag.putLong("NextStarPos", nextStarPos.asLong());
+        }
         return tag;
     }
 
@@ -219,7 +245,59 @@ public class StoryState extends SavedData {
         setDirty();
     }
 
+    public int counter(String name) {
+        return counters.getOrDefault(name, 0);
+    }
+
+    public int addCounter(String name, int delta) {
+        int value = counter(name) + delta;
+        counters.put(name, value);
+        setDirty();
+        return value;
+    }
+
+    public void setCounter(String name, int value) {
+        if (counter(name) != value || !counters.containsKey(name)) {
+            counters.put(name, value);
+            setDirty();
+        }
+    }
+
+    public Set<BlockPos> lanterns() {
+        return java.util.Collections.unmodifiableSet(lanterns);
+    }
+
+    public void addLantern(BlockPos pos) {
+        if (lanterns.add(pos.immutable())) {
+            setDirty();
+        }
+    }
+
+    public void removeLantern(BlockPos pos) {
+        if (lanterns.remove(pos)) {
+            setDirty();
+        }
+    }
+
+    public long nextStarTime() {
+        return nextStarTime;
+    }
+
+    public BlockPos nextStarPos() {
+        return nextStarPos;
+    }
+
+    public void planStar(long time, BlockPos pos) {
+        this.nextStarTime = time;
+        this.nextStarPos = pos == null ? null : pos.immutable();
+        setDirty();
+    }
+
     public void reset() {
+        counters.clear();
+        lanterns.clear();
+        nextStarTime = 0;
+        nextStarPos = null;
         flags.clear();
         flagTimes.clear();
         playerFlags.clear();

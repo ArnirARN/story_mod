@@ -1,0 +1,31 @@
+{
+  "once": "world",
+  "if": {
+    "structure": "#storymod:ancient_cities",
+    "sneaking": true,
+    "role": "wanderer",
+    "flags": [
+      "letter_4"
+    ]
+  },
+  "actions": [
+    {
+      "type": "set_flag",
+      "flag": "lullaby_4"
+    },
+    {
+      "type": "sound",
+      "sound": "minecraft:block.amethyst_block.resonate"
+    },
+    {
+      "type": "title",
+      "text": "Строка колыбельной",
+      "subtitle": "в тишине под землёй не бойся: тишина — это я,"
+    },
+    {
+      "type": "message",
+      "text": "Ты вдруг вспоминаешь строку, которую никогда не учил: «в тишине под землёй не бойся: тишина — это я,»",
+      "color": "white"
+    }
+  ]
+}

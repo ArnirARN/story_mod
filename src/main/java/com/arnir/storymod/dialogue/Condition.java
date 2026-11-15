@@ -31,6 +31,15 @@ import java.util.function.BiPredicate;
  *   "advancement": "minecraft:end/root",
  *   "mods": ["create"],                          // all these mods are installed
  *   "role_near": {"role": "keeper", "radius": 12},  // a player with this role stands nearby (or is the player)
+ *   "min_y": 200, "max_y": 0,                    // the player's height
+ *   "sneaking": true,
+ *   "structure": "minecraft:monument",           // standing inside a structure (or "#tag")
+ *   "near_entities": {"type": "minecraft:enderman", "count": 3, "radius": 16},
+ *   "role_taken": "keeper", "not_role_taken": "keeper",   // somebody on the server has (never had) this role
+ *   "pflag_count": {"prefix": "lullaby_", "min": 3},     // the player's own flags with a prefix
+ *   "counter": {"name": "stars_fallen", "min": 2},       // a story counter
+ *   "lanterns": 4,                               // star lanterns standing around the old circle
+ *   "chance": 0.25,                              // passes only sometimes
  *   "not": {...},                                // the nested condition fails
  *   "any": [ {...}, {...} ]                      // at least one nested condition passes
  * }
@@ -143,6 +152,61 @@ public final class Condition {
                 }
                 return false;
             });
+        }
+        if (obj.has("min_y")) {
+            double y = obj.get("min_y").getAsDouble();
+            parts.add((p, s) -> p.getY() >= y);
+        }
+        if (obj.has("max_y")) {
+            double y = obj.get("max_y").getAsDouble();
+            parts.add((p, s) -> p.getY() <= y);
+        }
+        if (obj.has("sneaking")) {
+            boolean want = obj.get("sneaking").getAsBoolean();
+            parts.add((p, s) -> p.isShiftKeyDown() == want);
+        }
+        if (obj.has("structure")) {
+            String id = obj.get("structure").getAsString();
+            parts.add((p, s) -> com.arnir.storymod.story.ActTwo.insideStructure(p, id));
+        }
+        if (obj.has("near_entities")) {
+            JsonObject ne = obj.getAsJsonObject("near_entities");
+            ResourceLocation type = ResourceLocation.parse(ne.get("type").getAsString());
+            int count = ne.has("count") ? ne.get("count").getAsInt() : 1;
+            double radius = ne.has("radius") ? ne.get("radius").getAsDouble() : 16.0;
+            parts.add((p, s) -> {
+                var entityType = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.get(type);
+                return p.serverLevel().getEntities((net.minecraft.world.entity.Entity) null,
+                        p.getBoundingBox().inflate(radius), e -> e.getType() == entityType && e.isAlive()).size() >= count;
+            });
+        }
+        if (obj.has("role_taken")) {
+            String role = obj.get("role_taken").getAsString();
+            parts.add((p, s) -> s.roleTaken(role));
+        }
+        if (obj.has("not_role_taken")) {
+            String role = obj.get("not_role_taken").getAsString();
+            parts.add((p, s) -> !s.roleTaken(role));
+        }
+        if (obj.has("pflag_count")) {
+            JsonObject fc = obj.getAsJsonObject("pflag_count");
+            String prefix = fc.get("prefix").getAsString();
+            int min = fc.get("min").getAsInt();
+            parts.add((p, s) -> s.personalFlags(p.getUUID()).stream().filter(f -> f.startsWith(prefix)).count() >= min);
+        }
+        if (obj.has("counter")) {
+            JsonObject c = obj.getAsJsonObject("counter");
+            String name = c.get("name").getAsString();
+            int min = c.has("min") ? c.get("min").getAsInt() : 1;
+            parts.add((p, s) -> s.counter(name) >= min);
+        }
+        if (obj.has("lanterns")) {
+            int min = obj.get("lanterns").getAsInt();
+            parts.add((p, s) -> com.arnir.storymod.story.ActTwo.lanternsAroundCircle(s) >= min);
+        }
+        if (obj.has("chance")) {
+            double chance = obj.get("chance").getAsDouble();
+            parts.add((p, s) -> p.getRandom().nextDouble() < chance);
         }
         if (obj.has("not")) {
             Condition inner = parse(obj.get("not"));

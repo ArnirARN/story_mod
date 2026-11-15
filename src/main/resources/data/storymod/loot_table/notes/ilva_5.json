@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Под водой стоит дом стражей. Самый старый из них спит и видит сны о свете.",
+                "Войди в его дом. Не буди его, если сможешь. Но если придётся, не жалей.\n\nСтрока ждёт тебя там.",
+                "Если тишина пристала к тебе, вспомни: горькое лечит. Слеза того, кто плачет огнём, поможет."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Пятое письмо",
+              "author": "—",
+              "generation": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

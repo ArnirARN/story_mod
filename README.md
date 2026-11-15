@@ -20,6 +20,8 @@
 - Странствующая торговка, которая приходит по расписанию, меняет диковины на изумруды и даёт побочные задания.
 - Дневник у каждого игрока (ПКМ): показывает только его текущие цели и то, что он уже знает.
 - Часть событий требует подождать несколько игровых дней, прийти в определённое время суток, фазу луны или место.
+- Сюжет не заканчивается на первой концовке: дальше идёт второй, более длинный сезон с событиями мира, которые развиваются по игровым дням, совместными решениями двух игроков, новым измерением и боссом.
+- Новые блоки и предметы второго сезона появляются по ходу сюжета (в книге рецептов скрыты).
 
 ## Моды в сборке
 
@@ -63,6 +65,7 @@
 | `/story flags` | Показать флаги сюжета (спойлер!) |
 | `/story flag set\|clear <флаг>` | Поставить или снять флаг |
 | `/story role <игрок> wanderer\|keeper\|none` | Назначить личную роль (если ник другой) |
+| `/story underside` | Перенести себя в измерение второго сезона (спойлер!) |
 | `/story reset` | Сбросить сюжет. Вступление начнётся заново при следующем входе |
 
 ## Как устроен контент
@@ -75,5 +78,7 @@
 - `data/storymod/loot_table/` и `data/storymod/loot_modifiers/` — что и с каким шансом добавляется в ванильные сундуки.
 - `assets/storymod/textures/entity/npc/<персонаж>.png` — скин персонажа (обычная раскладка скина игрока 64×64).
 
-Условия: `flags`, `not_flags`, `pflags`, `not_pflags`, `role`, `not_role`, `role_near`, `items`, `carry_pages`, `flag_count`, `days_since`, `time`, `moon_phase`, `dimension`, `near_anchor`, `advancement`, `any`, `not`.
-Действия: `set_flag`, `clear_flag`, `set_pflag`, `clear_pflag`, `title`, `give_item`, `give_item_all`, `take_item`, `give_loot`, `spawn_npc`, `despawn_self`, `despawn_character`, `become_boss`, `broadcast`, `message`, `effect`, `sound`, `lightning`.
+Условия: `flags`, `not_flags`, `pflags`, `not_pflags`, `role`, `not_role`, `role_near`, `role_taken`, `not_role_taken`, `items`, `carry_pages`, `flag_count`, `pflag_count`, `counter`, `days_since`, `time`, `moon_phase`, `dimension`, `near_anchor`, `min_y`, `max_y`, `sneaking`, `structure`, `near_entities`, `lanterns`, `chance`, `advancement`, `mods`, `any`, `not`.
+Действия: `set_flag`, `clear_flag`, `set_pflag`, `clear_pflag`, `title`, `give_item`, `give_item_all`, `give_item_role`, `take_item`, `give_loot`, `give_structure_compass`, `spawn_npc` (в том числе `"at": "anchor"`), `despawn_self`, `despawn_character`, `become_boss`, `make_boss`, `broadcast`, `message`, `effect`, `effect_all`, `sound`, `lightning`, `counter_add`, `star_fall`, `break_lantern`, `spawn_echoes`, `seam_up`, `teleport_underside`, `leave_underside`, `set_time`.
+
+В текстах дневника можно использовать `{player}`, `{cores}`, `{pages}`, `{seam}`, `{lanterns}`, `{stars}`.

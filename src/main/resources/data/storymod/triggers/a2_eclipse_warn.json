@@ -1,0 +1,21 @@
+{
+  "once": "world",
+  "if": {
+    "flags": [
+      "seam_4"
+    ],
+    "not_flags": [
+      "eclipse_done"
+    ]
+  },
+  "actions": [
+    {
+      "type": "broadcast",
+      "text": "Ось у старого круга щёлкает громче обычного: «Скоро ночь, когда луна закроет глаза. Круг нужно будет удержать»."
+    },
+    {
+      "type": "counter_add",
+      "counter": "eclipse_warned"
+    }
+  ]
+}

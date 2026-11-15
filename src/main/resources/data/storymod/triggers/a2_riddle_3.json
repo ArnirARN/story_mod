@@ -1,0 +1,41 @@
+{
+  "once": "world",
+  "if": {
+    "dimension": "minecraft:the_end",
+    "near_entities": {
+      "type": "minecraft:enderman",
+      "count": 3,
+      "radius": 16
+    },
+    "items": [
+      {
+        "item": "storymod:star_shard",
+        "count": 1
+      }
+    ],
+    "role": "wanderer",
+    "flags": [
+      "letter_3"
+    ]
+  },
+  "actions": [
+    {
+      "type": "set_flag",
+      "flag": "lullaby_3"
+    },
+    {
+      "type": "sound",
+      "sound": "minecraft:block.amethyst_block.resonate"
+    },
+    {
+      "type": "title",
+      "text": "Строка колыбельной",
+      "subtitle": "высокие помнят твой шаг и не обернутся вслед,"
+    },
+    {
+      "type": "message",
+      "text": "Ты вдруг вспоминаешь строку, которую никогда не учил: «высокие помнят твой шаг и не обернутся вслед,»",
+      "color": "white"
+    }
+  ]
+}

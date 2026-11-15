@@ -1,0 +1,73 @@
+{
+  "once": "world",
+  "if": {
+    "near_anchor": 7,
+    "time": {
+      "from": 17300,
+      "to": 18700
+    },
+    "items": [
+      {
+        "item": "minecraft:string",
+        "count": 8
+      },
+      {
+        "item": "minecraft:ender_pearl",
+        "count": 4
+      },
+      {
+        "item": "storymod:star_shard",
+        "count": 4
+      }
+    ],
+    "role": "wanderer",
+    "flags": [
+      "letter_6"
+    ]
+  },
+  "actions": [
+    {
+      "type": "take_item",
+      "item": "minecraft:string",
+      "count": 8
+    },
+    {
+      "type": "take_item",
+      "item": "minecraft:ender_pearl",
+      "count": 4
+    },
+    {
+      "type": "take_item",
+      "item": "storymod:star_shard",
+      "count": 4
+    },
+    {
+      "type": "give_item",
+      "item": "storymod:ilva_thread",
+      "count": 1
+    },
+    {
+      "type": "message",
+      "text": "Нити, жемчуг и звезда исчезают с ладони, а вместо них остаётся белая нить, тёплая и живая.",
+      "color": "white"
+    },
+    {
+      "type": "set_flag",
+      "flag": "lullaby_6"
+    },
+    {
+      "type": "sound",
+      "sound": "minecraft:block.amethyst_block.resonate"
+    },
+    {
+      "type": "title",
+      "text": "Строка колыбельной",
+      "subtitle": "нить, жемчуг, звезда — так шьют небеса,"
+    },
+    {
+      "type": "message",
+      "text": "Ты вдруг вспоминаешь строку, которую никогда не учил: «нить, жемчуг, звезда — так шьют небеса,»",
+      "color": "white"
+    }
+  ]
+}

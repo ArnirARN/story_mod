@@ -1,0 +1,84 @@
+{
+  "once": "world",
+  "if": {
+    "any": [
+      {
+        "flags": [
+          "v1_w_open",
+          "v1_k_open"
+        ]
+      },
+      {
+        "flags": [
+          "v1_w_open"
+        ],
+        "not_role_taken": "keeper"
+      },
+      {
+        "flags": [
+          "v1_k_open"
+        ],
+        "not_role_taken": "wanderer"
+      },
+      {
+        "flags": [
+          "v1_w_open"
+        ],
+        "not_flags": [
+          "v1_k_open",
+          "v1_k_close"
+        ],
+        "days_since": {
+          "flag": "v1_w_open",
+          "days": 3
+        }
+      },
+      {
+        "flags": [
+          "v1_k_open"
+        ],
+        "not_flags": [
+          "v1_w_open",
+          "v1_w_close"
+        ],
+        "days_since": {
+          "flag": "v1_k_open",
+          "days": 3
+        }
+      }
+    ],
+    "not_flags": [
+      "window_open",
+      "window_closed",
+      "window_split"
+    ]
+  },
+  "actions": [
+    {
+      "type": "set_flag",
+      "flag": "window_open"
+    },
+    {
+      "type": "seam_up"
+    },
+    {
+      "type": "effect_all",
+      "effect": "minecraft:blindness",
+      "duration": 60
+    },
+    {
+      "type": "title",
+      "text": "Окно открыто.",
+      "subtitle": "На один вдох."
+    },
+    {
+      "type": "broadcast",
+      "text": "Нэль поднимает руки, и в Шве открывается окно. На один вдох все видят то, что за ним: перевёрнутую землю, белые деревья без листьев, столп света, у которого кто-то стоит. И пустую клетку у края.",
+      "color": "white"
+    },
+    {
+      "type": "broadcast",
+      "text": "Окно закрывается. Шов в небе стал шире."
+    }
+  ]
+}
