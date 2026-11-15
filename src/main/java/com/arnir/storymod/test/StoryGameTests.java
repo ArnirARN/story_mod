@@ -1615,7 +1615,14 @@ public final class StoryGameTests {
         helper.runAfterDelay(20, () -> {
             List<StoryNpc> ilvas = new ArrayList<>(under.getEntities(com.arnir.storymod.registry.ModEntities.STORY_NPC.get(),
                     e -> e.getCharacter().equals("ilva") && e.isAlive()));
-            check(ilvas.size() == 1, "expected one ilva on the island, found " + ilvas.size());
+            StringBuilder seen = new StringBuilder();
+            for (net.minecraft.world.entity.Entity e : under.getAllEntities()) {
+                seen.append(e.getType().toShortString()).append(e instanceof StoryNpc n ? ":" + n.getCharacter() : "")
+                        .append('@').append(e.blockPosition().toShortString()).append(' ');
+            }
+            check(ilvas.size() == 1, "expected one ilva on the island, found " + ilvas.size() + " (gen "
+                    + state.generation("ilva") + ", keeper in " + k.level().dimension().location() + " at "
+                    + k.blockPosition().toShortString() + ", entities: " + seen + ")");
             StoryNpc ilva = ilvas.get(0);
             k.teleportTo(ilva.getX() + 1.5, ilva.getY(), ilva.getZ() + 1.5);
             expectNode(talk(k, ilva), "meet");
