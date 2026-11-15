@@ -4,6 +4,69 @@
     {
       "if": {
         "flags": [
+          "ending_lullaby"
+        ]
+      },
+      "node": "a2_epi_lullaby"
+    },
+    {
+      "if": {
+        "flags": [
+          "ending_seam"
+        ]
+      },
+      "node": "a2_epi_seam"
+    },
+    {
+      "if": {
+        "flags": [
+          "ending_open"
+        ]
+      },
+      "node": "a2_epi_open"
+    },
+    {
+      "if": {
+        "flags": [
+          "loom_started"
+        ],
+        "not_flags": [
+          "loom_ready"
+        ],
+        "role": "keeper",
+        "days_since": {
+          "flag": "loom_started",
+          "days": 2
+        },
+        "time": {
+          "from": 13000,
+          "to": 23000
+        }
+      },
+      "node": "loom_done"
+    },
+    {
+      "if": {
+        "flags": [
+          "act2_start"
+        ],
+        "not_flags": [
+          "os_a2_intro"
+        ]
+      },
+      "node": "a2_intro"
+    },
+    {
+      "if": {
+        "flags": [
+          "act2_start"
+        ]
+      },
+      "node": "a2_hub"
+    },
+    {
+      "if": {
+        "flags": [
           "ending_dawn"
         ]
       },
@@ -466,6 +529,34 @@
             "not_flags": [
               "os_brass_done"
             ]
+          }
+        },
+        {
+          "text": "Я собрал семь знаков застав.",
+          "next": "op_all",
+          "if": {
+            "flags": [
+              "outposts_all"
+            ],
+            "not_flags": [
+              "op_all_told"
+            ],
+            "items": [
+              {
+                "item": "storymod:outpost_sign",
+                "count": 7
+              }
+            ]
+          }
+        },
+        {
+          "text": "Расскажи о заставах.",
+          "next": "op_tales",
+          "if": {
+            "flag_count": {
+              "prefix": "outpost_done_",
+              "min": 1
+            }
           }
         },
         {
@@ -986,6 +1077,998 @@
         {
           "text": "Спасибо, Ось.",
           "next": "hub"
+        }
+      ]
+    },
+    "a2_intro": {
+      "text": [
+        "Щёлк. Небо. Ось видит небо. Ось не любит такое небо.",
+        "Память Оси… щёлк… Лира однажды сказала: под Горном лежит что-то старше Горна. Колодец белых. Камень в центре круга — их камень. Орден построил Горн сверху, как дом на чужом фундаменте.",
+        "Ось думает: Горн брал свет, а колодец брал свет у Горна. Горн погас. Колодец пуст. Небо расходится. Ось не уверена. Ось очень хотела бы ошибаться."
+      ],
+      "actions": [
+        {
+          "type": "set_flag",
+          "flag": "os_a2_intro"
+        }
+      ],
+      "options": [
+        {
+          "text": "…",
+          "next": "a2_hub"
+        }
+      ]
+    },
+    "a2_hub": {
+      "text": "Ось слушает. Небо скрипит. Ось тоже.",
+      "options": [
+        {
+          "text": "Что такое этот Шов?",
+          "next": "a2_seam"
+        },
+        {
+          "text": "Кто пишет мне письма?",
+          "next": "a2_handwriting",
+          "if": {
+            "role": "wanderer",
+            "flags": [
+              "letter_1"
+            ],
+            "not_flags": [
+              "os_handwriting"
+            ]
+          }
+        },
+        {
+          "text": "Как решает совет?",
+          "next": "council_rules",
+          "if": {
+            "not_flags": [
+              "window_open",
+              "window_closed",
+              "window_split"
+            ],
+            "flags": [
+              "vote1_proposed"
+            ]
+          }
+        },
+        {
+          "text": "Мой голос: открыть окно в Шов.",
+          "next": "vote_cast",
+          "if": {
+            "role": "wanderer",
+            "flags": [
+              "vote1_proposed"
+            ],
+            "not_flags": [
+              "window_open",
+              "window_closed",
+              "window_split",
+              "v1_w_open",
+              "v1_w_close"
+            ]
+          },
+          "actions": [
+            {
+              "type": "set_flag",
+              "flag": "v1_w_open"
+            }
+          ]
+        },
+        {
+          "text": "Мой голос: не открывать окно.",
+          "next": "vote_cast",
+          "if": {
+            "role": "wanderer",
+            "flags": [
+              "vote1_proposed"
+            ],
+            "not_flags": [
+              "window_open",
+              "window_closed",
+              "window_split",
+              "v1_w_open",
+              "v1_w_close"
+            ]
+          },
+          "actions": [
+            {
+              "type": "set_flag",
+              "flag": "v1_w_close"
+            }
+          ]
+        },
+        {
+          "text": "Мой голос: открыть окно в Шов.",
+          "next": "vote_cast",
+          "if": {
+            "role": "keeper",
+            "flags": [
+              "vote1_proposed"
+            ],
+            "not_flags": [
+              "window_open",
+              "window_closed",
+              "window_split",
+              "v1_k_open",
+              "v1_k_close"
+            ]
+          },
+          "actions": [
+            {
+              "type": "set_flag",
+              "flag": "v1_k_open"
+            }
+          ]
+        },
+        {
+          "text": "Мой голос: не открывать окно.",
+          "next": "vote_cast",
+          "if": {
+            "role": "keeper",
+            "flags": [
+              "vote1_proposed"
+            ],
+            "not_flags": [
+              "window_open",
+              "window_closed",
+              "window_split",
+              "v1_k_open",
+              "v1_k_close"
+            ]
+          },
+          "actions": [
+            {
+              "type": "set_flag",
+              "flag": "v1_k_close"
+            }
+          ]
+        },
+        {
+          "text": "Ось, просканируй Нэля.",
+          "next": "scan_nel",
+          "if": {
+            "role": "keeper",
+            "flags": [
+              "nel_met"
+            ],
+            "not_flags": [
+              "os_scanned_nel",
+              "nel_cured",
+              "nel_gone",
+              "nel_lost"
+            ]
+          }
+        },
+        {
+          "text": "Ось, чем сшивали небо?",
+          "next": "loom1",
+          "if": {
+            "role": "keeper",
+            "flags": [
+              "seam_2"
+            ],
+            "not_flags": [
+              "loom_started"
+            ]
+          }
+        },
+        {
+          "text": "Ось, небо можно сшить?",
+          "next": "loom_other",
+          "if": {
+            "not_role": "keeper",
+            "flags": [
+              "seam_2"
+            ],
+            "not_flags": [
+              "loom_started"
+            ]
+          }
+        },
+        {
+          "text": "Как станок?",
+          "next": "loom_wait",
+          "if": {
+            "flags": [
+              "loom_started"
+            ],
+            "not_flags": [
+              "loom_ready"
+            ]
+          }
+        },
+        {
+          "text": "У меня сердце звезды.",
+          "next": "heart1",
+          "if": {
+            "role": "keeper",
+            "items": [
+              {
+                "item": "storymod:star_core",
+                "count": 1
+              }
+            ],
+            "not_flags": [
+              "os_star_heart"
+            ]
+          }
+        },
+        {
+          "text": "У меня сердце звезды.",
+          "next": "heart_other",
+          "if": {
+            "not_role": "keeper",
+            "items": [
+              {
+                "item": "storymod:star_core",
+                "count": 1
+              }
+            ],
+            "not_flags": [
+              "os_star_heart"
+            ]
+          }
+        },
+        {
+          "text": "Как прогнать тишину?",
+          "next": "tincture",
+          "if": {
+            "flags": [
+              "seam_2"
+            ]
+          }
+        },
+        {
+          "text": "Что будет ночью у круга?",
+          "next": "eclipse_info",
+          "if": {
+            "flags": [
+              "seam_4"
+            ],
+            "not_flags": [
+              "eclipse_done"
+            ]
+          }
+        },
+        {
+          "text": "Шов открыт. Что делать?",
+          "next": "rift_info",
+          "if": {
+            "flags": [
+              "rift_open"
+            ]
+          }
+        },
+        {
+          "text": "Окуляр пропал.",
+          "next": "lost_eyepiece",
+          "if": {
+            "flags": [
+              "nel_q1_done"
+            ],
+            "not": {
+              "items": [
+                {
+                  "item": "storymod:star_eyepiece",
+                  "count": 1
+                }
+              ]
+            }
+          }
+        },
+        {
+          "text": "Челнок пропал.",
+          "next": "lost_shuttle",
+          "if": {
+            "role": "keeper",
+            "flags": [
+              "loom_ready"
+            ],
+            "not": {
+              "items": [
+                {
+                  "item": "storymod:loom_shuttle",
+                  "count": 1
+                }
+              ]
+            }
+          }
+        },
+        {
+          "text": "Нить пропала.",
+          "next": "lost_thread",
+          "if": {
+            "role": "wanderer",
+            "flags": [
+              "lullaby_6"
+            ],
+            "not": {
+              "items": [
+                {
+                  "item": "storymod:ilva_thread",
+                  "count": 1
+                }
+              ]
+            }
+          }
+        },
+        {
+          "text": "Дневник куда-то пропал.",
+          "next": "lost_journal",
+          "if": {
+            "not": {
+              "items": [
+                {
+                  "item": "storymod:journal",
+                  "count": 1
+                }
+              ]
+            }
+          }
+        },
+        {
+          "text": "Я собрал семь знаков застав.",
+          "next": "op_all",
+          "if": {
+            "flags": [
+              "outposts_all"
+            ],
+            "not_flags": [
+              "op_all_told"
+            ],
+            "items": [
+              {
+                "item": "storymod:outpost_sign",
+                "count": 7
+              }
+            ]
+          }
+        },
+        {
+          "text": "Расскажи о заставах.",
+          "next": "op_tales",
+          "if": {
+            "flag_count": {
+              "prefix": "outpost_done_",
+              "min": 1
+            }
+          }
+        },
+        {
+          "text": "Ничего. До встречи."
+        }
+      ]
+    },
+    "a2_seam": {
+      "text": [
+        "Ось объясняет. Небо — ткань. Ткань сшита. Шили не люди. Нитки держались светом, а свет шёл через колодец под кругом.",
+        "Каждый стежок, что падает, это звезда. Чем больше упало, тем шире Шов. Ось чувствует: Шов расходится примерно раз в пять дней. Если ничего не делать."
+      ],
+      "options": [
+        {
+          "text": "…",
+          "next": "a2_hub"
+        }
+      ]
+    },
+    "a2_handwriting": {
+      "text": [
+        "Ось просит показать письмо. Щёлк. Сравнение.",
+        "Почерк совпадает с запиской, что лежала у тебя, когда ты проснулся у белых камней. Тот же наклон. Та же рука. Та же привычка не подписываться.",
+        "Ось не знает, кто это. Ось знает, что этот человек… щёлк… это существо знает тебя очень давно."
+      ],
+      "actions": [
+        {
+          "type": "set_flag",
+          "flag": "os_handwriting"
+        }
+      ],
+      "options": [
+        {
+          "text": "…",
+          "next": "a2_hub"
+        }
+      ]
+    },
+    "council_rules": {
+      "text": [
+        "Протокол совета Ордена. Каждый, у кого есть своё место в истории, отдаёт голос. Ось записывает.",
+        "Голоса совпали — решение принято. Голоса разошлись — Ось не решает за вас, но кто-то решит сам. Ось боится, что Нэль.",
+        "Если второй голос молчит три дня, Ось засчитает один. Если второго человека нет вовсе, один голос — уже решение."
+      ],
+      "options": [
+        {
+          "text": "…",
+          "next": "a2_hub"
+        }
+      ]
+    },
+    "vote_cast": {
+      "text": "Щёлк. Голос записан. Ось ждёт второй голос.",
+      "options": [
+        {
+          "text": "…",
+          "next": "a2_hub"
+        }
+      ]
+    },
+    "scan_nel": {
+      "text": [
+        "Ось долго смотрит в сторону Нэля. Шестерни замедляются.",
+        "Сканирование. Температура: норма. Дыхание: норма. Сердце: бьётся. Звук сердца: отсутствует.",
+        "Ось слышит не Нэля. Ось слышит эхо. Кто-то слушает через него, наладчица. Как через замочную скважину."
+      ],
+      "actions": [
+        {
+          "type": "set_flag",
+          "flag": "os_scanned_nel"
+        },
+        {
+          "type": "set_flag",
+          "flag": "nel_suspect"
+        }
+      ],
+      "options": [
+        {
+          "text": "…",
+          "next": "a2_hub"
+        }
+      ]
+    },
+    "loom1": {
+      "text": [
+        "Ось помнит. В Хальде стоял станок. Большой, выше дома. Лира называла его «иглой для неба». Им Орден чинил то, что порвал Горн.",
+        "Ось может собрать малый станок. Нужно: звёздные осколки, восемь. Нить, шестнадцать. Аметист, четыре. И обычный ткацкий станок, как основа.",
+        "Наладчица соберёт, Ось настроит. Две ночи."
+      ],
+      "options": [
+        {
+          "text": "Вот всё, что нужно.",
+          "next": "loom2",
+          "if": {
+            "items": [
+              {
+                "item": "storymod:star_shard",
+                "count": 8
+              },
+              {
+                "item": "minecraft:string",
+                "count": 16
+              },
+              {
+                "item": "minecraft:amethyst_shard",
+                "count": 4
+              },
+              {
+                "item": "minecraft:loom",
+                "count": 1
+              }
+            ]
+          },
+          "actions": [
+            {
+              "type": "take_item",
+              "item": "storymod:star_shard",
+              "count": 8
+            },
+            {
+              "type": "take_item",
+              "item": "minecraft:string",
+              "count": 16
+            },
+            {
+              "type": "take_item",
+              "item": "minecraft:amethyst_shard",
+              "count": 4
+            },
+            {
+              "type": "take_item",
+              "item": "minecraft:loom",
+              "count": 1
+            },
+            {
+              "type": "set_flag",
+              "flag": "loom_started"
+            },
+            {
+              "type": "sound",
+              "sound": "minecraft:block.beacon.power_select"
+            }
+          ]
+        },
+        {
+          "text": "Соберу и вернусь.",
+          "next": "a2_hub",
+          "actions": [
+            {
+              "type": "set_flag",
+              "flag": "loom_asked"
+            }
+          ]
+        }
+      ]
+    },
+    "loom2": {
+      "text": "Станок собран. Основа ещё не натянута. Ночью, через две ночи. Наладчица натянет последнюю нить.",
+      "options": [
+        {
+          "text": "Хорошо.",
+          "next": "a2_hub"
+        }
+      ]
+    },
+    "loom_other": {
+      "text": "Можно. Нужен станок. Станок соберёт наладчица. Твои руки… для другого.",
+      "options": [
+        {
+          "text": "Понятно.",
+          "next": "a2_hub"
+        }
+      ]
+    },
+    "loom_wait": {
+      "text": "Станок гудит. Основа ждёт. Ночью, наладчица. Не раньше, чем пройдут две ночи.",
+      "options": [
+        {
+          "text": "…",
+          "next": "a2_hub"
+        }
+      ]
+    },
+    "loom_done": {
+      "text": [
+        "Наладчица тянет последнюю нить, и станок вздрагивает. Нити основы начинают светиться, одна за другой.",
+        "Станок поёт. Ось слышит, как ему отвечает небо.",
+        "Возьми челнок. Он вытягивает жар из упавших звёзд и выдёргивает из них осколок. А станку нужно сердце, чтобы шить само. Сердце звезды. Последней."
+      ],
+      "actions": [
+        {
+          "type": "set_flag",
+          "flag": "loom_ready"
+        },
+        {
+          "type": "give_item",
+          "item": "storymod:loom_shuttle",
+          "count": 1
+        },
+        {
+          "type": "sound",
+          "sound": "minecraft:block.beacon.activate"
+        },
+        {
+          "type": "message",
+          "text": "Станок готов. Ему нужно сердце звезды.",
+          "color": "yellow"
+        }
+      ],
+      "options": [
+        {
+          "text": "Спасибо, Ось.",
+          "next": "a2_hub"
+        }
+      ]
+    },
+    "heart1": {
+      "text": [
+        "Ось смотрит на сердце звезды долго. Очень долго для Оси.",
+        "Ось может носить его. Тогда станок будет шить сам, даже без рук. Без Оси рядом. Без никого.",
+        "Ось не знает, будет ли Ось потом прежней. Ось хочет попробовать."
+      ],
+      "options": [
+        {
+          "text": "Возьми его.",
+          "next": "heart2",
+          "actions": [
+            {
+              "type": "take_item",
+              "item": "storymod:star_core",
+              "count": 1
+            },
+            {
+              "type": "set_flag",
+              "flag": "os_star_heart"
+            },
+            {
+              "type": "sound",
+              "sound": "minecraft:block.amethyst_block.resonate"
+            }
+          ]
+        },
+        {
+          "text": "Нет, рано.",
+          "next": "a2_hub"
+        }
+      ]
+    },
+    "heart2": {
+      "text": [
+        "Наладчица открывает Оси грудь. Внутри старые шестерни Ордена и пустое место, будто его там ждали.",
+        "Щёлк. Тепло. Ось слышит небо изнутри. Оно поёт. Ось… поёт? Нет. Ось ещё не умеет. Но станок умеет."
+      ],
+      "options": [
+        {
+          "text": "…",
+          "next": "a2_hub"
+        }
+      ]
+    },
+    "heart_other": {
+      "text": "Сердце звезды. Ось чувствует его тепло. Чтобы открыть грудь Оси, нужны руки наладчицы. Позови её.",
+      "options": [
+        {
+          "text": "…",
+          "next": "a2_hub"
+        }
+      ]
+    },
+    "tincture": {
+      "text": [
+        "Тишина цепляется к тем, кто умирает в темноте, и к тем, кого касаются отзвуки. Спать не даёт. Шепчет.",
+        "Тихий чай заварить просто: мёд, ландыш, сладкие ягоды. Помогает на пару дней.",
+        "Настой тишины прогоняет её навсегда, и больше она не пристанет. Осколок звезды, слеза гаста, светящийся лишайник, четыре, и бутылка мёда. Ось смешает."
+      ],
+      "options": [
+        {
+          "text": "Вот всё для настоя.",
+          "next": "tincture_done",
+          "if": {
+            "items": [
+              {
+                "item": "storymod:star_shard",
+                "count": 1
+              },
+              {
+                "item": "minecraft:ghast_tear",
+                "count": 1
+              },
+              {
+                "item": "minecraft:glow_lichen",
+                "count": 4
+              },
+              {
+                "item": "minecraft:honey_bottle",
+                "count": 1
+              }
+            ]
+          },
+          "actions": [
+            {
+              "type": "take_item",
+              "item": "storymod:star_shard",
+              "count": 1
+            },
+            {
+              "type": "take_item",
+              "item": "minecraft:ghast_tear",
+              "count": 1
+            },
+            {
+              "type": "take_item",
+              "item": "minecraft:glow_lichen",
+              "count": 4
+            },
+            {
+              "type": "take_item",
+              "item": "minecraft:honey_bottle",
+              "count": 1
+            },
+            {
+              "type": "give_item",
+              "item": "storymod:quiet_tincture",
+              "count": 1
+            },
+            {
+              "type": "sound",
+              "sound": "minecraft:item.bottle.fill"
+            }
+          ]
+        },
+        {
+          "text": "Понятно.",
+          "next": "a2_hub"
+        }
+      ]
+    },
+    "tincture_done": {
+      "text": "Ось смешивает. Горько пахнет. Хорошо пахнет. Пей, когда тишина рядом. Или дай тому, в ком тишина живёт.",
+      "options": [
+        {
+          "text": "Спасибо.",
+          "next": "a2_hub"
+        }
+      ]
+    },
+    "eclipse_info": {
+      "text": [
+        "Шов широкий. Скоро ночь, когда луна закроет глаза. Тогда отзвуки придут к кругу. Много. Волнами.",
+        "Ось не боец. Ось будет считать. Три волны. Если круг выстоит, Шов отступит, а на камнях останется свет."
+      ],
+      "options": [
+        {
+          "text": "Мы будем готовы.",
+          "next": "a2_hub"
+        }
+      ]
+    },
+    "rift_info": {
+      "text": [
+        "Лодестоун в центре холодный. Сквозь него теперь можно пройти: присядь рядом, и тебя потянет на ту сторону.",
+        "Обратно так же: на той стороне есть камень у края. Присядь возле него.",
+        "Ось останется здесь. Кто-то должен держать дверь с этой стороны."
+      ],
+      "options": [
+        {
+          "text": "…",
+          "next": "a2_hub"
+        }
+      ]
+    },
+    "lost_eyepiece": {
+      "text": "Ось нашла его в траве у круга. Ось находит всё, что блестит.",
+      "actions": [
+        {
+          "type": "give_item",
+          "item": "storymod:star_eyepiece",
+          "count": 1
+        }
+      ],
+      "options": [
+        {
+          "text": "Спасибо.",
+          "next": "a2_hub"
+        }
+      ]
+    },
+    "lost_shuttle": {
+      "text": "Челнок вернулся к станку сам. Он помнит дорогу.",
+      "actions": [
+        {
+          "type": "give_item",
+          "item": "storymod:loom_shuttle",
+          "count": 1
+        }
+      ],
+      "options": [
+        {
+          "text": "Спасибо.",
+          "next": "a2_hub"
+        }
+      ]
+    },
+    "lost_thread": {
+      "text": "Нить лежала на лодестоуне. Белая. Ось не трогала. Возьми.",
+      "actions": [
+        {
+          "type": "give_item",
+          "item": "storymod:ilva_thread",
+          "count": 1
+        }
+      ],
+      "options": [
+        {
+          "text": "…",
+          "next": "a2_hub"
+        }
+      ]
+    },
+    "a2_epi_lullaby": {
+      "text": [
+        "Ось стоит у станка. В груди у Оси тёплый свет, и станок тихо шьёт, даже когда никто не смотрит.",
+        "Шов закрыт. Белая дома. Наладчица рядом. Ось… счастлива? Да. Это называется так. Лира бы обрадовалась."
+      ],
+      "options": [
+        {
+          "text": "…"
+        }
+      ]
+    },
+    "a2_epi_seam": {
+      "text": "Шов закрыт. Небо целое. Ось иногда смотрит наверх, туда, где тонкий белый след, и молчит дольше, чем обычно.",
+      "options": [
+        {
+          "text": "…"
+        }
+      ]
+    },
+    "a2_epi_open": {
+      "text": "Лодестоун холодный. Звёзды падают. Ось считает каждую и сторожит дверь. Это хорошее назначение. Беспокойное.",
+      "options": [
+        {
+          "text": "…"
+        }
+      ]
+    },
+    "op_tales": {
+      "text": "Ось слушает. О какой заставе?",
+      "options": [
+        {
+          "text": "Про Сайра из пустыни.",
+          "next": "op_tale_desert",
+          "if": {
+            "flags": [
+              "outpost_done_desert"
+            ]
+          }
+        },
+        {
+          "text": "Про перевозчицу Тину.",
+          "next": "op_tale_swamp",
+          "if": {
+            "flags": [
+              "outpost_done_swamp"
+            ]
+          }
+        },
+        {
+          "text": "Про звонаря Хальда.",
+          "next": "op_tale_peaks",
+          "if": {
+            "flags": [
+              "outpost_done_peaks"
+            ]
+          }
+        },
+        {
+          "text": "Про сад Сэйны.",
+          "next": "op_tale_cherry",
+          "if": {
+            "flags": [
+              "outpost_done_cherry"
+            ]
+          }
+        },
+        {
+          "text": "Про летописца Мха.",
+          "next": "op_tale_mushroom",
+          "if": {
+            "flags": [
+              "outpost_done_mushroom"
+            ]
+          }
+        },
+        {
+          "text": "Про капитана Варга.",
+          "next": "op_tale_ship",
+          "if": {
+            "flags": [
+              "outpost_done_ship"
+            ]
+          }
+        },
+        {
+          "text": "Про Вейру.",
+          "next": "op_tale_mansion",
+          "if": {
+            "flags": [
+              "outpost_done_mansion"
+            ]
+          }
+        },
+        {
+          "text": "Потом.",
+          "next": "op_back"
+        }
+      ]
+    },
+    "op_tale_desert": {
+      "text": "Полуденная застава. Песок для часов неба. Ось помнит: часы неба шли, пока Сайр возил песок. Потом встали. Потом треснуло. Ось думает, это связано. Ось редко ошибается.",
+      "options": [
+        {
+          "text": "…",
+          "next": "op_tales"
+        }
+      ]
+    },
+    "op_tale_swamp": {
+      "text": "Высокая застава… Ось знал её. Ось не помнит. Белые и высокие. Кто помнит имя. Кто забыл. Ось помнит своё имя. Ось рада.",
+      "options": [
+        {
+          "text": "…",
+          "next": "op_tales"
+        }
+      ]
+    },
+    "op_tale_peaks": {
+      "text": "Звонарь звонил три дня, и никто не пришёл. Ось бы пришла. Ось тогда была в ящике. Простите, звонарь.",
+      "options": [
+        {
+          "text": "…",
+          "next": "op_tales"
+        }
+      ]
+    },
+    "op_tale_cherry": {
+      "text": "Дерево для каждого. Для Оси тоже? Ось не служила. Ось только работала. Ось хочет дерево. Маленькое.",
+      "options": [
+        {
+          "text": "…",
+          "next": "op_tales"
+        }
+      ]
+    },
+    "op_tale_mushroom": {
+      "text": "Мох пишет правду. Ось записывает всё. Вместе мы — архив. Ось уважает Мха.",
+      "options": [
+        {
+          "text": "…",
+          "next": "op_tales"
+        }
+      ]
+    },
+    "op_tale_ship": {
+      "text": "Белые камни. Где кончается мир и начинается снова. Ось стоит у белых камней очень давно. Ось видела. Ось не скажет. Приказ магистра: не называть.",
+      "options": [
+        {
+          "text": "…",
+          "next": "op_tales"
+        }
+      ]
+    },
+    "op_tale_mansion": {
+      "text": "Впустить тишину, чтобы не было одиноко. Ось понимает. Ось не одобряет. Ось рада, что вы пришли к ней.",
+      "options": [
+        {
+          "text": "…",
+          "next": "op_tales"
+        }
+      ]
+    },
+    "op_all": {
+      "text": "Семь знаков. Ось помнит эту фигуру: семь точек по краю и одна в середине. Середина — круг. Середина — вы.\n\nОрден ушёл наверх, но края снова держат. Ось сошьёт знамя.",
+      "actions": [
+        {
+          "type": "take_item",
+          "item": "storymod:outpost_sign",
+          "count": 7
+        },
+        {
+          "type": "give_item",
+          "item": "storymod:seven_banner",
+          "count": 1
+        },
+        {
+          "type": "set_flag",
+          "flag": "op_all_told"
+        },
+        {
+          "type": "sound",
+          "sound": "minecraft:block.beacon.power_select"
+        },
+        {
+          "type": "broadcast",
+          "text": "Над старым кругом на миг загораются семь огней, по одному с каждого края мира.",
+          "color": "aqua"
+        }
+      ],
+      "options": [
+        {
+          "text": "Спасибо, Ось.",
+          "next": "op_back"
+        }
+      ]
+    },
+    "op_back": {
+      "text": "Щёлк.",
+      "options": [
+        {
+          "text": "…",
+          "next": "a2_hub",
+          "if": {
+            "flags": [
+              "act2_start"
+            ]
+          }
+        },
+        {
+          "text": "…",
+          "next": "hub",
+          "if": {
+            "not_flags": [
+              "act2_start"
+            ]
+          }
         }
       ]
     }

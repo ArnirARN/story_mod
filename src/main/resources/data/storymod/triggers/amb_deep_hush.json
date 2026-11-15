@@ -1,0 +1,15 @@
+{
+  "once": "player",
+  "pace": "ambient",
+  "if": {
+    "max_y": -20,
+    "dimension": "minecraft:overworld",
+    "chance": 0.35
+  },
+  "actions": [
+    {
+      "type": "message",
+      "text": "Тишина здесь особенная. Будто кто-то затаил дыхание, чтобы ты его не услышал."
+    }
+  ]
+}

@@ -1341,4 +1341,814 @@ public final class StoryGameTests {
         check(!new ItemStack(Items.DIAMOND).is(hidden), "vanilla items hidden");
         helper.succeed();
     }
+
+    // ------------------------------------------------------------------ second season
+
+    private static StoryState actTwo(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        state.set("veld_met");
+        state.set("ending");
+        state.set("ending_seal");
+        com.arnir.storymod.story.ActTwo.start(helper.getLevel().getServer());
+        return state;
+    }
+
+    private static void day(GameTestHelper helper, long time) {
+        helper.getLevel().setDayTime(helper.getLevel().getDayTime() / 24000L * 24000L + time);
+    }
+
+    private static void triggers(ServerPlayer p, StoryState state) {
+        TriggerManager.check(p, state);
+    }
+
+    @GameTest(template = T, batch = "story_41")
+    public static void secondSeasonStartsADayAfterAnyEnding(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        var server = helper.getLevel().getServer();
+        com.arnir.storymod.story.ActTwo.tick(server);
+        check(!state.has("act2_start"), "season two started without an ending");
+        state.set("ending");
+        com.arnir.storymod.story.ActTwo.tick(server);
+        check(!state.has("act2_start"), "season two started right after the ending");
+        state.backdate("ending", 24000L);
+        com.arnir.storymod.story.ActTwo.tick(server);
+        check(state.has("act2_start") && state.has("seam_1"), "season two did not start a day after the ending");
+        check(com.arnir.storymod.story.ActTwo.seam(state) == 1, "seam should be at stage 1");
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_42")
+    public static void seamWidensUnlessFourLanternsHold(GameTestHelper helper) {
+        StoryState state = actTwo(helper);
+        var server = helper.getLevel().getServer();
+        day(helper, 6000);
+        state.backdate("seam_1", 24000L * 5);
+        com.arnir.storymod.story.ActTwo.tick(server);
+        check(com.arnir.storymod.story.ActTwo.seam(state) == 2, "seam did not widen after five days");
+
+        ServerLevel level = helper.getLevel();
+        BlockPos a = state.anchor();
+        List<BlockPos> spots = List.of(a.offset(13, 2, 0), a.offset(-13, 2, 0), a.offset(0, 2, 13), a.offset(0, 2, -13));
+        for (BlockPos pos : spots) {
+            level.setBlockAndUpdate(pos, com.arnir.storymod.registry.ModBlocks.STAR_LANTERN.get().defaultBlockState());
+        }
+        // A lantern right next to another one does not count twice.
+        level.setBlockAndUpdate(a.offset(14, 2, 1), com.arnir.storymod.registry.ModBlocks.STAR_LANTERN.get().defaultBlockState());
+        check(com.arnir.storymod.story.ActTwo.lanternsAroundCircle(state) == 4,
+                "expected 4 lanterns, counted " + com.arnir.storymod.story.ActTwo.lanternsAroundCircle(state));
+        check(state.has("lanterns_lit"), "lanterns_lit not set");
+        state.backdate("seam_2", 24000L * 6);
+        com.arnir.storymod.story.ActTwo.tick(server);
+        check(com.arnir.storymod.story.ActTwo.seam(state) == 2, "seam widened while the lanterns held");
+
+        level.setBlockAndUpdate(spots.get(0), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+        level.setBlockAndUpdate(a.offset(14, 2, 1), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+        check(!state.has("lanterns_lit"), "lanterns_lit kept after a lantern broke");
+        com.arnir.storymod.story.ActTwo.tick(server);
+        check(com.arnir.storymod.story.ActTwo.seam(state) == 3, "seam did not widen after a lantern went out");
+        for (BlockPos pos : spots) {
+            level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_43")
+    public static void fallenStarBurnsCoolsAndBreaksIntoShards(GameTestHelper helper) {
+        StoryState state = actTwo(helper);
+        ServerLevel level = helper.getLevel();
+        BlockPos at = helper.absolutePos(new BlockPos(1, 1, 1));
+        BlockPos star = com.arnir.storymod.story.ActTwo.impact(level.getServer(), at, false);
+        check(level.getBlockState(star).is(com.arnir.storymod.registry.ModBlocks.FALLEN_STAR.get()), "no star at the impact");
+        check(com.arnir.storymod.block.FallenStarBlock.isHot(level.getBlockState(star)), "a fresh star should be hot");
+        check(state.counter("stars_fallen") == 1 && state.has("first_star"), "star not counted");
+        var hotDrops = net.minecraft.world.level.block.Block.getDrops(level.getBlockState(star), level, star, null);
+        check(hotDrops.isEmpty(), "a hot star dropped " + hotDrops);
+        com.arnir.storymod.block.FallenStarBlock.cool(level, star);
+        check(!com.arnir.storymod.block.FallenStarBlock.isHot(level.getBlockState(star)), "star did not cool");
+        var drops = net.minecraft.world.level.block.Block.getDrops(level.getBlockState(star), level, star, null);
+        check(drops.stream().anyMatch(st -> st.is(ModItems.STAR_SHARD.get())), "a cooled star dropped no shards: " + drops);
+        // Water next to a hot star cools it on the spot.
+        BlockPos second = star.above(3);
+        level.setBlockAndUpdate(second, com.arnir.storymod.registry.ModBlocks.FALLEN_STAR.get().defaultBlockState());
+        level.setBlockAndUpdate(second.east(), net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
+        check(!com.arnir.storymod.block.FallenStarBlock.isHot(level.getBlockState(second)), "water did not cool the star");
+        // The keeper's shuttle cools a star and pulls out a shard.
+        ServerPlayer k = player(helper, PlayerRoles.KEEPER);
+        level.setBlockAndUpdate(second, com.arnir.storymod.registry.ModBlocks.FALLEN_STAR.get().defaultBlockState());
+        level.setBlockAndUpdate(second.east(), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+        level.setBlockAndUpdate(second, com.arnir.storymod.registry.ModBlocks.FALLEN_STAR.get().defaultBlockState());
+        k.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(ModItems.LOOM_SHUTTLE.get()));
+        useOnBlock(k, second);
+        check(!com.arnir.storymod.block.FallenStarBlock.isHot(level.getBlockState(second)), "shuttle did not cool the star");
+        check(count(k, "storymod:star_shard") == 1, "shuttle gave no shard");
+        leave(helper, k);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_44")
+    public static void eyepieceForetellsTheNextStar(GameTestHelper helper) {
+        StoryState state = actTwo(helper);
+        ServerPlayer p = player(helper, PlayerRoles.KEEPER);
+        BlockPos target = com.arnir.storymod.story.ActTwo.planStar(helper.getLevel().getServer(), p, 600);
+        check(target != null && state.nextStarTime() > 0, "no star planned");
+        String text = com.arnir.storymod.story.ActTwo.forecast(p).getString();
+        check(text.contains("X " + target.getX()) && text.contains("Z " + target.getZ()), "forecast has no coordinates: " + text);
+        state.planStar(0, null);
+        leave(helper, p);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_45")
+    public static void silenceMarksAndIsCured(GameTestHelper helper) {
+        StoryState state = actTwo(helper);
+        ServerPlayer p = player(helper, "");
+        check(!com.arnir.storymod.story.ActTwo.isMarked(p, state), "marked from the start");
+        com.arnir.storymod.story.ActTwo.mark(p);
+        check(com.arnir.storymod.story.ActTwo.isMarked(p, state), "mark did not stick");
+        com.arnir.storymod.item.QuietDrinkItem.drink(p, false);
+        check(com.arnir.storymod.story.ActTwo.isCalm(p), "tea did not calm");
+        check(com.arnir.storymod.story.ActTwo.isMarked(p, state), "tea should not cure");
+        com.arnir.storymod.item.QuietDrinkItem.drink(p, true);
+        check(!com.arnir.storymod.story.ActTwo.isMarked(p, state), "tincture did not cure");
+        com.arnir.storymod.story.ActTwo.mark(p);
+        check(!com.arnir.storymod.story.ActTwo.isMarked(p, state), "cured player marked again");
+        leave(helper, p);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_46")
+    public static void stargazerQuestsAndHisEars(GameTestHelper helper) {
+        StoryState state = actTwo(helper);
+        ServerPlayer p = player(helper, PlayerRoles.KEEPER);
+        StoryNpc nel = npc(helper, "nel");
+        expectNode(talk(p, nel), "intro");
+        say(p, "линия");
+        say(p, "Принесу");
+        check(state.has("nel_q1"), "first quest not given");
+        give(p, new ItemStack(ModItems.STAR_SHARD.get(), 3));
+        expectNode(talk(p, nel), "hub");
+        expectNode(say(p, "Вот три осколка"), "q1_done");
+        check(count(p, "storymod:star_eyepiece") == 1 && count(p, "storymod:star_shard") == 0, "eyepiece not given");
+        say(p, "Спасибо");
+        expectNode(say(p, "удержать небо"), "lanterns");
+        say(p, "Понятно");
+        check(state.has("nel_lanterns"), "lantern quest not given");
+        // Telling him where the lanterns are lets the silence break one.
+        BlockPos lantern = state.anchor().offset(20, 3, 0);
+        helper.getLevel().setBlockAndUpdate(lantern, com.arnir.storymod.registry.ModBlocks.STAR_LANTERN.get().defaultBlockState());
+        talk(p, nel);
+        say(p, "фонари у круга");
+        check(state.has("nel_heard"), "telling did not register");
+        state.backdate("nel_heard", 24000L);
+        day(helper, 18000);
+        triggers(p, state);
+        check(state.has("lantern_broken_by_ear"), "lantern not broken after he heard");
+        check(!helper.getLevel().getBlockState(lantern).is(com.arnir.storymod.registry.ModBlocks.STAR_LANTERN.get()), "lantern still stands");
+        // Os sees what is wrong with him; then he can be cured.
+        state.set("nel_suspect");
+        give(p, new ItemStack(ModItems.QUIET_TINCTURE.get()));
+        DialogueSessions.forget(p);
+        talk(p, nel);
+        expectNode(say(p, "не слышишь"), "truth");
+        expectNode(say(p, "Выпей"), "cured");
+        check(state.has("nel_cured") && count(p, "storymod:seam_needle") == 1, "cure did not work");
+        leave(helper, p);
+        helper.succeed();
+    }
+
+    private static void osHub(ServerPlayer p, StoryNpc os) {
+        DialogueSessions.forget(p);
+        String node = talk(p, os);
+        if (node.equals("a2_intro")) {
+            say(p, "…");
+        }
+    }
+
+    @GameTest(template = T, batch = "story_47")
+    public static void councilVotesDecideTheWindow(GameTestHelper helper) {
+        StoryState state = actTwo(helper);
+        ServerPlayer w = player(helper, PlayerRoles.WANDERER);
+        ServerPlayer k = player(helper, PlayerRoles.KEEPER);
+        StoryNpc os = npc(helper, "os");
+        osHub(w, os);
+        check(!hasOption(w, "Мой голос"), "vote offered before the proposal");
+        state.set("vote1_proposed");
+        osHub(w, os);
+        say(w, "открыть окно в Шов");
+        osHub(w, os);
+        check(!hasOption(w, "Мой голос"), "wanderer can vote twice");
+        osHub(k, os);
+        say(k, "не открывать");
+        triggers(k, state);
+        check(state.has("window_split") && state.has("nel_lost"), "split votes did not send the stargazer away");
+        check(!state.has("window_open") && !state.has("window_closed"), "split vote produced another outcome too");
+
+        // Both agree to open: the window opens and the seam widens.
+        state.clear("window_split");
+        state.clear("trigger_a2_vote_split");
+        state.clear("v1_k_close");
+        osHub(k, os);
+        say(k, "открыть окно в Шов");
+        int before = com.arnir.storymod.story.ActTwo.seam(state);
+        triggers(k, state);
+        check(state.has("window_open"), "agreed vote did not open the window");
+        check(com.arnir.storymod.story.ActTwo.seam(state) == before + 1, "window did not widen the seam");
+        leave(helper, w, k);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_48")
+    public static void lettersLeadToTheLullaby(GameTestHelper helper) {
+        StoryState state = actTwo(helper);
+        ServerPlayer w = player(helper, PlayerRoles.WANDERER);
+        ServerPlayer k = player(helper, PlayerRoles.KEEPER);
+        day(helper, 1000);
+        triggers(w, state);
+        check(!state.has("letter_1"), "letter came on the first morning");
+        state.backdate("act2_start", 24000L);
+        triggers(k, state);
+        check(!state.has("letter_1"), "letter came to the keeper");
+        triggers(w, state);
+        check(state.has("letter_1") && count(w, "minecraft:written_book") == 1, "first letter not delivered");
+        // Riddle 1: the circle at sunset with the pearl.
+        day(helper, 12500);
+        triggers(w, state);
+        check(!state.has("lullaby_1"), "riddle solved without the pearl");
+        give(w, new ItemStack(ModItems.WHITE_PEARL.get()));
+        triggers(w, state);
+        check(state.has("lullaby_1"), "riddle 1 not solved");
+        // Riddle 2: above the clouds at midnight.
+        state.set("letter_2");
+        day(helper, 18000);
+        triggers(w, state);
+        check(!state.has("lullaby_2"), "riddle 2 solved on the ground");
+        w.moveTo(w.getX(), 200, w.getZ());
+        triggers(w, state);
+        check(state.has("lullaby_2"), "riddle 2 not solved high up");
+        // Riddle 6: offerings at the circle at midnight give the thread.
+        state.set("letter_6");
+        w.moveTo(state.anchor().getX() + 0.5, state.anchor().getY(), state.anchor().getZ() + 1.5);
+        give(w, new ItemStack(Items.STRING, 8));
+        give(w, new ItemStack(Items.ENDER_PEARL, 4));
+        give(w, new ItemStack(ModItems.STAR_SHARD.get(), 4));
+        triggers(w, state);
+        check(state.has("lullaby_6") && count(w, "storymod:ilva_thread") == 1, "riddle 6 gave no thread");
+        check(count(w, "minecraft:string") == 0, "offerings not taken");
+        leave(helper, w, k);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_49", timeoutTicks = 400)
+    public static void undersideFightAndSeamEnding(GameTestHelper helper) {
+        StoryState state = actTwo(helper);
+        var server = helper.getLevel().getServer();
+        ServerLevel under = com.arnir.storymod.story.Underside.level(server);
+        check(under != null, "the underside dimension is not loaded");
+        state.set("rift_open");
+        ServerPlayer w = player(helper, PlayerRoles.WANDERER);
+        ServerPlayer k = player(helper, PlayerRoles.KEEPER);
+        com.arnir.storymod.story.Underside.enter(k);
+        check(com.arnir.storymod.story.Underside.isHere(k), "keeper did not cross the seam");
+        check(under.getBlockState(com.arnir.storymod.story.Underside.CENTER).is(net.minecraft.world.level.block.Blocks.REINFORCED_DEEPSLATE),
+                "island not built");
+        // Entities in a freshly loaded dimension become visible a few ticks after the chunks get a ticket.
+        helper.runAfterDelay(20, () -> {
+            // The player tick re-checks the cast once the island chunks are loaded; mock players do not tick.
+            com.arnir.storymod.story.Underside.ensureCast(under, state);
+            List<StoryNpc> ilvas = new ArrayList<>(under.getEntities(com.arnir.storymod.registry.ModEntities.STORY_NPC.get(),
+                    e -> e.getCharacter().equals("ilva") && e.isAlive()));
+            StringBuilder seen = new StringBuilder();
+            for (net.minecraft.world.entity.Entity e : under.getAllEntities()) {
+                seen.append(e.getType().toShortString()).append(e instanceof StoryNpc n ? ":" + n.getCharacter() : "")
+                        .append('@').append(e.blockPosition().toShortString()).append(' ');
+            }
+            check(ilvas.size() == 1, "expected one ilva on the island, found " + ilvas.size() + " (gen "
+                    + state.generation("ilva") + ", keeper in " + k.level().dimension().location() + " at "
+                    + k.blockPosition().toShortString() + ", entities: " + seen + ")");
+            StoryNpc ilva = ilvas.get(0);
+            k.teleportTo(ilva.getX() + 1.5, ilva.getY(), ilva.getZ() + 1.5);
+            expectNode(talk(k, ilva), "meet");
+            say(k, "Что такое Шов");
+            say(k, "тень наверху");
+            expectNode(say(k, "…"), "hub");
+            say(k, "готовы");
+            check(state.has("shade_fight"), "fight did not start");
+            helper.runAfterDelay(20, () -> {
+                List<StoryNpc> shades = new ArrayList<>(under.getEntities(com.arnir.storymod.registry.ModEntities.STORY_NPC.get(),
+                        e -> e.getCharacter().equals("shade") && e.isAlive()));
+                check(shades.size() == 1, "expected one shade, found " + shades.size());
+                StoryNpc shade = shades.get(0);
+                check(shade.isHostile() && shade.getMaxHealth() >= 400, "shade is not a boss");
+                // Last phase: only the wanderer or starlight can hurt it.
+                shade.setHealth(100);
+                float before = shade.getHealth();
+                shade.invulnerableTime = 0;
+                shade.hurt(under.damageSources().playerAttack(k), 10);
+                check(shade.getHealth() == before, "keeper hurt the shade without starlight");
+                BlockPos near = k.blockPosition().offset(2, 0, 0);
+                under.setBlockAndUpdate(near, com.arnir.storymod.registry.ModBlocks.STAR_LANTERN.get().defaultBlockState());
+                shade.invulnerableTime = 0;
+                shade.hurt(under.damageSources().playerAttack(k), 10);
+                check(shade.getHealth() < before, "starlight did not let the keeper hurt the shade");
+                under.setBlockAndUpdate(near, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+                before = shade.getHealth();
+                shade.invulnerableTime = 0;
+                shade.hurt(under.damageSources().playerAttack(w), 10);
+                check(shade.getHealth() < before, "the wanderer could not hurt the shade");
+                shade.kill();
+                check(state.has("shade_defeated"), "shade_defeated not set");
+                DialogueSessions.forget(k);
+                expectNode(talk(k, ilva), "final");
+                check(!hasOption(k, "Спой со мной"), "song ending offered to the keeper");
+                say(k, "Сшей Шов");
+                check(say(k, "Прощай") == null, "dialogue should close");
+                check(state.has("ending_seam") && state.has("act2_over"), "seam ending flags missing");
+                check(k.level().dimension() == net.minecraft.world.level.Level.OVERWORLD, "keeper not returned home");
+                check(count(k, "storymod:comet_tail") == 1, "no reward for the seam ending");
+                leave(helper, w, k);
+                helper.succeed();
+            });
+        });
+    }
+
+    @GameTest(template = T, batch = "story_50")
+    public static void lullabyEndingNeedsEverythingTogether(GameTestHelper helper) {
+        StoryState state = actTwo(helper);
+        for (int i = 1; i <= 7; i++) {
+            state.set("lullaby_" + i);
+        }
+        state.set("shade_defeated");
+        state.set("loom_ready");
+        ServerPlayer w = player(helper, PlayerRoles.WANDERER);
+        StoryNpc ilva = npc(helper, "ilva");
+        // The keeper exists (role taken) but is far away: no song.
+        ServerPlayer k = player(helper, PlayerRoles.KEEPER);
+        k.moveTo(k.getX() + 200, k.getY(), k.getZ());
+        state.set("os_star_heart");
+        expectNode(talk(w, ilva), "final");
+        check(!hasOption(w, "Спой со мной"), "song possible without the keeper nearby");
+        k.moveTo(w.getX() + 1, w.getY(), w.getZ());
+        DialogueSessions.forget(w);
+        talk(w, ilva);
+        expectNode(say(w, "Спой со мной"), "end_song1");
+        say(w, "…");
+        check(say(w, "домой") == null, "dialogue should close");
+        check(state.has("ending_lullaby") && state.has("act2_over"), "lullaby ending flags missing");
+        check(count(w, "storymod:silent_bell") == 1 && count(k, "storymod:silent_bell") == 1, "bell not given to both");
+        check(findNpc(helper, "ilva") != null, "ilva did not come to the circle");
+        StoryNpc os = npc(helper, "os");
+        expectNode(talk(w, os), "a2_epi_lullaby");
+        leave(helper, w, k);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_51", timeoutTicks = 300)
+    public static void eclipseComesInThreeWaves(GameTestHelper helper) {
+        StoryState state = actTwo(helper);
+        var server = helper.getLevel().getServer();
+        state.set("seam_2");
+        state.set("seam_3");
+        state.set("seam_4");
+        ServerPlayer p = player(helper, "");
+        day(helper, 18000);
+        com.arnir.storymod.story.ActTwo.tick(server);
+        check(state.has("eclipse_active"), "eclipse did not start");
+        for (int wave = 1; wave <= 3; wave++) {
+            int alive = com.arnir.storymod.story.ActTwo.echoesNear(helper.getLevel(), state.anchor(), 40);
+            check(state.counter("eclipse_wave") == wave && alive > 0, "wave " + wave + " did not come (alive " + alive + ")");
+            for (net.minecraft.world.entity.Entity e : helper.getLevel().getEntities((net.minecraft.world.entity.Entity) null,
+                    new net.minecraft.world.phys.AABB(state.anchor()).inflate(40), e -> e.getTags().contains(com.arnir.storymod.story.ActTwo.ECHO_TAG))) {
+                e.discard();
+            }
+            com.arnir.storymod.story.ActTwo.tick(server);
+        }
+        check(state.has("eclipse_done") && !state.has("eclipse_active"), "eclipse did not end after three waves");
+        check(count(p, "storymod:star_shard") == 4, "no reward for the eclipse");
+        leave(helper, p);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_52")
+    public static void keeperBuildsTheLoomAndGivesOsTheHeart(GameTestHelper helper) {
+        StoryState state = actTwo(helper);
+        state.set("seam_2");
+        ServerPlayer k = player(helper, PlayerRoles.KEEPER);
+        StoryNpc os = npc(helper, "os");
+        expectNode(talk(k, os), "a2_intro");
+        expectNode(say(k, "…"), "a2_hub");
+        expectNode(say(k, "чем сшивали"), "loom1");
+        check(!hasOption(k, "Вот всё"), "loom accepted without parts");
+        say(k, "Соберу");
+        give(k, new ItemStack(ModItems.STAR_SHARD.get(), 8));
+        give(k, new ItemStack(Items.STRING, 16));
+        give(k, new ItemStack(Items.AMETHYST_SHARD, 4));
+        give(k, new ItemStack(Items.LOOM));
+        osHub(k, os);
+        say(k, "чем сшивали");
+        expectNode(say(k, "Вот всё"), "loom2");
+        check(state.has("loom_started") && count(k, "minecraft:loom") == 0, "loom parts not taken");
+        day(helper, 18000);
+        osHub(k, os);
+        check(!state.has("loom_ready"), "loom finished too early");
+        state.backdate("loom_started", 24000L * 2);
+        DialogueSessions.forget(k);
+        expectNode(talk(k, os), "loom_done");
+        check(state.has("loom_ready") && count(k, "storymod:loom_shuttle") == 1, "loom not finished");
+        give(k, new ItemStack(ModItems.STAR_CORE.get()));
+        osHub(k, os);
+        expectNode(say(k, "сердце звезды"), "heart1");
+        expectNode(say(k, "Возьми его"), "heart2");
+        check(state.has("os_star_heart") && count(k, "storymod:star_core") == 0, "heart not given");
+        leave(helper, k);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_53")
+    public static void whiteThreadPullsTheWandererOut(GameTestHelper helper) {
+        actTwo(helper);
+        ServerPlayer w = player(helper, PlayerRoles.WANDERER);
+        w.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        give(w, new ItemStack(ModItems.ILVA_THREAD.get()));
+        w.hurt(helper.getLevel().damageSources().genericKill(), 1000.0F);
+        check(w.isAlive() && w.getHealth() > 0, "thread did not save the wanderer");
+        check(w.getCooldowns().isOnCooldown(ModItems.ILVA_THREAD.get()), "thread has no cooldown");
+        check(com.arnir.storymod.story.PersonalItems.isBound(new ItemStack(ModItems.ILVA_THREAD.get())), "thread is not bound");
+        leave(helper, w);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_54")
+    public static void secondSeasonDialoguesOpenInEveryStage(GameTestHelper helper) {
+        List<List<String>> stages = List.of(
+                List.of("act2_start", "seam_1"),
+                List.of("act2_start", "seam_1", "seam_2", "nel_met", "nel_q1", "vote1_proposed", "os_a2_intro"),
+                List.of("act2_start", "seam_3", "mira_taken", "nel_lost", "window_split", "os_a2_intro"),
+                List.of("act2_start", "seam_3", "rift_open", "ilva_met", "shade_fight", "os_a2_intro", "nel_truth"),
+                List.of("act2_start", "rift_open", "shade_defeated", "ilva_met", "mira_rescued", "nel_cured", "os_a2_intro"),
+                List.of("act2_start", "act2_over", "ending_seam", "nel_cured"),
+                List.of("act2_start", "act2_over", "ending_lullaby"),
+                List.of("act2_start", "act2_over", "ending_open", "ending_open"));
+        for (String role : List.of("", PlayerRoles.WANDERER, PlayerRoles.KEEPER)) {
+            StoryState state = freshState(helper);
+            ServerPlayer p = player(helper, role);
+            for (List<String> stage : stages) {
+                state.reset();
+                state.set("intro_spawned");
+                state.set("ending");
+                state.set("veld_met");
+                stage.forEach(state::set);
+                for (String c : com.arnir.storymod.command.StoryCommand.CHARACTERS) {
+                    StoryNpc npc = npc(helper, c);
+                    DialogueSessions.forget(p);
+                    DialogueSessions.start(p, npc);
+                    DialogueSessions.View v = DialogueSessions.view(p);
+                    check(v != null || npc.isRemoved(), c + " opened nothing at stage " + stage + " for role '" + role + "'");
+                    DialogueSessions.forget(p);
+                    if (!npc.isRemoved()) {
+                        npc.discard();
+                    }
+                }
+            }
+            leave(helper, p);
+        }
+        // Journal pages render for every stage without leftovers of placeholders.
+        StoryState state = freshState(helper);
+        ServerPlayer p = player(helper, PlayerRoles.WANDERER);
+        for (String f : List.of("act2_start", "seam_1", "os_a2_intro", "nel_lanterns", "letter_1", "lullaby_1", "lullaby_2")) {
+            state.set(f);
+        }
+        for (String page : JournalManager.pagesFor(p)) {
+            check(!page.contains("{"), "journal placeholder left: " + page);
+        }
+        leave(helper, p);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_55", timeoutTicks = 300)
+    public static void riftOpensAtTheCircleAndLeadsAcross(GameTestHelper helper) {
+        StoryState state = actTwo(helper);
+        var server = helper.getLevel().getServer();
+        state.set("loom_ready");
+        state.set("nel_gone");
+        com.arnir.storymod.story.ActTwo.tick(server);
+        check(state.has("rift_open"), "rift did not open when the loom was ready and the stargazer settled");
+        ServerPlayer p = player(helper, "");
+        BlockPos a = state.anchor();
+        p.moveTo(a.getX() + 0.5, a.getY(), a.getZ() + 0.5);
+        p.setShiftKeyDown(true);
+        com.arnir.storymod.story.ActTwo.tickPlayer(p);
+        check(com.arnir.storymod.story.Underside.isHere(p), "sneaking at the lodestone did not lead across");
+        p.moveTo(com.arnir.storymod.story.Underside.EXIT.getX() + 0.5, com.arnir.storymod.story.Underside.EXIT.getY(),
+                com.arnir.storymod.story.Underside.EXIT.getZ() + 0.5);
+        com.arnir.storymod.story.ActTwo.tickPlayer(p);
+        check(p.level().dimension() == net.minecraft.world.level.Level.OVERWORLD, "exit stone did not lead back");
+        leave(helper, p);
+        helper.succeed();
+    }
+
+    // ------------------------------------------------------------------ stories of far places
+
+    private static void biome(GameTestHelper helper, BlockPos at, ResourceKey<net.minecraft.world.level.biome.Biome> key) {
+        ServerLevel level = helper.getLevel();
+        var holder = level.registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(key);
+        net.minecraft.server.commands.FillBiomeCommand.fill(level, at.offset(-6, -6, -6), at.offset(6, 6, 6), holder);
+    }
+
+    private static void moonNight(GameTestHelper helper, int phase) {
+        ServerLevel level = helper.getLevel();
+        long cycle = 24000L * 8;
+        level.setDayTime((level.getDayTime() / cycle + 1) * cycle + 24000L * phase + 18000L);
+    }
+
+    @GameTest(template = T, batch = "story_56", timeoutTicks = 100)
+    public static void farStoriesStartWhereTheyAreFoundAndKeepTheirPace(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer p = player(helper, "");
+        BlockPos at = p.blockPosition();
+        biome(helper, at, net.minecraft.world.level.biome.Biomes.DESERT);
+        day(helper, 18000);
+        TriggerManager.resetPace(p);
+        triggers(p, state);
+        check(!state.has("op_desert_seen"), "the noon mirage came at night");
+        day(helper, 6000);
+        triggers(p, state);
+        check(state.has("op_desert_seen"), "the desert at noon did not start its story");
+        check(state.place("sayr") != null, "the place was not remembered");
+        StoryNpc sayr = findNpc(helper, "sayr");
+        check(sayr != null, "the mirage did not appear");
+        // A second discovery right away is held back, then comes after a pause.
+        biome(helper, at, net.minecraft.world.level.biome.Biomes.CHERRY_GROVE);
+        triggers(p, state);
+        check(!state.has("op_cherry_seen"), "two discoveries came in one breath");
+        TriggerManager.resetPace(p);
+        triggers(p, state);
+        check(state.has("op_cherry_seen"), "the cherry grove did not start after the pause");
+        // The journal remembers where.
+        state.set("op_desert_met");
+        String where = state.place("sayr").pos().getX() + " " + state.place("sayr").pos().getY();
+        check(JournalManager.pagesFor(p).stream().anyMatch(pg -> pg.contains(where)), "journal has no coordinates");
+        // Small moments: never in the first minutes, then at most one per long while.
+        biome(helper, at, net.minecraft.world.level.biome.Biomes.TAIGA);
+        TriggerManager.resetPace(p);
+        for (int i = 0; i < 40; i++) {
+            triggers(p, state);
+        }
+        check(!state.hasPersonal(p.getUUID(), "trigger_amb_taiga_feeder"), "an ambient moment came right after joining");
+        p.tickCount = TriggerManager.AMBIENT_WARMUP + 1;
+        for (int i = 0; i < 60 && !state.hasPersonal(p.getUUID(), "trigger_amb_taiga_feeder"); i++) {
+            TriggerManager.resetPace(p);
+            triggers(p, state);
+        }
+        check(state.hasPersonal(p.getUUID(), "trigger_amb_taiga_feeder"), "the taiga never said anything");
+        p.getPersistentData().putLong("storymod_pace_any", 0L);
+        biome(helper, at, net.minecraft.world.level.biome.Biomes.BIRCH_FOREST);
+        for (int i = 0; i < 60; i++) {
+            triggers(p, state);
+        }
+        check(!state.hasPersonal(p.getUUID(), "trigger_amb_birch_name"), "two ambient moments came too close");
+        leave(helper, p);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_57")
+    public static void desertMirageWaitsForSunset(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer p = player(helper, "");
+        StoryNpc sayr = npc(helper, "sayr");
+        day(helper, 6000);
+        expectNode(talk(p, sayr), "meet");
+        expectNode(say(p, "Какой сейчас год"), "year");
+        expectNode(say(p, "очень давно"), "denial");
+        expectNode(say(p, "Хорошо"), "hub");
+        check(!hasOption(p, "Вот часы"), "clock accepted without a clock");
+        say(p, "Пока");
+        give(p, new ItemStack(Items.CLOCK));
+        expectNode(talk(p, sayr), "hub");
+        expectNode(say(p, "Вот часы"), "clock");
+        expectNode(say(p, "Где твой караван"), "caravan");
+        check(state.has("op_desert_clock") && count(p, "minecraft:clock") == 0, "clock not taken");
+        say(p, "Найду");
+        triggers(p, state);
+        check(!state.has("op_desert_tag"), "the tag was found outside the pyramid");
+        state.set("op_desert_tag");
+        expectNode(talk(p, sayr), "tag");
+        expectNode(say(p, "Груз сдан"), "read");
+        say(p, "Приду");
+        expectNode(talk(p, sayr), "wait_sunset");
+        DialogueSessions.forget(p);
+        day(helper, 12500);
+        expectNode(talk(p, sayr), "sunset");
+        check(say(p, "Прощай") == null, "dialogue should close");
+        check(state.has("outpost_done_desert") && count(p, "storymod:sayr_hourglass") == 1
+                && count(p, "storymod:outpost_sign") == 1, "no reward from the desert");
+        check(sayr.isRemoved(), "the mirage did not fade");
+        leave(helper, p);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_58")
+    public static void swampFerrywomanCarriesAVoice(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer p = player(helper, PlayerRoles.WANDERER);
+        StoryNpc tina = npc(helper, "tina");
+        expectNode(talk(p, tina), "meet");
+        expectNode(say(p, "Чьи голоса"), "voices");
+        expectNode(say(p, "Чем я могу"), "task");
+        expectNode(say(p, "Попробую"), "hub");
+        check(!hasOption(p, "Вот три"), "lights accepted without lights");
+        say(p, "Пока");
+        give(p, new ItemStack(Items.OCHRE_FROGLIGHT));
+        give(p, new ItemStack(Items.VERDANT_FROGLIGHT));
+        give(p, new ItemStack(Items.PEARLESCENT_FROGLIGHT));
+        expectNode(talk(p, tina), "hub");
+        expectNode(say(p, "Вот три"), "lit");
+        expectNode(say(p, "…"), "voice");
+        expectNode(say(p, "голос прав"), "after_voice");
+        check(say(p, "Спасибо") == null, "dialogue should close");
+        check(state.has("outpost_done_swamp") && count(p, "storymod:tina_shell") == 1, "no shell");
+        check(count(p, "minecraft:ochre_froglight") == 0, "lights not taken");
+        // The shell talks over the silence.
+        state.set("act2_start");
+        state.setPersonal(p.getUUID(), "hollow_mark");
+        com.arnir.storymod.story.ActTwo.tickPlayer(p);
+        check(com.arnir.storymod.story.ActTwo.isCalm(p), "the shell did not calm the silence");
+        leave(helper, p);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_59")
+    public static void bellRingerRingsAtDawn(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer p = player(helper, "");
+        StoryNpc hald = npc(helper, "hald");
+        expectNode(talk(p, hald), "meet");
+        expectNode(say(p, "Что случилось"), "story");
+        expectNode(say(p, "Как тебе помочь"), "task");
+        expectNode(say(p, "Принесу"), "hub");
+        say(p, "Пока");
+        give(p, new ItemStack(Items.BELL));
+        give(p, new ItemStack(Items.SOUL_CAMPFIRE));
+        expectNode(talk(p, hald), "hub");
+        expectNode(say(p, "Вот колокол"), "thaw");
+        check(say(p, "Приду") == null, "dialogue should close");
+        state.setPlace("hald", net.minecraft.core.GlobalPos.of(helper.getLevel().dimension(), p.blockPosition()));
+        day(helper, 12000);
+        triggers(p, state);
+        check(!state.has("op_peaks_rang"), "the bell rang in the evening");
+        day(helper, 23500);
+        triggers(p, state);
+        check(state.has("op_peaks_rang"), "the bell did not ring at dawn");
+        expectNode(talk(p, hald), "rang");
+        check(say(p, "Спасибо") == null, "dialogue should close");
+        check(state.has("outpost_done_peaks") && count(p, "storymod:hald_tongue") == 1, "no clapper");
+        leave(helper, p);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_60")
+    public static void gardenBloomsAtFullMoon(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer p = player(helper, "");
+        StoryNpc seina = npc(helper, "seina");
+        day(helper, 6000);
+        expectNode(talk(p, seina), "meet");
+        expectNode(say(p, "Сколько"), "count");
+        expectNode(say(p, "Принесу"), "hub");
+        check(!hasOption(p, "Вот пять"), "saplings accepted without saplings");
+        say(p, "Пока");
+        for (var item : List.of(Items.JUNGLE_SAPLING, Items.ACACIA_SAPLING, Items.DARK_OAK_SAPLING, Items.SPRUCE_SAPLING,
+                Items.MANGROVE_PROPAGULE)) {
+            give(p, new ItemStack(item));
+        }
+        expectNode(talk(p, seina), "hub");
+        expectNode(say(p, "Вот пять"), "planted");
+        check(say(p, "Приду") == null, "dialogue should close");
+        moonNight(helper, 3);
+        expectNode(talk(p, seina), "wait_moon");
+        DialogueSessions.forget(p);
+        moonNight(helper, 0);
+        expectNode(talk(p, seina), "bloom");
+        expectNode(say(p, "…"), "names");
+        expectNode(say(p, "…"), "petal");
+        check(say(p, "Спасибо") == null, "dialogue should close");
+        check(state.has("outpost_done_cherry") && count(p, "storymod:seina_petal") == 1, "no petal");
+        leave(helper, p);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_61")
+    public static void chroniclerComparesThePages(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer p = player(helper, "");
+        StoryNpc moss = npc(helper, "moss");
+        expectNode(talk(p, moss), "meet");
+        expectNode(say(p, "Какую правду"), "truth");
+        expectNode(say(p, "Почему"), "why");
+        check(count(p, "minecraft:written_book") == 1, "no chronicle");
+        expectNode(say(p, "Договорились"), "hub");
+        check(!hasOption(p, "Я прочёл"), "pages accepted without pages");
+        say(p, "Пока");
+        state.set("page_founding");
+        state.set("page_roster");
+        state.set("page_letter");
+        expectNode(talk(p, moss), "hub");
+        expectNode(say(p, "Я прочёл"), "compare");
+        expectNode(say(p, "Найду"), "spore");
+        check(say(p, "Спасибо") == null, "dialogue should close");
+        check(state.has("outpost_done_mushroom") && count(p, "storymod:moss_spore") == 1, "no spore");
+        leave(helper, p);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_62")
+    public static void captainRemembersHisCargo(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer p = player(helper, PlayerRoles.WANDERER);
+        StoryNpc varg = npc(helper, "varg");
+        expectNode(talk(p, varg), "meet");
+        expectNode(say(p, "Что случилось"), "wreck");
+        expectNode(say(p, "Что был за груз"), "cargo");
+        expectNode(say(p, "Я найду"), "hub");
+        DialogueSessions.forget(p);
+        triggers(p, state);
+        check(!state.has("op_ship_logfound"), "the log was found away from the shore");
+        state.set("op_ship_logfound");
+        expectNode(talk(p, varg), "log");
+        expectNode(say(p, "Читать"), "entry");
+        expectNode(say(p, "холодеют"), "remember");
+        check(say(p, "Прощай") == null, "dialogue should close");
+        check(state.has("outpost_done_ship") && count(p, "storymod:varg_compass") == 1, "no compass");
+        check(varg.isRemoved(), "the captain did not fade");
+        state.set("ilva_met");
+        StoryNpc ilva = npc(helper, "ilva");
+        expectNode(talk(p, ilva), "hub");
+        check(hasOption(p, "Капитан Варг"), "ilva is not asked about the captain");
+        leave(helper, p);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_63")
+    public static void hostessBargainAndRelease(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer p = player(helper, PlayerRoles.KEEPER);
+        StoryNpc veira = npc(helper, "veira");
+        expectNode(talk(p, veira), "meet");
+        expectNode(say(p, "не одна"), "two");
+        expectNode(say(p, "Я останусь"), "stay");
+        check(count(p, "storymod:veira_mirror") == 1 && state.hasPersonal(p.getUUID(), "hollow_mark"), "the bargain was not struck");
+        check(!state.has("outpost_done_mansion"), "the bargain freed the outpost");
+        say(p, "…");
+        expectNode(talk(p, veira), "again");
+        expectNode(say(p, "Хватит"), "fight");
+        check(veira.isHostile(), "the silence did not fight");
+        DialogueSessions.forget(p);
+        veira.kill();
+        check(state.has("veira_freed"), "veira_freed not set");
+        StoryNpc freed = helper.getLevel().getEntities(com.arnir.storymod.registry.ModEntities.STORY_NPC.get(),
+                e -> e.getCharacter().equals("veira") && e.isAlive() && e != veira).stream().findFirst().orElse(null);
+        check(freed != null && !freed.isHostile(), "the hostess did not come back as herself");
+        expectNode(talk(p, freed), "freed");
+        check(!hasOption(p, "Возьми себя"), "a second mirror was offered");
+        expectNode(say(p, "А зеркальце"), "mirror");
+        check(say(p, "Спасибо") == null, "dialogue should close");
+        check(state.has("outpost_done_mansion") && state.hasPersonal(p.getUUID(), "hollow_cured")
+                && count(p, "storymod:veira_mirror") == 1, "release did not settle the bargain");
+        leave(helper, p);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_64")
+    public static void sevenSignsAndRumours(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer p = player(helper, "");
+        // Mira points to the first far place nobody has seen yet.
+        state.setPersonal(p.getUUID(), "mira_met");
+        StoryNpc mira = npc(helper, "mira");
+        expectNode(talk(p, mira), "hub");
+        expectNode(say(p, "дальних краях"), "far_desert");
+        DialogueSessions.forget(p);
+        state.set("op_desert_seen");
+        expectNode(talk(p, mira), "hub");
+        expectNode(say(p, "дальних краях"), "far_swamp");
+        DialogueSessions.forget(p);
+        mira.discard();
+        // Os sews the banner from seven signs.
+        for (String id : com.arnir.storymod.story.Outposts.IDS) {
+            com.arnir.storymod.story.Outposts.complete(p, id);
+        }
+        check(state.has("outposts_all") && count(p, "storymod:outpost_sign") == 7, "seven signs not counted");
+        state.set("os_met");
+        StoryNpc os = npc(helper, "os");
+        expectNode(talk(p, os), "hub");
+        expectNode(say(p, "Расскажи о заставах"), "op_tales");
+        expectNode(say(p, "Про Сайра"), "op_tale_desert");
+        expectNode(say(p, "…"), "op_tales");
+        expectNode(say(p, "Потом"), "op_back");
+        expectNode(say(p, "…"), "hub");
+        expectNode(say(p, "семь знаков"), "op_all");
+        check(count(p, "storymod:seven_banner") == 1 && count(p, "storymod:outpost_sign") == 0, "no banner");
+        expectNode(say(p, "Спасибо"), "op_back");
+        leave(helper, p);
+        helper.succeed();
+    }
 }

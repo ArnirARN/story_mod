@@ -127,18 +127,30 @@ public class StoryNpc extends PathfinderMob {
         return this.entityData.get(HOSTILE);
     }
 
+    /** Boss health per character. */
+    public static float bossHealth(String character) {
+        return switch (character) {
+            case "shade" -> 420.0F;
+            case "nel" -> 160.0F;
+            default -> BOSS_HEALTH;
+        };
+    }
+
     public void becomeBoss() {
         if (isHostile()) {
             return;
         }
         this.entityData.set(HOSTILE, true);
+        float health = bossHealth(getCharacter());
         var maxHealth = this.getAttribute(Attributes.MAX_HEALTH);
         if (maxHealth != null) {
-            maxHealth.setBaseValue(BOSS_HEALTH);
+            maxHealth.setBaseValue(health);
         }
-        this.setHealth(BOSS_HEALTH);
-        this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.NETHERITE_SWORD));
-        this.setDropChance(EquipmentSlot.MAINHAND, 0.0F);
+        this.setHealth(health);
+        if (!getCharacter().equals("shade")) {
+            this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(getCharacter().equals("nel") ? Items.IRON_SWORD : Items.NETHERITE_SWORD));
+            this.setDropChance(EquipmentSlot.MAINHAND, 0.0F);
+        }
         this.bossEvent.setName(this.getDisplayName());
         this.bossEvent.setVisible(true);
         addHostileGoals();
@@ -160,7 +172,16 @@ public class StoryNpc extends PathfinderMob {
         if (!isHostile() && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             return false;
         }
+        if (isHostile() && getCharacter().equals("shade") && inLastPhase() && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)
+                && !com.arnir.storymod.story.ShadeFight.canHurt(this, source)) {
+            com.arnir.storymod.story.ShadeFight.deflect(this, source);
+            return false;
+        }
         return super.hurt(source, amount);
+    }
+
+    public boolean inLastPhase() {
+        return this.getHealth() <= this.getMaxHealth() / 3.0F;
     }
 
     @Override
@@ -188,6 +209,15 @@ public class StoryNpc extends PathfinderMob {
     @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
+        if (getCharacter().equals("shade") && this.level() instanceof ServerLevel serverLevel) {
+            if (isHostile()) {
+                this.bossEvent.setProgress(this.getHealth() / this.getMaxHealth());
+                com.arnir.storymod.story.ShadeFight.tick(this, serverLevel);
+            } else {
+                com.arnir.storymod.story.ShadeFight.lurk(this, serverLevel);
+            }
+            return;
+        }
         if (!isHostile()) {
             return;
         }

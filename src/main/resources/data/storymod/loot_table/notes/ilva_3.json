@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Те, кого вы зовёте высокими, когда-то были такими, как я. Теперь от них остались только тени и тихая злость.",
+                "Встань среди них в их краю, держа в руке упавшую звезду. Пусть посмотрят на тебя. Тебя они не тронут.\n\nОни помнят."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Третье письмо",
+              "author": "—",
+              "generation": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

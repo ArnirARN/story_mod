@@ -39,6 +39,18 @@
         {
           "type": "minecraft:item",
           "name": "storymod:storm_feather"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "storymod:silent_bell"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "storymod:comet_tail"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "storymod:seam_needle"
         }
       ]
     }

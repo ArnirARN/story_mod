@@ -1,0 +1,18 @@
+{
+  "once": "player",
+  "if": {
+    "flags": [
+      "act2_start"
+    ],
+    "not_role": "wanderer",
+    "not": {
+      "role": "keeper"
+    }
+  },
+  "actions": [
+    {
+      "type": "message",
+      "text": "Над миром светлая линия, от края до края неба. Ось у старого круга что-то знает."
+    }
+  ]
+}

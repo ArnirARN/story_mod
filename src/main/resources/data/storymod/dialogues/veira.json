@@ -1,0 +1,186 @@
+{
+  "speaker": "Вейра",
+  "entries": [
+    {
+      "if": {
+        "flags": [
+          "outpost_done_mansion"
+        ]
+      },
+      "node": "after"
+    },
+    {
+      "if": {
+        "flags": [
+          "veira_freed"
+        ]
+      },
+      "node": "freed"
+    },
+    {
+      "if": {
+        "flags": [
+          "op_mansion_bargain"
+        ]
+      },
+      "node": "again"
+    },
+    {
+      "if": {
+        "flags": [
+          "op_mansion_met"
+        ]
+      },
+      "node": "two"
+    },
+    {
+      "node": "meet"
+    }
+  ],
+  "nodes": {
+    "meet": {
+      "text": "Гость! Настоящий! Садитесь, садитесь. Я Вейра, хозяйка Дома без окон. Это была застава, знаете ли: тёмный лес, очень важный край. А потом все ушли, и стало так тихо…\n\nЯ сама впустила тишину. Она хорошая собеседница. Только иногда говорит моим голосом.",
+      "actions": [
+        {
+          "type": "set_flag",
+          "flag": "op_mansion_met"
+        }
+      ],
+      "options": [
+        {
+          "text": "Ты здесь не одна?",
+          "next": "two"
+        }
+      ]
+    },
+    "two": {
+      "text": "Мы… вдвоём. Не уходите. Останьтесь на ночь. Мы подарим вам всё, что захотите.",
+      "speaker": "Вейра?",
+      "options": [
+        {
+          "text": "Я помогу тебе избавиться от тишины.",
+          "next": "fight"
+        },
+        {
+          "text": "Я останусь.",
+          "next": "stay"
+        },
+        {
+          "text": "Мне пора."
+        }
+      ]
+    },
+    "stay": {
+      "text": "Как чудесно. Возьмите зеркальце. В нём вы никогда не будете один. Никогда.",
+      "speaker": "Вейра?",
+      "actions": [
+        {
+          "type": "give_item",
+          "item": "storymod:veira_mirror",
+          "count": 1
+        },
+        {
+          "type": "set_flag",
+          "flag": "op_mansion_bargain"
+        },
+        {
+          "type": "silence_mark"
+        }
+      ],
+      "options": [
+        {
+          "text": "…"
+        }
+      ]
+    },
+    "again": {
+      "text": "Вы вернулись! Мы так рады. Вам ведь хорошо с нами? Тихо, правда?",
+      "speaker": "Вейра?",
+      "options": [
+        {
+          "text": "Хватит. Я заберу у тебя тишину.",
+          "next": "fight"
+        },
+        {
+          "text": "Мне пора."
+        }
+      ]
+    },
+    "fight": {
+      "text": "Избавиться? От неё? Она не уйдёт по-хорошему. ОНА НЕ УЙДЁТ.",
+      "speaker": "Тишина",
+      "actions": [
+        {
+          "type": "set_flag",
+          "flag": "op_mansion_fight"
+        },
+        {
+          "type": "become_boss"
+        }
+      ],
+      "options": [
+        {
+          "text": "…"
+        }
+      ]
+    },
+    "freed": {
+      "text": "Тихо… По-настоящему тихо. Не так, как с ней. Спасибо.\n\nЯ снова хозяйка своего дома. Возьмите знак заставы. Он ваш по праву.",
+      "options": [
+        {
+          "text": "Возьми себя в руки, Вейра.",
+          "if": {
+            "not_flags": [
+              "op_mansion_bargain"
+            ]
+          },
+          "actions": [
+            {
+              "type": "give_item",
+              "item": "storymod:veira_mirror",
+              "count": 1
+            },
+            {
+              "type": "outpost_done",
+              "outpost": "mansion"
+            }
+          ]
+        },
+        {
+          "text": "А зеркальце?",
+          "next": "mirror",
+          "if": {
+            "flags": [
+              "op_mansion_bargain"
+            ]
+          }
+        }
+      ]
+    },
+    "mirror": {
+      "text": "Зеркальце больше не шепчет. В нём теперь только вы. И та тишина, что вы унесли от меня… я забираю её обратно. Мне её и выносить.",
+      "options": [
+        {
+          "text": "Спасибо.",
+          "actions": [
+            {
+              "type": "silence_cure"
+            },
+            {
+              "type": "outpost_done",
+              "outpost": "mansion"
+            }
+          ]
+        }
+      ]
+    },
+    "after": {
+      "text": "В доме горят свечи, и ни одна не клонится к хозяйке. Вейра ставит на стол вторую чашку. «На всякий случай», — говорит она.",
+      "options": [
+        {
+          "text": "…"
+        }
+      ]
+    }
+  }
+}

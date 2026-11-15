@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Под землёй есть города, где тьма умеет слушать. Пройди там тихо, пригнувшись, как ходят те, кто прячется. Там будет следующая строка.",
+                "И ещё. Тот, кто считает звёзды, не слышит своих шагов. Не говори при нём ничего, что хочешь сохранить. Через него слушает Изнанка.",
+                "Он не виноват. Тишина входит в тех, кто долго был один."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Четвёртое письмо",
+              "author": "—",
+              "generation": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

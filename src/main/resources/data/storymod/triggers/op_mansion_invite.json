@@ -1,0 +1,35 @@
+{
+  "once": "world",
+  "pace": "discovery",
+  "if": {
+    "biome": [
+      "minecraft:dark_forest"
+    ],
+    "dimension": "minecraft:overworld",
+    "time": {
+      "from": 13000,
+      "to": 23000
+    }
+  },
+  "actions": [
+    {
+      "type": "set_flag",
+      "flag": "op_mansion_seen"
+    },
+    {
+      "type": "give_loot",
+      "table": "storymod:notes/veira_invite"
+    },
+    {
+      "type": "give_structure_compass",
+      "structure": "storymod:mansions",
+      "radius": 100,
+      "name": "Приглашение",
+      "fail_text": "Стрелка компаса дрожит. Дом далеко. Слишком далеко, чтобы показать."
+    },
+    {
+      "type": "message",
+      "text": "Из чащи доносится мелодия музыкальной шкатулки. Обрывается на одной и той же ноте. На ветке висит конверт. На нём твоё имя."
+    }
+  ]
+}

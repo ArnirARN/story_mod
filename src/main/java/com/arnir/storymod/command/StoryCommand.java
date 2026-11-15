@@ -27,7 +27,8 @@ import java.util.List;
  * </ul>
  */
 public final class StoryCommand {
-    public static final List<String> CHARACTERS = List.of("veld", "os", "ash", "irmen", "mira");
+    public static final List<String> CHARACTERS = List.of("veld", "os", "ash", "irmen", "mira", "nel", "ilva", "shade",
+            "sayr", "tina", "hald", "seina", "moss", "varg", "veira");
 
     private StoryCommand() {
     }
@@ -82,6 +83,10 @@ public final class StoryCommand {
                                                     "Роль " + target.getGameProfile().getName() + ": " + role), true);
                                             return 1;
                                         }))))
+                .then(Commands.literal("underside").executes(ctx -> {
+                    com.arnir.storymod.story.Underside.enter(ctx.getSource().getPlayerOrException());
+                    return 1;
+                }))
                 .then(Commands.literal("reset").executes(ctx -> {
                     StoryState state = StoryState.get(ctx.getSource().getServer());
                     state.reset();

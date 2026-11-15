@@ -1,0 +1,18 @@
+{
+  "once": "player",
+  "if": {
+    "pflags": [
+      "hollow_mark"
+    ],
+    "not_pflags": [
+      "hollow_cured"
+    ]
+  },
+  "actions": [
+    {
+      "type": "message",
+      "text": "Говорят, от тишины помогает горький чай. А Ось у круга знает средство посильнее.",
+      "color": "yellow"
+    }
+  ]
+}

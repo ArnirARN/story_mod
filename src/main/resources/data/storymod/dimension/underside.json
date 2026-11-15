@@ -1,0 +1,18 @@
+{
+  "type": "storymod:underside",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "biome": "storymod:underside",
+      "layers": [
+        {
+          "block": "minecraft:air",
+          "height": 1
+        }
+      ],
+      "lakes": false,
+      "features": false,
+      "structure_overrides": []
+    }
+  }
+}

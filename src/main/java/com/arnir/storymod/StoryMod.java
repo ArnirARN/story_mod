@@ -18,6 +18,7 @@ public class StoryMod {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public StoryMod(IEventBus modBus, ModContainer container) {
+        com.arnir.storymod.registry.ModBlocks.BLOCKS.register(modBus);
         ModItems.ITEMS.register(modBus);
         ModEntities.ENTITIES.register(modBus);
         com.arnir.storymod.loot.ModChestCondition.TYPES.register(modBus);

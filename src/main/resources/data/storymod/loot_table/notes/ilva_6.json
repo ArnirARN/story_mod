@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Последнее, что я могу попросить через бумагу.",
+                "Принеси к кругу то, чем шьют: нить, жемчуг высоких и осколок упавшей звезды. Много нити: восемь мотков. Жемчуга четыре. Звёзд четыре. В полночь.",
+                "Я пришлю тебе свою нить. Она вытащит тебя из беды, когда меня не будет рядом.\n\nСедьмую строку я спою тебе сама."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Шестое письмо",
+              "author": "—",
+              "generation": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

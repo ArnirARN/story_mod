@@ -1,0 +1,38 @@
+{
+  "once": "world",
+  "if": {
+    "flags": [
+      "op_peaks_thawed"
+    ],
+    "not_flags": [
+      "op_peaks_rang"
+    ],
+    "near_place": {
+      "name": "hald",
+      "radius": 12
+    },
+    "time": {
+      "from": 22800,
+      "to": 1000
+    }
+  },
+  "actions": [
+    {
+      "type": "set_flag",
+      "flag": "op_peaks_rang"
+    },
+    {
+      "type": "sound",
+      "sound": "minecraft:block.bell.use"
+    },
+    {
+      "type": "sound",
+      "sound": "minecraft:block.bell.resonate"
+    },
+    {
+      "type": "broadcast",
+      "text": "Над миром разносится далёкий звон. Где-то в горах колокол бьёт впервые за триста лет.",
+      "color": "white"
+    }
+  ]
+}

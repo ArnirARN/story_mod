@@ -1,0 +1,29 @@
+{
+  "once": "world",
+  "pace": "discovery",
+  "if": {
+    "biome": [
+      "minecraft:mushroom_fields"
+    ],
+    "dimension": "minecraft:overworld"
+  },
+  "actions": [
+    {
+      "type": "mark_place",
+      "name": "moss"
+    },
+    {
+      "type": "spawn_npc",
+      "character": "moss",
+      "distance": 4
+    },
+    {
+      "type": "set_flag",
+      "flag": "op_mushroom_seen"
+    },
+    {
+      "type": "message",
+      "text": "На грибном острове стоит хижина из шляпок. На пороге сидит старик, весь в спорах, и что-то пишет."
+    }
+  ]
+}

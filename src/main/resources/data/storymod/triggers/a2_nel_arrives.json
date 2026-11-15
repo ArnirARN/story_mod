@@ -1,0 +1,30 @@
+{
+  "once": "world",
+  "if": {
+    "flags": [
+      "first_star"
+    ],
+    "not_flags": [
+      "nel_met"
+    ],
+    "time": {
+      "from": 0,
+      "to": 3000
+    }
+  },
+  "actions": [
+    {
+      "type": "spawn_npc",
+      "character": "nel",
+      "at": "anchor",
+      "dx": 5,
+      "dz": 3,
+      "distance": 1,
+      "yaw": 200
+    },
+    {
+      "type": "broadcast",
+      "text": "К старому кругу пришёл человек с подзорной трубой и тетрадью. Он смотрит то на небо, то на дымящийся кратер."
+    }
+  ]
+}

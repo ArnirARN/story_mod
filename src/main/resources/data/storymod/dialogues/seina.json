@@ -1,0 +1,223 @@
+{
+  "speaker": "Сэйна",
+  "entries": [
+    {
+      "if": {
+        "flags": [
+          "outpost_done_cherry"
+        ]
+      },
+      "node": "after"
+    },
+    {
+      "if": {
+        "flags": [
+          "op_cherry_planted"
+        ],
+        "moon_phase": 0,
+        "time": {
+          "from": 13000,
+          "to": 23000
+        }
+      },
+      "node": "bloom"
+    },
+    {
+      "if": {
+        "flags": [
+          "op_cherry_planted"
+        ]
+      },
+      "node": "wait_moon"
+    },
+    {
+      "if": {
+        "flags": [
+          "op_cherry_task"
+        ]
+      },
+      "node": "hub"
+    },
+    {
+      "node": "meet"
+    }
+  ],
+  "nodes": {
+    "meet": {
+      "text": "Ой! Наконец-то кто-то живой. Я Сэйна, садовница Цветущей заставы. Ну, бывшей заставы. Я сажаю по дереву на каждого, кто служил в Ордене. Чтобы их помнили, хотя бы корни.",
+      "actions": [
+        {
+          "type": "set_flag",
+          "flag": "op_cherry_met"
+        }
+      ],
+      "options": [
+        {
+          "text": "Сколько ты посадила?",
+          "next": "count"
+        },
+        {
+          "text": "Мне пора."
+        }
+      ]
+    },
+    "count": {
+      "text": "Сорок одно. Осталось пять. Но здесь растёт только вишня, а люди были разные. Мне нужны саженцы из дальних мест: из джунглей, саванны, тёмного леса, тайги и мангровый росток с болота. По одному.",
+      "actions": [
+        {
+          "type": "set_flag",
+          "flag": "op_cherry_task"
+        }
+      ],
+      "options": [
+        {
+          "text": "Принесу.",
+          "next": "hub"
+        }
+      ]
+    },
+    "hub": {
+      "text": "Пять саженцев: джунгли, саванна, тёмный лес, тайга и мангры.",
+      "options": [
+        {
+          "text": "Вот пять саженцев.",
+          "next": "planted",
+          "if": {
+            "items": [
+              {
+                "item": "minecraft:jungle_sapling",
+                "count": 1
+              },
+              {
+                "item": "minecraft:acacia_sapling",
+                "count": 1
+              },
+              {
+                "item": "minecraft:dark_oak_sapling",
+                "count": 1
+              },
+              {
+                "item": "minecraft:spruce_sapling",
+                "count": 1
+              },
+              {
+                "item": "minecraft:mangrove_propagule",
+                "count": 1
+              }
+            ]
+          },
+          "actions": [
+            {
+              "type": "take_item",
+              "item": "minecraft:jungle_sapling",
+              "count": 1
+            },
+            {
+              "type": "take_item",
+              "item": "minecraft:acacia_sapling",
+              "count": 1
+            },
+            {
+              "type": "take_item",
+              "item": "minecraft:dark_oak_sapling",
+              "count": 1
+            },
+            {
+              "type": "take_item",
+              "item": "minecraft:spruce_sapling",
+              "count": 1
+            },
+            {
+              "type": "take_item",
+              "item": "minecraft:mangrove_propagule",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "text": "Пока."
+        }
+      ]
+    },
+    "planted": {
+      "text": "Она сажает их по кругу, шепчет каждому что-то вроде имени и утаптывает землю босой ногой.\n\n«Теперь полнолуние. Сад цветёт только в полнолуние, тогда видно имена. Приходи ночью, когда луна будет полной».",
+      "actions": [
+        {
+          "type": "set_flag",
+          "flag": "op_cherry_planted"
+        }
+      ],
+      "options": [
+        {
+          "text": "Приду."
+        }
+      ]
+    },
+    "wait_moon": {
+      "text": "Луна ещё не полная, сад спит. Приходи ночью, в полнолуние.",
+      "options": [
+        {
+          "text": "…"
+        }
+      ]
+    },
+    "bloom": {
+      "text": "Смотри. Видишь, на коре проступают имена?",
+      "actions": [
+        {
+          "type": "sound",
+          "sound": "minecraft:block.cherry_leaves.place"
+        }
+      ],
+      "options": [
+        {
+          "text": "…",
+          "next": "names"
+        }
+      ]
+    },
+    "names": {
+      "text": "Магистр. Звонарь Хальд. Перевозчица Тина. Караванщик Сайр. Ильва: у этого дерева самые белые цветы.\n\nА вот дерево без имени. Я посадила его последним, для того, кто ещё вернётся. Странно: когда ты подходишь, оно шелестит.",
+      "options": [
+        {
+          "text": "…",
+          "next": "petal"
+        },
+        {
+          "text": "(Тебе хочется коснуться коры.)",
+          "next": "petal",
+          "if": {
+            "role": "wanderer"
+          }
+        }
+      ]
+    },
+    "petal": {
+      "text": "Возьми лепесток с него. Он не вянет. Раз дерево тебя узнало, пусть лепесток будет у тебя.",
+      "options": [
+        {
+          "text": "Спасибо, Сэйна.",
+          "actions": [
+            {
+              "type": "give_item",
+              "item": "storymod:seina_petal",
+              "count": 1
+            },
+            {
+              "type": "outpost_done",
+              "outpost": "cherry"
+            }
+          ]
+        }
+      ]
+    },
+    "after": {
+      "text": "Сад шелестит. Сэйна поливает дерево без имени и почему-то поглядывает на тебя.",
+      "options": [
+        {
+          "text": "…"
+        }
+      ]
+    }
+  }
+}

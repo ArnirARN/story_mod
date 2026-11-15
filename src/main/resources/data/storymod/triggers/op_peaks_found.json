@@ -1,0 +1,37 @@
+{
+  "once": "world",
+  "pace": "discovery",
+  "if": {
+    "biome": [
+      "minecraft:frozen_peaks",
+      "minecraft:jagged_peaks",
+      "minecraft:snowy_slopes"
+    ],
+    "min_y": 140,
+    "dimension": "minecraft:overworld"
+  },
+  "actions": [
+    {
+      "type": "mark_place",
+      "name": "hald"
+    },
+    {
+      "type": "spawn_npc",
+      "character": "hald",
+      "distance": 4
+    },
+    {
+      "type": "set_flag",
+      "flag": "op_peaks_seen"
+    },
+    {
+      "type": "title",
+      "text": "Звонарь",
+      "subtitle": ""
+    },
+    {
+      "type": "message",
+      "text": "У края склона, в ледяной глыбе, вмёрз человек. Глаза у него открыты. Они двигаются."
+    }
+  ]
+}

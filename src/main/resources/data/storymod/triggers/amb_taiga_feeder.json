@@ -1,0 +1,15 @@
+{
+  "once": "player",
+  "pace": "ambient",
+  "if": {
+    "biome": "#minecraft:is_taiga",
+    "dimension": "minecraft:overworld",
+    "chance": 0.35
+  },
+  "actions": [
+    {
+      "type": "message",
+      "text": "Под елью стоит деревянная кормушка со свежим зерном. Вокруг ни одного следа."
+    }
+  ]
+}

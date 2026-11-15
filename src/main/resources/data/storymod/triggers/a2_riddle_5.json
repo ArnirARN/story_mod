@@ -1,0 +1,30 @@
+{
+  "once": "world",
+  "if": {
+    "structure": "#storymod:monuments",
+    "role": "wanderer",
+    "flags": [
+      "letter_5"
+    ]
+  },
+  "actions": [
+    {
+      "type": "set_flag",
+      "flag": "lullaby_5"
+    },
+    {
+      "type": "sound",
+      "sound": "minecraft:block.amethyst_block.resonate"
+    },
+    {
+      "type": "title",
+      "text": "Строка колыбельной",
+      "subtitle": "под водой стражи спят, и ты не буди их,"
+    },
+    {
+      "type": "message",
+      "text": "Ты вдруг вспоминаешь строку, которую никогда не учил: «под водой стражи спят, и ты не буди их,»",
+      "color": "white"
+    }
+  ]
+}

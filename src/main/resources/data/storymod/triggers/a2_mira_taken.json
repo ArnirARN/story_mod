@@ -1,0 +1,34 @@
+{
+  "once": "world",
+  "if": {
+    "flags": [
+      "seam_3"
+    ],
+    "not_flags": [
+      "mira_taken"
+    ]
+  },
+  "actions": [
+    {
+      "type": "set_flag",
+      "flag": "mira_taken"
+    },
+    {
+      "type": "clear_flag",
+      "flag": "mira_here"
+    },
+    {
+      "type": "despawn_character",
+      "character": "mira"
+    },
+    {
+      "type": "give_loot",
+      "table": "storymod:notes/mira_cart"
+    },
+    {
+      "type": "broadcast",
+      "text": "У старого круга стоит повозка Миры. Пустая. На облучке записка.",
+      "color": "yellow"
+    }
+  ]
+}

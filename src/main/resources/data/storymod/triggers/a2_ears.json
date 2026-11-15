@@ -1,0 +1,28 @@
+{
+  "once": "world",
+  "if": {
+    "flags": [
+      "nel_heard"
+    ],
+    "not_flags": [
+      "nel_truth"
+    ],
+    "days_since": {
+      "flag": "nel_heard",
+      "days": 1
+    },
+    "time": {
+      "from": 14000,
+      "to": 22000
+    }
+  },
+  "actions": [
+    {
+      "type": "break_lantern"
+    },
+    {
+      "type": "set_flag",
+      "flag": "lantern_broken_by_ear"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "once": "world",
+  "pace": "discovery",
+  "if": {
+    "biome": [
+      "minecraft:cherry_grove"
+    ],
+    "dimension": "minecraft:overworld",
+    "time": {
+      "from": 0,
+      "to": 12000
+    }
+  },
+  "actions": [
+    {
+      "type": "mark_place",
+      "name": "seina"
+    },
+    {
+      "type": "spawn_npc",
+      "character": "seina",
+      "distance": 5
+    },
+    {
+      "type": "set_flag",
+      "flag": "op_cherry_seen"
+    },
+    {
+      "type": "message",
+      "text": "Среди розовых деревьев кто-то поёт и копает. Девушка в перепачканном землёй платье машет тебе, как старому знакомому."
+    }
+  ]
+}

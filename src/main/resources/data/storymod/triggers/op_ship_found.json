@@ -1,0 +1,38 @@
+{
+  "once": "world",
+  "pace": "discovery",
+  "if": {
+    "any": [
+      {
+        "structure": "minecraft:shipwreck"
+      },
+      {
+        "structure": "minecraft:shipwreck_beached"
+      }
+    ],
+    "dimension": "minecraft:overworld",
+    "time": {
+      "from": 13000,
+      "to": 23000
+    }
+  },
+  "actions": [
+    {
+      "type": "mark_place",
+      "name": "varg"
+    },
+    {
+      "type": "spawn_npc",
+      "character": "varg",
+      "distance": 4
+    },
+    {
+      "type": "set_flag",
+      "flag": "op_ship_seen"
+    },
+    {
+      "type": "message",
+      "text": "Обломки корабля скрипят, хотя ветра нет. На накренившейся палубе стоит капитан, прозрачный, как утренний туман."
+    }
+  ]
+}

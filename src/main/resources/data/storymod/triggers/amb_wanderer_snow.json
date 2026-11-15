@@ -1,0 +1,20 @@
+{
+  "once": "player",
+  "pace": "ambient",
+  "if": {
+    "role": "wanderer",
+    "biome": "#minecraft:is_mountain",
+    "time": {
+      "from": 13000,
+      "to": 23000
+    },
+    "dimension": "minecraft:overworld",
+    "chance": 0.35
+  },
+  "actions": [
+    {
+      "type": "message",
+      "text": "Снег ложится на плечи и не тает. Тебе не холодно. В темноте тебе почему-то никогда не бывает холодно."
+    }
+  ]
+}

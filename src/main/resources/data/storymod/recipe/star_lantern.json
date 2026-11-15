@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    " S ",
+    "CGC",
+    " S "
+  ],
+  "key": {
+    "S": {
+      "item": "storymod:star_shard"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "G": {
+      "item": "minecraft:glowstone"
+    }
+  },
+  "result": {
+    "id": "storymod:star_lantern",
+    "count": 1
+  }
+}

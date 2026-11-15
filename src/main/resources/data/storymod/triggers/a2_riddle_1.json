@@ -1,0 +1,40 @@
+{
+  "once": "world",
+  "if": {
+    "near_anchor": 8,
+    "time": {
+      "from": 11800,
+      "to": 13400
+    },
+    "items": [
+      {
+        "item": "storymod:white_pearl",
+        "count": 1
+      }
+    ],
+    "role": "wanderer",
+    "flags": [
+      "letter_1"
+    ]
+  },
+  "actions": [
+    {
+      "type": "set_flag",
+      "flag": "lullaby_1"
+    },
+    {
+      "type": "sound",
+      "sound": "minecraft:block.amethyst_block.resonate"
+    },
+    {
+      "type": "title",
+      "text": "Строка колыбельной",
+      "subtitle": "Спи, пока небо шито белой нитью,"
+    },
+    {
+      "type": "message",
+      "text": "Ты вдруг вспоминаешь строку, которую никогда не учил: «Спи, пока небо шито белой нитью,»",
+      "color": "white"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "once": "player",
+  "if": {
+    "dimension": "storymod:underside",
+    "role": "wanderer"
+  },
+  "actions": [
+    {
+      "type": "message",
+      "text": "Здесь тихо так, как бывает только во сне. И почему-то совсем не страшно. Как будто ты здесь уже был."
+    }
+  ]
+}

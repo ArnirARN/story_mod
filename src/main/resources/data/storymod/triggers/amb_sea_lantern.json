@@ -1,0 +1,22 @@
+{
+  "once": "player",
+  "pace": "ambient",
+  "if": {
+    "biome": "#minecraft:is_ocean",
+    "time": {
+      "from": 13000,
+      "to": 23000
+    },
+    "not_flags": [
+      "op_ship_seen"
+    ],
+    "dimension": "minecraft:overworld",
+    "chance": 0.35
+  },
+  "actions": [
+    {
+      "type": "message",
+      "text": "Над водой мелькает фонарь, будто кто-то стоит на палубе. Моргнёшь, и там пусто."
+    }
+  ]
+}

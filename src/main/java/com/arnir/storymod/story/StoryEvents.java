@@ -201,12 +201,15 @@ public final class StoryEvents {
     /** Everything the story checks about a player every two seconds. */
     public static void tickStory(ServerPlayer player) {
         StoryState state = StoryState.get(player.getServer());
-        if (!state.has("intro_spawned") || state.has("ending")) {
+        if (!state.has("intro_spawned")) {
             return;
         }
-        scanInventory(player, state);
-        checkAppearances(player, state);
+        if (!state.has("ending")) {
+            scanInventory(player, state);
+            checkAppearances(player, state);
+        }
         com.arnir.storymod.dialogue.TriggerManager.check(player, state);
+        ActTwo.tickPlayer(player);
     }
 
     private static void scanInventory(ServerPlayer player, StoryState state) {
@@ -322,7 +325,8 @@ public final class StoryEvents {
         if (anchor == null || !state.has("veld_met")) {
             return;
         }
-        boolean open = merchantHours(server.overworld().getDayTime());
+        boolean open = merchantHours(server.overworld().getDayTime())
+                && (!state.has("mira_taken") || state.has("mira_rescued"));
         boolean here = state.has("mira_here");
         if (open && !here) {
             state.set("mira_here");
@@ -335,6 +339,10 @@ public final class StoryEvents {
             }
         } else if (!open && here) {
             state.clear("mira_here");
+            if (state.has("mira_taken") && !state.has("mira_rescued")) {
+                // She is kept on the other side now; leave that copy alone.
+                return;
+            }
             state.bumpGeneration("mira");
             for (StoryNpc npc : server.overworld().getEntities(com.arnir.storymod.registry.ModEntities.STORY_NPC.get(),
                     e -> e.getCharacter().equals("mira"))) {
@@ -441,6 +449,23 @@ public final class StoryEvents {
     }
 
     public static void onBossDefeated(ServerLevel level, StoryNpc boss) {
+        if (boss.getCharacter().equals("shade")) {
+            ActTwo.onShadeDefeated(level, boss);
+            return;
+        }
+        if (boss.getCharacter().equals("veira")) {
+            StoryState s = StoryState.get(level.getServer());
+            s.set("veira_freed");
+            broadcast(level.getServer(), "Хозяйка оседает на пол. Из неё выходит тишина, как дым из погасшей свечи, и в доме впервые за триста лет скрипит половица.");
+            StoryNpc.spawn(level, "veira", groundNear(level, boss.blockPosition(), 1), 0.0F);
+            return;
+        }
+        if (boss.getCharacter().equals("nel")) {
+            StoryState.get(level.getServer()).set("nel_defeated");
+            broadcast(level.getServer(), "Звездочёт падает на колени. Чернота стекает с него, как вода, и он впервые за долгое время слышит собственный вздох.");
+            StoryNpc.spawn(level, "nel", groundNear(level, boss.blockPosition(), 1), 0.0F);
+            return;
+        }
         StoryState state = StoryState.get(level.getServer());
         state.set("boss_defeated");
         state.bumpGeneration(boss.getCharacter());

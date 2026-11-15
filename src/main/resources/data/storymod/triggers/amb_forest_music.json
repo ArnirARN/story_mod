@@ -1,0 +1,26 @@
+{
+  "once": "player",
+  "pace": "ambient",
+  "if": {
+    "biome": [
+      "minecraft:forest",
+      "minecraft:birch_forest",
+      "minecraft:old_growth_birch_forest"
+    ],
+    "time": {
+      "from": 11500,
+      "to": 14000
+    },
+    "not_flags": [
+      "op_mansion_seen"
+    ],
+    "dimension": "minecraft:overworld",
+    "chance": 0.35
+  },
+  "actions": [
+    {
+      "type": "message",
+      "text": "Где-то в чаще играет музыкальная шкатулка. Мелодия обрывается на одной и той же ноте."
+    }
+  ]
+}

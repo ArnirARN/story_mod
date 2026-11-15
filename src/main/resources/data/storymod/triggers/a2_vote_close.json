@@ -1,0 +1,66 @@
+{
+  "once": "world",
+  "if": {
+    "any": [
+      {
+        "flags": [
+          "v1_w_close",
+          "v1_k_close"
+        ]
+      },
+      {
+        "flags": [
+          "v1_w_close"
+        ],
+        "not_role_taken": "keeper"
+      },
+      {
+        "flags": [
+          "v1_k_close"
+        ],
+        "not_role_taken": "wanderer"
+      },
+      {
+        "flags": [
+          "v1_w_close"
+        ],
+        "not_flags": [
+          "v1_k_close",
+          "v1_k_open"
+        ],
+        "days_since": {
+          "flag": "v1_w_close",
+          "days": 3
+        }
+      },
+      {
+        "flags": [
+          "v1_k_close"
+        ],
+        "not_flags": [
+          "v1_w_close",
+          "v1_w_open"
+        ],
+        "days_since": {
+          "flag": "v1_k_close",
+          "days": 3
+        }
+      }
+    ],
+    "not_flags": [
+      "window_open",
+      "window_closed",
+      "window_split"
+    ]
+  },
+  "actions": [
+    {
+      "type": "set_flag",
+      "flag": "window_closed"
+    },
+    {
+      "type": "broadcast",
+      "text": "Совет решил: окно не открывать. Нэль долго молчит, а потом уходит смотреть на звёзды в одиночестве."
+    }
+  ]
+}

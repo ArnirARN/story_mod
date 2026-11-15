@@ -1,0 +1,43 @@
+{
+  "once": "world",
+  "if": {
+    "any": [
+      {
+        "flags": [
+          "v1_w_open",
+          "v1_k_close"
+        ]
+      },
+      {
+        "flags": [
+          "v1_w_close",
+          "v1_k_open"
+        ]
+      }
+    ],
+    "not_flags": [
+      "window_open",
+      "window_closed",
+      "window_split"
+    ]
+  },
+  "actions": [
+    {
+      "type": "set_flag",
+      "flag": "window_split"
+    },
+    {
+      "type": "set_flag",
+      "flag": "nel_lost"
+    },
+    {
+      "type": "despawn_character",
+      "character": "nel"
+    },
+    {
+      "type": "broadcast",
+      "text": "Голоса разошлись. Ночью Нэль решил за вас: он открыл окно сам и шагнул в него. Окно закрылось. Звездочёт не вернулся.",
+      "color": "dark_purple"
+    }
+  ]
+}
