@@ -1611,50 +1611,55 @@ public final class StoryGameTests {
         check(com.arnir.storymod.story.Underside.isHere(k), "keeper did not cross the seam");
         check(under.getBlockState(com.arnir.storymod.story.Underside.CENTER).is(net.minecraft.world.level.block.Blocks.REINFORCED_DEEPSLATE),
                 "island not built");
-        List<StoryNpc> ilvas = new ArrayList<>(under.getEntities(com.arnir.storymod.registry.ModEntities.STORY_NPC.get(),
-                e -> e.getCharacter().equals("ilva") && e.isAlive()));
-        check(ilvas.size() == 1, "expected one ilva on the island, found " + ilvas.size());
-        StoryNpc ilva = ilvas.get(0);
-        k.teleportTo(ilva.getX() + 1.5, ilva.getY(), ilva.getZ() + 1.5);
-        expectNode(talk(k, ilva), "meet");
-        say(k, "Что такое Шов");
-        say(k, "тень наверху");
-        expectNode(say(k, "…"), "hub");
-        say(k, "готовы");
-        check(state.has("shade_fight"), "fight did not start");
-        List<StoryNpc> shades = new ArrayList<>(under.getEntities(com.arnir.storymod.registry.ModEntities.STORY_NPC.get(),
-                e -> e.getCharacter().equals("shade") && e.isAlive()));
-        check(shades.size() == 1, "expected one shade, found " + shades.size());
-        StoryNpc shade = shades.get(0);
-        check(shade.isHostile() && shade.getMaxHealth() >= 400, "shade is not a boss");
-        // Last phase: only the wanderer or starlight can hurt it.
-        shade.setHealth(100);
-        float before = shade.getHealth();
-        shade.invulnerableTime = 0;
-        shade.hurt(under.damageSources().playerAttack(k), 10);
-        check(shade.getHealth() == before, "keeper hurt the shade without starlight");
-        BlockPos near = k.blockPosition().offset(2, 0, 0);
-        under.setBlockAndUpdate(near, com.arnir.storymod.registry.ModBlocks.STAR_LANTERN.get().defaultBlockState());
-        shade.invulnerableTime = 0;
-        shade.hurt(under.damageSources().playerAttack(k), 10);
-        check(shade.getHealth() < before, "starlight did not let the keeper hurt the shade");
-        under.setBlockAndUpdate(near, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
-        before = shade.getHealth();
-        shade.invulnerableTime = 0;
-        shade.hurt(under.damageSources().playerAttack(w), 10);
-        check(shade.getHealth() < before, "the wanderer could not hurt the shade");
-        shade.kill();
-        check(state.has("shade_defeated"), "shade_defeated not set");
-        DialogueSessions.forget(k);
-        expectNode(talk(k, ilva), "final");
-        check(!hasOption(k, "Спой со мной"), "song ending offered to the keeper");
-        say(k, "Сшей Шов");
-        check(say(k, "Прощай") == null, "dialogue should close");
-        check(state.has("ending_seam") && state.has("act2_over"), "seam ending flags missing");
-        check(k.level().dimension() == net.minecraft.world.level.Level.OVERWORLD, "keeper not returned home");
-        check(count(k, "storymod:comet_tail") == 1, "no reward for the seam ending");
-        leave(helper, w, k);
-        helper.succeed();
+        // Entities in a freshly loaded dimension become visible a few ticks after the chunks get a ticket.
+        helper.runAfterDelay(20, () -> {
+            List<StoryNpc> ilvas = new ArrayList<>(under.getEntities(com.arnir.storymod.registry.ModEntities.STORY_NPC.get(),
+                    e -> e.getCharacter().equals("ilva") && e.isAlive()));
+            check(ilvas.size() == 1, "expected one ilva on the island, found " + ilvas.size());
+            StoryNpc ilva = ilvas.get(0);
+            k.teleportTo(ilva.getX() + 1.5, ilva.getY(), ilva.getZ() + 1.5);
+            expectNode(talk(k, ilva), "meet");
+            say(k, "Что такое Шов");
+            say(k, "тень наверху");
+            expectNode(say(k, "…"), "hub");
+            say(k, "готовы");
+            check(state.has("shade_fight"), "fight did not start");
+            helper.runAfterDelay(20, () -> {
+                List<StoryNpc> shades = new ArrayList<>(under.getEntities(com.arnir.storymod.registry.ModEntities.STORY_NPC.get(),
+                        e -> e.getCharacter().equals("shade") && e.isAlive()));
+                check(shades.size() == 1, "expected one shade, found " + shades.size());
+                StoryNpc shade = shades.get(0);
+                check(shade.isHostile() && shade.getMaxHealth() >= 400, "shade is not a boss");
+                // Last phase: only the wanderer or starlight can hurt it.
+                shade.setHealth(100);
+                float before = shade.getHealth();
+                shade.invulnerableTime = 0;
+                shade.hurt(under.damageSources().playerAttack(k), 10);
+                check(shade.getHealth() == before, "keeper hurt the shade without starlight");
+                BlockPos near = k.blockPosition().offset(2, 0, 0);
+                under.setBlockAndUpdate(near, com.arnir.storymod.registry.ModBlocks.STAR_LANTERN.get().defaultBlockState());
+                shade.invulnerableTime = 0;
+                shade.hurt(under.damageSources().playerAttack(k), 10);
+                check(shade.getHealth() < before, "starlight did not let the keeper hurt the shade");
+                under.setBlockAndUpdate(near, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+                before = shade.getHealth();
+                shade.invulnerableTime = 0;
+                shade.hurt(under.damageSources().playerAttack(w), 10);
+                check(shade.getHealth() < before, "the wanderer could not hurt the shade");
+                shade.kill();
+                check(state.has("shade_defeated"), "shade_defeated not set");
+                DialogueSessions.forget(k);
+                expectNode(talk(k, ilva), "final");
+                check(!hasOption(k, "Спой со мной"), "song ending offered to the keeper");
+                say(k, "Сшей Шов");
+                check(say(k, "Прощай") == null, "dialogue should close");
+                check(state.has("ending_seam") && state.has("act2_over"), "seam ending flags missing");
+                check(k.level().dimension() == net.minecraft.world.level.Level.OVERWORLD, "keeper not returned home");
+                check(count(k, "storymod:comet_tail") == 1, "no reward for the seam ending");
+                leave(helper, w, k);
+                helper.succeed();
+            });
+        });
     }
 
     @GameTest(template = T, batch = "story_50")
