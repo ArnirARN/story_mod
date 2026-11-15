@@ -1,0 +1,38 @@
+{
+  "once": "world",
+  "pace": "discovery",
+  "if": {
+    "biome": [
+      "minecraft:desert"
+    ],
+    "dimension": "minecraft:overworld",
+    "time": {
+      "from": 4000,
+      "to": 8000
+    }
+  },
+  "actions": [
+    {
+      "type": "mark_place",
+      "name": "sayr"
+    },
+    {
+      "type": "spawn_npc",
+      "character": "sayr",
+      "distance": 6
+    },
+    {
+      "type": "set_flag",
+      "flag": "op_desert_seen"
+    },
+    {
+      "type": "title",
+      "text": "Мираж",
+      "subtitle": "Воздух над песком дрожит."
+    },
+    {
+      "type": "message",
+      "text": "В дрожащем воздухе проступает человек в выцветшем плаще. Он стоит в самый полдень и не отбрасывает тени."
+    }
+  ]
+}

@@ -134,6 +134,26 @@ public final class ModItems {
     public static final DeferredItem<net.minecraft.world.item.BlockItem> FALLEN_STAR = ITEMS.registerSimpleBlockItem("fallen_star",
             ModBlocks.FALLEN_STAR);
 
+    // Rewards of the stories that live in far places (any order, any chapter).
+    public static final DeferredItem<com.arnir.storymod.item.LoreItem> OUTPOST_SIGN = ITEMS.register("outpost_sign",
+            () -> new com.arnir.storymod.item.LoreItem(new Item.Properties().stacksTo(7).rarity(Rarity.RARE).fireResistant(), true));
+    public static final DeferredItem<ArtifactItem> SAYR_HOURGLASS = artifact("sayr_hourglass", MobEffects.DIG_SPEED, 1,
+            p -> p.level().dimension() == Level.OVERWORLD && p.level().getDayTime() % 24000L < 12300L);
+    public static final DeferredItem<ArtifactItem> TINA_SHELL = artifact("tina_shell", MobEffects.CONDUIT_POWER, 0,
+            p -> p.isUnderWater());
+    public static final DeferredItem<ArtifactItem> HALD_TONGUE = artifact("hald_tongue", MobEffects.DAMAGE_RESISTANCE, 0,
+            p -> p.level().getBiome(p.blockPosition()).value().coldEnoughToSnow(p.blockPosition()));
+    public static final DeferredItem<ArtifactItem> SEINA_PETAL = artifact("seina_petal", MobEffects.REGENERATION, 0,
+            p -> p.getHealth() < p.getMaxHealth() * 0.5F && p.tickCount - p.getLastHurtByMobTimestamp() > 100);
+    public static final DeferredItem<ArtifactItem> MOSS_SPORE = artifact("moss_spore", MobEffects.SATURATION, 0,
+            p -> p.getFoodData().getFoodLevel() < 6);
+    public static final DeferredItem<ArtifactItem> VARG_COMPASS = artifact("varg_compass", MobEffects.DOLPHINS_GRACE, 0,
+            p -> p.isInWater());
+    public static final DeferredItem<ArtifactItem> VEIRA_MIRROR = artifact("veira_mirror", MobEffects.DAMAGE_BOOST, 0,
+            p -> p.level().getMaxLocalRawBrightness(p.blockPosition()) < 7);
+    public static final DeferredItem<ArtifactItem> SEVEN_BANNER = artifact("seven_banner", MobEffects.HERO_OF_THE_VILLAGE, 1,
+            p -> true);
+
     public static final List<String> ARTIFACT_IDS = List.of("zenith_ring", "echo_pendant", "guardian_scale",
             "forge_ember", "void_feather", "order_medallion", "berserker_charm", "stone_heart", "storm_feather",
             "silent_bell", "comet_tail", "seam_needle");

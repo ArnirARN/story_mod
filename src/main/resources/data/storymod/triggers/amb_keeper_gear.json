@@ -1,0 +1,26 @@
+{
+  "once": "player",
+  "pace": "ambient",
+  "if": {
+    "role": "keeper",
+    "biome": [
+      "minecraft:plains",
+      "minecraft:forest",
+      "minecraft:taiga",
+      "minecraft:savanna"
+    ],
+    "dimension": "minecraft:overworld",
+    "chance": 0.35
+  },
+  "actions": [
+    {
+      "type": "message",
+      "text": "В траве блестит ржавая шестерня. Работа Ордена: такие зубцы больше никто не точит. Ты машинально прячешь её в карман."
+    },
+    {
+      "type": "give_item",
+      "item": "minecraft:iron_nugget",
+      "count": 3
+    }
+  ]
+}

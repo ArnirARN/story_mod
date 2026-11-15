@@ -1,0 +1,18 @@
+{
+  "once": "player",
+  "pace": "ambient",
+  "if": {
+    "biome": [
+      "minecraft:birch_forest",
+      "minecraft:old_growth_birch_forest"
+    ],
+    "dimension": "minecraft:overworld",
+    "chance": 0.35
+  },
+  "actions": [
+    {
+      "type": "message",
+      "text": "На берёзе вырезаны имя и дата. Дате лет триста. Имя кто-то аккуратно стёр."
+    }
+  ]
+}

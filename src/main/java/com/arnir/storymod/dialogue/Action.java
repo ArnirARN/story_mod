@@ -33,7 +33,8 @@ import java.util.List;
  * set_flag, clear_flag, set_pflag, clear_pflag, title, give_structure_compass, give_item, give_item_all, take_item, give_loot, spawn_npc, despawn_self,
  * despawn_character, become_boss, broadcast, message, effect, sound, lightning,
  * give_item_role, counter_add, star_fall, break_lantern, spawn_echoes, seam_up, teleport_underside, leave_underside,
- * set_time, effect_all, make_boss.
+ * set_time, effect_all, make_boss, mark_place, calm, outpost_done, silence_mark, silence_cure.
+ * spawn_npc takes "at": "anchor" | "place" (with "place": name) | player (default).
  */
 public record Action(String type, JsonObject args) {
 
@@ -92,7 +93,12 @@ public record Action(String type, JsonObject args) {
             }
             case "spawn_npc" -> {
                 int distance = num("distance", 3);
-                if ("anchor".equals(str("at", "")) && state.anchor() != null) {
+                net.minecraft.core.GlobalPos place = "place".equals(str("at", "")) ? state.place(str("place", "")) : null;
+                ServerLevel placeLevel = place == null ? null : level.getServer().getLevel(place.dimension());
+                if (placeLevel != null) {
+                    StoryNpc.spawn(placeLevel, str("character", "veld"), StoryEvents.groundNear(placeLevel, place.pos(), distance),
+                            (float) num("yaw", 0));
+                } else if ("anchor".equals(str("at", "")) && state.anchor() != null) {
                     ServerLevel overworld = level.getServer().overworld();
                     BlockPos base = state.anchor().offset(num("dx", 0), 0, num("dz", 0));
                     StoryNpc.spawn(overworld, str("character", "veld"), StoryEvents.groundNear(overworld, base, distance),
@@ -116,6 +122,12 @@ public record Action(String type, JsonObject args) {
                     }
                 }
             }
+            case "mark_place" -> state.setPlace(str("name", ""), net.minecraft.core.GlobalPos.of(level.dimension(),
+                    npc != null ? npc.blockPosition() : player.blockPosition()));
+            case "silence_mark" -> com.arnir.storymod.story.ActTwo.mark(player);
+            case "silence_cure" -> com.arnir.storymod.story.ActTwo.cure(player);
+            case "calm" -> com.arnir.storymod.story.ActTwo.calm(player, num("days", 2));
+            case "outpost_done" -> com.arnir.storymod.story.Outposts.complete(player, str("outpost", ""));
             case "counter_add" -> state.addCounter(str("counter", ""), num("amount", 1));
             case "star_fall" -> com.arnir.storymod.story.ActTwo.dropStarNow(level.getServer(), player,
                     str("at", "player"), num("distance", 24), args.has("big") && args.get("big").getAsBoolean());

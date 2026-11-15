@@ -1,0 +1,39 @@
+{
+  "once": "world",
+  "pace": "discovery",
+  "if": {
+    "biome": [
+      "minecraft:swamp",
+      "minecraft:mangrove_swamp"
+    ],
+    "dimension": "minecraft:overworld",
+    "time": {
+      "from": 13000,
+      "to": 23000
+    }
+  },
+  "actions": [
+    {
+      "type": "mark_place",
+      "name": "tina"
+    },
+    {
+      "type": "spawn_npc",
+      "character": "tina",
+      "distance": 5
+    },
+    {
+      "type": "set_flag",
+      "flag": "op_swamp_seen"
+    },
+    {
+      "type": "title",
+      "text": "Фонарь над водой",
+      "subtitle": ""
+    },
+    {
+      "type": "message",
+      "text": "Над чёрной водой покачивается фонарь. Под ним, в лодке без вёсел, сидит женщина и смотрит прямо на тебя."
+    }
+  ]
+}

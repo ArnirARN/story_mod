@@ -1,0 +1,24 @@
+{
+  "once": "player",
+  "pace": "ambient",
+  "if": {
+    "biome": [
+      "minecraft:desert"
+    ],
+    "time": {
+      "from": 13000,
+      "to": 23000
+    },
+    "flags": [
+      "outpost_done_desert"
+    ],
+    "dimension": "minecraft:overworld",
+    "chance": 0.35
+  },
+  "actions": [
+    {
+      "type": "message",
+      "text": "Ночью в пустыне песок течёт вверх по склону дюны. Кто-то переворачивает часы."
+    }
+  ]
+}

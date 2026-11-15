@@ -453,6 +453,13 @@ public final class StoryEvents {
             ActTwo.onShadeDefeated(level, boss);
             return;
         }
+        if (boss.getCharacter().equals("veira")) {
+            StoryState s = StoryState.get(level.getServer());
+            s.set("veira_freed");
+            broadcast(level.getServer(), "Хозяйка оседает на пол. Из неё выходит тишина, как дым из погасшей свечи, и в доме впервые за триста лет скрипит половица.");
+            StoryNpc.spawn(level, "veira", groundNear(level, boss.blockPosition(), 1), 0.0F);
+            return;
+        }
         if (boss.getCharacter().equals("nel")) {
             StoryState.get(level.getServer()).set("nel_defeated");
             broadcast(level.getServer(), "Звездочёт падает на колени. Чернота стекает с него, как вода, и он впервые за долгое время слышит собственный вздох.");

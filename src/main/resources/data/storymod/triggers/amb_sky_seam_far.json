@@ -1,0 +1,25 @@
+{
+  "once": "player",
+  "pace": "ambient",
+  "if": {
+    "flags": [
+      "act2_start"
+    ],
+    "not_flags": [
+      "act2_over"
+    ],
+    "biome": "#minecraft:is_ocean",
+    "time": {
+      "from": 13000,
+      "to": 23000
+    },
+    "dimension": "minecraft:overworld",
+    "chance": 0.35
+  },
+  "actions": [
+    {
+      "type": "message",
+      "text": "В воде отражается Шов. В отражении он кажется длиннее, чем на небе."
+    }
+  ]
+}

@@ -1845,4 +1845,310 @@ public final class StoryGameTests {
         leave(helper, p);
         helper.succeed();
     }
+
+    // ------------------------------------------------------------------ stories of far places
+
+    private static void biome(GameTestHelper helper, BlockPos at, ResourceKey<net.minecraft.world.level.biome.Biome> key) {
+        ServerLevel level = helper.getLevel();
+        var holder = level.registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(key);
+        net.minecraft.server.commands.FillBiomeCommand.fill(level, at.offset(-6, -6, -6), at.offset(6, 6, 6), holder);
+    }
+
+    private static void moonNight(GameTestHelper helper, int phase) {
+        ServerLevel level = helper.getLevel();
+        long cycle = 24000L * 8;
+        level.setDayTime((level.getDayTime() / cycle + 1) * cycle + 24000L * phase + 18000L);
+    }
+
+    @GameTest(template = T, batch = "story_56", timeoutTicks = 100)
+    public static void farStoriesStartWhereTheyAreFoundAndKeepTheirPace(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer p = player(helper, "");
+        BlockPos at = p.blockPosition();
+        biome(helper, at, net.minecraft.world.level.biome.Biomes.DESERT);
+        day(helper, 18000);
+        TriggerManager.resetPace(p);
+        triggers(p, state);
+        check(!state.has("op_desert_seen"), "the noon mirage came at night");
+        day(helper, 6000);
+        triggers(p, state);
+        check(state.has("op_desert_seen"), "the desert at noon did not start its story");
+        check(state.place("sayr") != null, "the place was not remembered");
+        StoryNpc sayr = findNpc(helper, "sayr");
+        check(sayr != null, "the mirage did not appear");
+        // A second discovery right away is held back, then comes after a pause.
+        biome(helper, at, net.minecraft.world.level.biome.Biomes.CHERRY_GROVE);
+        triggers(p, state);
+        check(!state.has("op_cherry_seen"), "two discoveries came in one breath");
+        TriggerManager.resetPace(p);
+        triggers(p, state);
+        check(state.has("op_cherry_seen"), "the cherry grove did not start after the pause");
+        // The journal remembers where.
+        state.set("op_desert_met");
+        String where = state.place("sayr").pos().getX() + " " + state.place("sayr").pos().getY();
+        check(JournalManager.pagesFor(p).stream().anyMatch(pg -> pg.contains(where)), "journal has no coordinates");
+        // Small moments: never in the first minutes, then at most one per long while.
+        biome(helper, at, net.minecraft.world.level.biome.Biomes.TAIGA);
+        TriggerManager.resetPace(p);
+        for (int i = 0; i < 40; i++) {
+            triggers(p, state);
+        }
+        check(!state.hasPersonal(p.getUUID(), "trigger_amb_taiga_feeder"), "an ambient moment came right after joining");
+        p.tickCount = TriggerManager.AMBIENT_WARMUP + 1;
+        for (int i = 0; i < 60 && !state.hasPersonal(p.getUUID(), "trigger_amb_taiga_feeder"); i++) {
+            TriggerManager.resetPace(p);
+            triggers(p, state);
+        }
+        check(state.hasPersonal(p.getUUID(), "trigger_amb_taiga_feeder"), "the taiga never said anything");
+        p.getPersistentData().putLong("storymod_pace_any", 0L);
+        biome(helper, at, net.minecraft.world.level.biome.Biomes.BIRCH_FOREST);
+        for (int i = 0; i < 60; i++) {
+            triggers(p, state);
+        }
+        check(!state.hasPersonal(p.getUUID(), "trigger_amb_birch_name"), "two ambient moments came too close");
+        leave(helper, p);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_57")
+    public static void desertMirageWaitsForSunset(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer p = player(helper, "");
+        StoryNpc sayr = npc(helper, "sayr");
+        day(helper, 6000);
+        expectNode(talk(p, sayr), "meet");
+        expectNode(say(p, "Какой сейчас год"), "year");
+        expectNode(say(p, "очень давно"), "denial");
+        expectNode(say(p, "Хорошо"), "hub");
+        check(!hasOption(p, "Вот часы"), "clock accepted without a clock");
+        say(p, "Пока");
+        give(p, new ItemStack(Items.CLOCK));
+        expectNode(talk(p, sayr), "hub");
+        expectNode(say(p, "Вот часы"), "clock");
+        expectNode(say(p, "Где твой караван"), "caravan");
+        check(state.has("op_desert_clock") && count(p, "minecraft:clock") == 0, "clock not taken");
+        say(p, "Найду");
+        triggers(p, state);
+        check(!state.has("op_desert_tag"), "the tag was found outside the pyramid");
+        state.set("op_desert_tag");
+        expectNode(talk(p, sayr), "tag");
+        expectNode(say(p, "Груз сдан"), "read");
+        say(p, "Приду");
+        expectNode(talk(p, sayr), "wait_sunset");
+        DialogueSessions.forget(p);
+        day(helper, 12500);
+        expectNode(talk(p, sayr), "sunset");
+        check(say(p, "Прощай") == null, "dialogue should close");
+        check(state.has("outpost_done_desert") && count(p, "storymod:sayr_hourglass") == 1
+                && count(p, "storymod:outpost_sign") == 1, "no reward from the desert");
+        check(sayr.isRemoved(), "the mirage did not fade");
+        leave(helper, p);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_58")
+    public static void swampFerrywomanCarriesAVoice(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer p = player(helper, PlayerRoles.WANDERER);
+        StoryNpc tina = npc(helper, "tina");
+        expectNode(talk(p, tina), "meet");
+        expectNode(say(p, "Чьи голоса"), "voices");
+        expectNode(say(p, "Чем я могу"), "task");
+        expectNode(say(p, "Попробую"), "hub");
+        check(!hasOption(p, "Вот три"), "lights accepted without lights");
+        say(p, "Пока");
+        give(p, new ItemStack(Items.OCHRE_FROGLIGHT));
+        give(p, new ItemStack(Items.VERDANT_FROGLIGHT));
+        give(p, new ItemStack(Items.PEARLESCENT_FROGLIGHT));
+        expectNode(talk(p, tina), "hub");
+        expectNode(say(p, "Вот три"), "lit");
+        expectNode(say(p, "…"), "voice");
+        expectNode(say(p, "голос прав"), "after_voice");
+        check(say(p, "Спасибо") == null, "dialogue should close");
+        check(state.has("outpost_done_swamp") && count(p, "storymod:tina_shell") == 1, "no shell");
+        check(count(p, "minecraft:ochre_froglight") == 0, "lights not taken");
+        // The shell talks over the silence.
+        state.set("act2_start");
+        state.setPersonal(p.getUUID(), "hollow_mark");
+        com.arnir.storymod.story.ActTwo.tickPlayer(p);
+        check(com.arnir.storymod.story.ActTwo.isCalm(p), "the shell did not calm the silence");
+        leave(helper, p);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_59")
+    public static void bellRingerRingsAtDawn(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer p = player(helper, "");
+        StoryNpc hald = npc(helper, "hald");
+        expectNode(talk(p, hald), "meet");
+        expectNode(say(p, "Что случилось"), "story");
+        expectNode(say(p, "Как тебе помочь"), "task");
+        expectNode(say(p, "Принесу"), "hub");
+        say(p, "Пока");
+        give(p, new ItemStack(Items.BELL));
+        give(p, new ItemStack(Items.SOUL_CAMPFIRE));
+        expectNode(talk(p, hald), "hub");
+        expectNode(say(p, "Вот колокол"), "thaw");
+        check(say(p, "Приду") == null, "dialogue should close");
+        state.setPlace("hald", net.minecraft.core.GlobalPos.of(helper.getLevel().dimension(), p.blockPosition()));
+        day(helper, 12000);
+        triggers(p, state);
+        check(!state.has("op_peaks_rang"), "the bell rang in the evening");
+        day(helper, 23500);
+        triggers(p, state);
+        check(state.has("op_peaks_rang"), "the bell did not ring at dawn");
+        expectNode(talk(p, hald), "rang");
+        check(say(p, "Спасибо") == null, "dialogue should close");
+        check(state.has("outpost_done_peaks") && count(p, "storymod:hald_tongue") == 1, "no clapper");
+        leave(helper, p);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_60")
+    public static void gardenBloomsAtFullMoon(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer p = player(helper, "");
+        StoryNpc seina = npc(helper, "seina");
+        day(helper, 6000);
+        expectNode(talk(p, seina), "meet");
+        expectNode(say(p, "Сколько"), "count");
+        expectNode(say(p, "Принесу"), "hub");
+        check(!hasOption(p, "Вот пять"), "saplings accepted without saplings");
+        say(p, "Пока");
+        for (var item : List.of(Items.JUNGLE_SAPLING, Items.ACACIA_SAPLING, Items.DARK_OAK_SAPLING, Items.SPRUCE_SAPLING,
+                Items.MANGROVE_PROPAGULE)) {
+            give(p, new ItemStack(item));
+        }
+        expectNode(talk(p, seina), "hub");
+        expectNode(say(p, "Вот пять"), "planted");
+        check(say(p, "Приду") == null, "dialogue should close");
+        moonNight(helper, 3);
+        expectNode(talk(p, seina), "wait_moon");
+        DialogueSessions.forget(p);
+        moonNight(helper, 0);
+        expectNode(talk(p, seina), "bloom");
+        expectNode(say(p, "…"), "names");
+        expectNode(say(p, "…"), "petal");
+        check(say(p, "Спасибо") == null, "dialogue should close");
+        check(state.has("outpost_done_cherry") && count(p, "storymod:seina_petal") == 1, "no petal");
+        leave(helper, p);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_61")
+    public static void chroniclerComparesThePages(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer p = player(helper, "");
+        StoryNpc moss = npc(helper, "moss");
+        expectNode(talk(p, moss), "meet");
+        expectNode(say(p, "Какую правду"), "truth");
+        expectNode(say(p, "Почему"), "why");
+        check(count(p, "minecraft:written_book") == 1, "no chronicle");
+        expectNode(say(p, "Договорились"), "hub");
+        check(!hasOption(p, "Я прочёл"), "pages accepted without pages");
+        say(p, "Пока");
+        state.set("page_founding");
+        state.set("page_roster");
+        state.set("page_letter");
+        expectNode(talk(p, moss), "hub");
+        expectNode(say(p, "Я прочёл"), "compare");
+        expectNode(say(p, "Найду"), "spore");
+        check(say(p, "Спасибо") == null, "dialogue should close");
+        check(state.has("outpost_done_mushroom") && count(p, "storymod:moss_spore") == 1, "no spore");
+        leave(helper, p);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_62")
+    public static void captainRemembersHisCargo(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer p = player(helper, PlayerRoles.WANDERER);
+        StoryNpc varg = npc(helper, "varg");
+        expectNode(talk(p, varg), "meet");
+        expectNode(say(p, "Что случилось"), "wreck");
+        expectNode(say(p, "Что был за груз"), "cargo");
+        expectNode(say(p, "Я найду"), "hub");
+        DialogueSessions.forget(p);
+        triggers(p, state);
+        check(!state.has("op_ship_logfound"), "the log was found away from the shore");
+        state.set("op_ship_logfound");
+        expectNode(talk(p, varg), "log");
+        expectNode(say(p, "Читать"), "entry");
+        expectNode(say(p, "холодеют"), "remember");
+        check(say(p, "Прощай") == null, "dialogue should close");
+        check(state.has("outpost_done_ship") && count(p, "storymod:varg_compass") == 1, "no compass");
+        check(varg.isRemoved(), "the captain did not fade");
+        state.set("ilva_met");
+        StoryNpc ilva = npc(helper, "ilva");
+        expectNode(talk(p, ilva), "hub");
+        check(hasOption(p, "Капитан Варг"), "ilva is not asked about the captain");
+        leave(helper, p);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_63")
+    public static void hostessBargainAndRelease(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer p = player(helper, PlayerRoles.KEEPER);
+        StoryNpc veira = npc(helper, "veira");
+        expectNode(talk(p, veira), "meet");
+        expectNode(say(p, "не одна"), "two");
+        expectNode(say(p, "Я останусь"), "stay");
+        check(count(p, "storymod:veira_mirror") == 1 && state.hasPersonal(p.getUUID(), "hollow_mark"), "the bargain was not struck");
+        check(!state.has("outpost_done_mansion"), "the bargain freed the outpost");
+        say(p, "…");
+        expectNode(talk(p, veira), "again");
+        expectNode(say(p, "Хватит"), "fight");
+        check(veira.isHostile(), "the silence did not fight");
+        DialogueSessions.forget(p);
+        veira.kill();
+        check(state.has("veira_freed"), "veira_freed not set");
+        StoryNpc freed = helper.getLevel().getEntities(com.arnir.storymod.registry.ModEntities.STORY_NPC.get(),
+                e -> e.getCharacter().equals("veira") && e.isAlive() && e != veira).stream().findFirst().orElse(null);
+        check(freed != null && !freed.isHostile(), "the hostess did not come back as herself");
+        expectNode(talk(p, freed), "freed");
+        check(!hasOption(p, "Возьми себя"), "a second mirror was offered");
+        expectNode(say(p, "А зеркальце"), "mirror");
+        check(say(p, "Спасибо") == null, "dialogue should close");
+        check(state.has("outpost_done_mansion") && state.hasPersonal(p.getUUID(), "hollow_cured")
+                && count(p, "storymod:veira_mirror") == 1, "release did not settle the bargain");
+        leave(helper, p);
+        helper.succeed();
+    }
+
+    @GameTest(template = T, batch = "story_64")
+    public static void sevenSignsAndRumours(GameTestHelper helper) {
+        StoryState state = freshState(helper);
+        ServerPlayer p = player(helper, "");
+        // Mira points to the first far place nobody has seen yet.
+        state.setPersonal(p.getUUID(), "mira_met");
+        StoryNpc mira = npc(helper, "mira");
+        expectNode(talk(p, mira), "hub");
+        expectNode(say(p, "дальних краях"), "far_desert");
+        DialogueSessions.forget(p);
+        state.set("op_desert_seen");
+        expectNode(talk(p, mira), "hub");
+        expectNode(say(p, "дальних краях"), "far_swamp");
+        DialogueSessions.forget(p);
+        mira.discard();
+        // Os sews the banner from seven signs.
+        for (String id : com.arnir.storymod.story.Outposts.IDS) {
+            com.arnir.storymod.story.Outposts.complete(p, id);
+        }
+        check(state.has("outposts_all") && count(p, "storymod:outpost_sign") == 7, "seven signs not counted");
+        state.set("os_met");
+        StoryNpc os = npc(helper, "os");
+        expectNode(talk(p, os), "hub");
+        expectNode(say(p, "Расскажи о заставах"), "op_tales");
+        expectNode(say(p, "Про Сайра"), "op_tale_desert");
+        expectNode(say(p, "…"), "op_tales");
+        expectNode(say(p, "Потом"), "op_back");
+        expectNode(say(p, "…"), "hub");
+        expectNode(say(p, "семь знаков"), "op_all");
+        check(count(p, "storymod:seven_banner") == 1 && count(p, "storymod:outpost_sign") == 0, "no banner");
+        expectNode(say(p, "Спасибо"), "op_back");
+        leave(helper, p);
+        helper.succeed();
+    }
 }

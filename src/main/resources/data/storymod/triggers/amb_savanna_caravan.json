@@ -1,0 +1,22 @@
+{
+  "once": "player",
+  "pace": "ambient",
+  "if": {
+    "biome": "#minecraft:is_savanna",
+    "time": {
+      "from": 4000,
+      "to": 8000
+    },
+    "not_flags": [
+      "op_desert_seen"
+    ],
+    "dimension": "minecraft:overworld",
+    "chance": 0.35
+  },
+  "actions": [
+    {
+      "type": "message",
+      "text": "В мареве над горизонтом на миг проступает караван. Он идёт в сторону песков и тает."
+    }
+  ]
+}

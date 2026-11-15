@@ -532,6 +532,34 @@
           }
         },
         {
+          "text": "Я собрал семь знаков застав.",
+          "next": "op_all",
+          "if": {
+            "flags": [
+              "outposts_all"
+            ],
+            "not_flags": [
+              "op_all_told"
+            ],
+            "items": [
+              {
+                "item": "storymod:outpost_sign",
+                "count": 7
+              }
+            ]
+          }
+        },
+        {
+          "text": "Расскажи о заставах.",
+          "next": "op_tales",
+          "if": {
+            "flag_count": {
+              "prefix": "outpost_done_",
+              "min": 1
+            }
+          }
+        },
+        {
           "text": "Ничего. До встречи.",
           "next": null
         }
@@ -1381,6 +1409,34 @@
           }
         },
         {
+          "text": "Я собрал семь знаков застав.",
+          "next": "op_all",
+          "if": {
+            "flags": [
+              "outposts_all"
+            ],
+            "not_flags": [
+              "op_all_told"
+            ],
+            "items": [
+              {
+                "item": "storymod:outpost_sign",
+                "count": 7
+              }
+            ]
+          }
+        },
+        {
+          "text": "Расскажи о заставах.",
+          "next": "op_tales",
+          "if": {
+            "flag_count": {
+              "prefix": "outpost_done_",
+              "min": 1
+            }
+          }
+        },
+        {
           "text": "Ничего. До встречи."
         }
       ]
@@ -1821,6 +1877,198 @@
       "options": [
         {
           "text": "…"
+        }
+      ]
+    },
+    "op_tales": {
+      "text": "Ось слушает. О какой заставе?",
+      "options": [
+        {
+          "text": "Про Сайра из пустыни.",
+          "next": "op_tale_desert",
+          "if": {
+            "flags": [
+              "outpost_done_desert"
+            ]
+          }
+        },
+        {
+          "text": "Про перевозчицу Тину.",
+          "next": "op_tale_swamp",
+          "if": {
+            "flags": [
+              "outpost_done_swamp"
+            ]
+          }
+        },
+        {
+          "text": "Про звонаря Хальда.",
+          "next": "op_tale_peaks",
+          "if": {
+            "flags": [
+              "outpost_done_peaks"
+            ]
+          }
+        },
+        {
+          "text": "Про сад Сэйны.",
+          "next": "op_tale_cherry",
+          "if": {
+            "flags": [
+              "outpost_done_cherry"
+            ]
+          }
+        },
+        {
+          "text": "Про летописца Мха.",
+          "next": "op_tale_mushroom",
+          "if": {
+            "flags": [
+              "outpost_done_mushroom"
+            ]
+          }
+        },
+        {
+          "text": "Про капитана Варга.",
+          "next": "op_tale_ship",
+          "if": {
+            "flags": [
+              "outpost_done_ship"
+            ]
+          }
+        },
+        {
+          "text": "Про Вейру.",
+          "next": "op_tale_mansion",
+          "if": {
+            "flags": [
+              "outpost_done_mansion"
+            ]
+          }
+        },
+        {
+          "text": "Потом.",
+          "next": "op_back"
+        }
+      ]
+    },
+    "op_tale_desert": {
+      "text": "Полуденная застава. Песок для часов неба. Ось помнит: часы неба шли, пока Сайр возил песок. Потом встали. Потом треснуло. Ось думает, это связано. Ось редко ошибается.",
+      "options": [
+        {
+          "text": "…",
+          "next": "op_tales"
+        }
+      ]
+    },
+    "op_tale_swamp": {
+      "text": "Высокая застава… Ось знал её. Ось не помнит. Белые и высокие. Кто помнит имя. Кто забыл. Ось помнит своё имя. Ось рада.",
+      "options": [
+        {
+          "text": "…",
+          "next": "op_tales"
+        }
+      ]
+    },
+    "op_tale_peaks": {
+      "text": "Звонарь звонил три дня, и никто не пришёл. Ось бы пришла. Ось тогда была в ящике. Простите, звонарь.",
+      "options": [
+        {
+          "text": "…",
+          "next": "op_tales"
+        }
+      ]
+    },
+    "op_tale_cherry": {
+      "text": "Дерево для каждого. Для Оси тоже? Ось не служила. Ось только работала. Ось хочет дерево. Маленькое.",
+      "options": [
+        {
+          "text": "…",
+          "next": "op_tales"
+        }
+      ]
+    },
+    "op_tale_mushroom": {
+      "text": "Мох пишет правду. Ось записывает всё. Вместе мы — архив. Ось уважает Мха.",
+      "options": [
+        {
+          "text": "…",
+          "next": "op_tales"
+        }
+      ]
+    },
+    "op_tale_ship": {
+      "text": "Белые камни. Где кончается мир и начинается снова. Ось стоит у белых камней очень давно. Ось видела. Ось не скажет. Приказ магистра: не называть.",
+      "options": [
+        {
+          "text": "…",
+          "next": "op_tales"
+        }
+      ]
+    },
+    "op_tale_mansion": {
+      "text": "Впустить тишину, чтобы не было одиноко. Ось понимает. Ось не одобряет. Ось рада, что вы пришли к ней.",
+      "options": [
+        {
+          "text": "…",
+          "next": "op_tales"
+        }
+      ]
+    },
+    "op_all": {
+      "text": "Семь знаков. Ось помнит эту фигуру: семь точек по краю и одна в середине. Середина — круг. Середина — вы.\n\nОрден ушёл наверх, но края снова держат. Ось сошьёт знамя.",
+      "actions": [
+        {
+          "type": "take_item",
+          "item": "storymod:outpost_sign",
+          "count": 7
+        },
+        {
+          "type": "give_item",
+          "item": "storymod:seven_banner",
+          "count": 1
+        },
+        {
+          "type": "set_flag",
+          "flag": "op_all_told"
+        },
+        {
+          "type": "sound",
+          "sound": "minecraft:block.beacon.power_select"
+        },
+        {
+          "type": "broadcast",
+          "text": "Над старым кругом на миг загораются семь огней, по одному с каждого края мира.",
+          "color": "aqua"
+        }
+      ],
+      "options": [
+        {
+          "text": "Спасибо, Ось.",
+          "next": "op_back"
+        }
+      ]
+    },
+    "op_back": {
+      "text": "Щёлк.",
+      "options": [
+        {
+          "text": "…",
+          "next": "a2_hub",
+          "if": {
+            "flags": [
+              "act2_start"
+            ]
+          }
+        },
+        {
+          "text": "…",
+          "next": "hub",
+          "if": {
+            "not_flags": [
+              "act2_start"
+            ]
+          }
         }
       ]
     }

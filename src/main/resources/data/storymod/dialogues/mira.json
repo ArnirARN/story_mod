@@ -327,6 +327,117 @@
           }
         },
         {
+          "text": "Что слышно в дальних краях?",
+          "next": "far_none",
+          "if": {
+            "flags": [
+              "op_desert_seen",
+              "op_swamp_seen",
+              "op_peaks_seen",
+              "op_cherry_seen",
+              "op_mushroom_seen",
+              "op_ship_seen",
+              "op_mansion_seen"
+            ]
+          }
+        },
+        {
+          "text": "Что слышно в дальних краях?",
+          "next": "far_mansion",
+          "if": {
+            "not_flags": [
+              "op_mansion_seen"
+            ],
+            "flags": [
+              "op_desert_seen",
+              "op_swamp_seen",
+              "op_peaks_seen",
+              "op_cherry_seen",
+              "op_mushroom_seen",
+              "op_ship_seen"
+            ]
+          }
+        },
+        {
+          "text": "Что слышно в дальних краях?",
+          "next": "far_ship",
+          "if": {
+            "not_flags": [
+              "op_ship_seen"
+            ],
+            "flags": [
+              "op_desert_seen",
+              "op_swamp_seen",
+              "op_peaks_seen",
+              "op_cherry_seen",
+              "op_mushroom_seen"
+            ]
+          }
+        },
+        {
+          "text": "Что слышно в дальних краях?",
+          "next": "far_mushroom",
+          "if": {
+            "not_flags": [
+              "op_mushroom_seen"
+            ],
+            "flags": [
+              "op_desert_seen",
+              "op_swamp_seen",
+              "op_peaks_seen",
+              "op_cherry_seen"
+            ]
+          }
+        },
+        {
+          "text": "Что слышно в дальних краях?",
+          "next": "far_cherry",
+          "if": {
+            "not_flags": [
+              "op_cherry_seen"
+            ],
+            "flags": [
+              "op_desert_seen",
+              "op_swamp_seen",
+              "op_peaks_seen"
+            ]
+          }
+        },
+        {
+          "text": "Что слышно в дальних краях?",
+          "next": "far_peaks",
+          "if": {
+            "not_flags": [
+              "op_peaks_seen"
+            ],
+            "flags": [
+              "op_desert_seen",
+              "op_swamp_seen"
+            ]
+          }
+        },
+        {
+          "text": "Что слышно в дальних краях?",
+          "next": "far_swamp",
+          "if": {
+            "not_flags": [
+              "op_swamp_seen"
+            ],
+            "flags": [
+              "op_desert_seen"
+            ]
+          }
+        },
+        {
+          "text": "Что слышно в дальних краях?",
+          "next": "far_desert",
+          "if": {
+            "not_flags": [
+              "op_desert_seen"
+            ]
+          }
+        },
+        {
           "text": "Пока, Мира.",
           "next": null
         }
@@ -805,6 +916,117 @@
           }
         },
         {
+          "text": "Что слышно в дальних краях?",
+          "next": "far_none",
+          "if": {
+            "flags": [
+              "op_desert_seen",
+              "op_swamp_seen",
+              "op_peaks_seen",
+              "op_cherry_seen",
+              "op_mushroom_seen",
+              "op_ship_seen",
+              "op_mansion_seen"
+            ]
+          }
+        },
+        {
+          "text": "Что слышно в дальних краях?",
+          "next": "far_mansion",
+          "if": {
+            "not_flags": [
+              "op_mansion_seen"
+            ],
+            "flags": [
+              "op_desert_seen",
+              "op_swamp_seen",
+              "op_peaks_seen",
+              "op_cherry_seen",
+              "op_mushroom_seen",
+              "op_ship_seen"
+            ]
+          }
+        },
+        {
+          "text": "Что слышно в дальних краях?",
+          "next": "far_ship",
+          "if": {
+            "not_flags": [
+              "op_ship_seen"
+            ],
+            "flags": [
+              "op_desert_seen",
+              "op_swamp_seen",
+              "op_peaks_seen",
+              "op_cherry_seen",
+              "op_mushroom_seen"
+            ]
+          }
+        },
+        {
+          "text": "Что слышно в дальних краях?",
+          "next": "far_mushroom",
+          "if": {
+            "not_flags": [
+              "op_mushroom_seen"
+            ],
+            "flags": [
+              "op_desert_seen",
+              "op_swamp_seen",
+              "op_peaks_seen",
+              "op_cherry_seen"
+            ]
+          }
+        },
+        {
+          "text": "Что слышно в дальних краях?",
+          "next": "far_cherry",
+          "if": {
+            "not_flags": [
+              "op_cherry_seen"
+            ],
+            "flags": [
+              "op_desert_seen",
+              "op_swamp_seen",
+              "op_peaks_seen"
+            ]
+          }
+        },
+        {
+          "text": "Что слышно в дальних краях?",
+          "next": "far_peaks",
+          "if": {
+            "not_flags": [
+              "op_peaks_seen"
+            ],
+            "flags": [
+              "op_desert_seen",
+              "op_swamp_seen"
+            ]
+          }
+        },
+        {
+          "text": "Что слышно в дальних краях?",
+          "next": "far_swamp",
+          "if": {
+            "not_flags": [
+              "op_swamp_seen"
+            ],
+            "flags": [
+              "op_desert_seen"
+            ]
+          }
+        },
+        {
+          "text": "Что слышно в дальних краях?",
+          "next": "far_desert",
+          "if": {
+            "not_flags": [
+              "op_desert_seen"
+            ]
+          }
+        },
+        {
           "text": "Пока, Мира."
         }
       ]
@@ -929,6 +1151,101 @@
         {
           "text": "Спасибо, Мира.",
           "next": "a2_hub"
+        }
+      ]
+    },
+    "far_desert": {
+      "text": "Купцы с юга говорят: в пустыне, в самый полдень, можно встретить караванщика без тени. Он всё спрашивает, который час.",
+      "options": [
+        {
+          "text": "Спасибо.",
+          "next": "far_back"
+        }
+      ]
+    },
+    "far_swamp": {
+      "text": "На болотах по ночам видят фонарь над водой. Лодочники туда не ходят. Говорят, там кого-то перевозят, только не людей.",
+      "options": [
+        {
+          "text": "Спасибо.",
+          "next": "far_back"
+        }
+      ]
+    },
+    "far_peaks": {
+      "text": "Пастухи слышат, как в метель кто-то зовёт. Высоко, выше облаков, где снег не тает даже летом.",
+      "options": [
+        {
+          "text": "Спасибо.",
+          "next": "far_back"
+        }
+      ]
+    },
+    "far_cherry": {
+      "text": "В розовых рощах кто-то сажает деревья. Не вишни. Странно, правда?",
+      "options": [
+        {
+          "text": "Спасибо.",
+          "next": "far_back"
+        }
+      ]
+    },
+    "far_mushroom": {
+      "text": "Рыбаки рассказывают про остров из грибов далеко в море. Там живёт старик, который всё записывает. Даже то, чего не было. Или было.",
+      "options": [
+        {
+          "text": "Спасибо.",
+          "next": "far_back"
+        }
+      ]
+    },
+    "far_ship": {
+      "text": "Если ночью наткнёшься на разбитый корабль, не поднимайся на палубу. Капитан до сих пор ищет свой журнал.",
+      "options": [
+        {
+          "text": "Спасибо.",
+          "next": "far_back"
+        }
+      ]
+    },
+    "far_mansion": {
+      "text": "В тёмных лесах стоят дома без окон. Кто-то шлёт оттуда приглашения на ужин. Я не хожу. Я и так худая.",
+      "options": [
+        {
+          "text": "Спасибо.",
+          "next": "far_back"
+        }
+      ]
+    },
+    "far_none": {
+      "text": "Про дальние края ты теперь знаешь больше меня. Это обидно. Расскажешь как-нибудь за чаем?",
+      "options": [
+        {
+          "text": "Обязательно.",
+          "next": "far_back"
+        }
+      ]
+    },
+    "far_back": {
+      "text": "Что-нибудь ещё?",
+      "options": [
+        {
+          "text": "…",
+          "next": "a2_hub",
+          "if": {
+            "flags": [
+              "act2_start"
+            ]
+          }
+        },
+        {
+          "text": "…",
+          "next": "hub",
+          "if": {
+            "not_flags": [
+              "act2_start"
+            ]
+          }
         }
       ]
     }

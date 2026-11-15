@@ -1,0 +1,24 @@
+{
+  "once": "player",
+  "pace": "ambient",
+  "if": {
+    "role": "wanderer",
+    "near_entities": {
+      "type": "minecraft:enderman",
+      "count": 1,
+      "radius": 12
+    },
+    "time": {
+      "from": 13000,
+      "to": 23000
+    },
+    "dimension": "minecraft:overworld",
+    "chance": 0.35
+  },
+  "actions": [
+    {
+      "type": "message",
+      "text": "Высокий поворачивает голову в твою сторону и не нападает. Смотрит долго, будто пытается вспомнить, где тебя видел."
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "once": "player",
+  "pace": "ambient",
+  "if": {
+    "biome": "#minecraft:is_river",
+    "time": {
+      "from": 13000,
+      "to": 23000
+    },
+    "not_flags": [
+      "op_swamp_seen"
+    ],
+    "dimension": "minecraft:overworld",
+    "chance": 0.35
+  },
+  "actions": [
+    {
+      "type": "message",
+      "text": "По реке плывёт бумажный кораблик с нарисованным глазом. Течение несёт его к болотам."
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Рейс последний. Ветер с края мира. Команда молчит.\n\nПриказ магистра вскрыть только у белых камней.",
+                "Груз доставлен. Записывать не велено.\n\nЗаписываю всё равно, потому что боюсь забыть. Остальное скажу капитану, если он спросит."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Судовой журнал Морской заставы",
+              "author": "—",
+              "generation": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -524,7 +524,11 @@ public final class ActTwo {
             return;
         }
         s.setCounter("eclipse_wave", wave + 1);
-        spawnEchoes(overworld, anchor, 3 + wave * 2, 10);
+        boolean bell = Outposts.isDone(s, "peaks");
+        spawnEchoes(overworld, anchor, Math.max(1, 3 + wave * 2 - (bell ? 2 : 0)), 10);
+        if (bell && wave == 0) {
+            StoryEvents.broadcast(server, "Издалека, с гор, бьёт колокол. Безмолвные фигуры вздрагивают, и их становится меньше.");
+        }
         StoryEvents.broadcast(server, wave == 0
                 ? "Из темноты за кругом выходят безмолвные фигуры."
                 : "Ещё одна волна тишины накатывает на круг.");
@@ -724,6 +728,12 @@ public final class ActTwo {
             return;
         }
         if (isMarked(player, s)) {
+            if (!isCalm(player) && PlayerItems.carried(player).stream().anyMatch(st -> st.is(ModItems.TINA_SHELL.get()))) {
+                // The voices in the shell talk over the silence for a while.
+                player.getPersistentData().putLong(CALM_KEY, player.getServer().overworld().getGameTime() + 24000L);
+                player.displayClientMessage(Component.literal("В ракушке шепчут голоса, и тишине нечего сказать поверх них.")
+                        .withStyle(ChatFormatting.AQUA, ChatFormatting.ITALIC), true);
+            }
             tickSilence(player, s);
         }
         Underside.tickPlayer(player, s);

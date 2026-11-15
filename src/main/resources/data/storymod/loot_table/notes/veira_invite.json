@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_written_book_pages",
+              "mode": "replace_all",
+              "pages": [
+                "Дорогой гость!\n\nДом без окон ждёт вас к ужину. Ужин всегда.\n\nКомпас покажет дорогу, если дом не слишком далеко.",
+                "Не берите с собой шума. Мы не любим шум.\n\nВаша Вейра.\n\nИ та, что с ней."
+              ]
+            },
+            {
+              "function": "minecraft:set_book_cover",
+              "title": "Приглашение",
+              "author": "—",
+              "generation": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

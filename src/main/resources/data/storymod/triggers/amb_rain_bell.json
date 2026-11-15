@@ -1,0 +1,23 @@
+{
+  "once": "player",
+  "pace": "ambient",
+  "if": {
+    "biome": [
+      "minecraft:plains",
+      "minecraft:sunflower_plains",
+      "minecraft:meadow"
+    ],
+    "weather": "rain",
+    "not_flags": [
+      "op_peaks_seen"
+    ],
+    "dimension": "minecraft:overworld",
+    "chance": 0.35
+  },
+  "actions": [
+    {
+      "type": "message",
+      "text": "Сквозь дождь доносится звон. Далеко, откуда-то с гор. Колокол, которому никто не отвечает."
+    }
+  ]
+}

@@ -69,7 +69,9 @@ public class JournalManager extends SimpleJsonResourceReloadListener {
                         .replace("{pages}", String.valueOf(state.countWithPrefix("page_")))
                         .replace("{seam}", com.arnir.storymod.story.ActTwo.seamName(state))
                         .replace("{lanterns}", String.valueOf(com.arnir.storymod.story.ActTwo.lanternsAroundCircle(state)))
-                        .replace("{stars}", String.valueOf(state.counter("stars_fallen")));
+                        .replace("{stars}", String.valueOf(state.counter("stars_fallen")))
+                        .replace("{outposts}", String.valueOf(com.arnir.storymod.story.Outposts.done(state)));
+                text = places(text, state);
                 pages.add(entry.title().isEmpty() ? text : "§l" + entry.title() + "§r\n\n" + text);
             }
         }
@@ -77,5 +79,21 @@ public class JournalManager extends SimpleJsonResourceReloadListener {
             pages.add("Страницы пусты. Пока.");
         }
         return pages;
+    }
+
+    private static final java.util.regex.Pattern PLACE = java.util.regex.Pattern.compile("\\{place:([a-z0-9_]+)}");
+
+    /** {place:name} becomes the coordinates the story remembered, or "неизвестно где". */
+    private static String places(String text, StoryState state) {
+        java.util.regex.Matcher m = PLACE.matcher(text);
+        StringBuilder out = new StringBuilder();
+        while (m.find()) {
+            net.minecraft.core.GlobalPos gp = state.place(m.group(1));
+            String where = gp == null ? "неизвестно где" : gp.pos().getX() + " " + gp.pos().getY() + " " + gp.pos().getZ()
+                    + (gp.dimension() == net.minecraft.world.level.Level.OVERWORLD ? "" : " (" + gp.dimension().location().getPath() + ")");
+            m.appendReplacement(out, java.util.regex.Matcher.quoteReplacement(where));
+        }
+        m.appendTail(out);
+        return out.toString();
     }
 }

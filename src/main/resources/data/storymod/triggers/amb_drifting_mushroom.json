@@ -1,0 +1,18 @@
+{
+  "once": "player",
+  "pace": "ambient",
+  "if": {
+    "biome": "#minecraft:is_deep_ocean",
+    "not_flags": [
+      "op_mushroom_seen"
+    ],
+    "dimension": "minecraft:overworld",
+    "chance": 0.35
+  },
+  "actions": [
+    {
+      "type": "message",
+      "text": "Мимо проплывает гриб. Целый, огромный, красный. Откуда-то из открытого моря."
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "once": "player",
+  "pace": "ambient",
+  "if": {
+    "biome": [
+      "minecraft:meadow",
+      "minecraft:flower_forest",
+      "minecraft:plains"
+    ],
+    "not_flags": [
+      "op_cherry_seen"
+    ],
+    "dimension": "minecraft:overworld",
+    "chance": 0.35
+  },
+  "actions": [
+    {
+      "type": "message",
+      "text": "Порыв ветра приносит розовые лепестки. Здесь вишни не растут."
+    }
+  ]
+}

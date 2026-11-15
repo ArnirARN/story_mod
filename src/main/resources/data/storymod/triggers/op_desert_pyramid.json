@@ -1,0 +1,28 @@
+{
+  "once": "world",
+  "if": {
+    "flags": [
+      "op_desert_clock"
+    ],
+    "structure": "minecraft:desert_pyramid"
+  },
+  "actions": [
+    {
+      "type": "give_loot",
+      "table": "storymod:notes/sayr_tag"
+    },
+    {
+      "type": "set_flag",
+      "flag": "op_desert_tag"
+    },
+    {
+      "type": "sound",
+      "sound": "minecraft:block.chain.place"
+    },
+    {
+      "type": "message",
+      "text": "Между плитами, под слоем песка, лежит латунная бирка на цепочке. На ней печать: солнце, разрезанное линией.",
+      "color": "yellow"
+    }
+  ]
+}

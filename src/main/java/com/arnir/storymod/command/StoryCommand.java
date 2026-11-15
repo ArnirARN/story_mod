@@ -27,7 +27,8 @@ import java.util.List;
  * </ul>
  */
 public final class StoryCommand {
-    public static final List<String> CHARACTERS = List.of("veld", "os", "ash", "irmen", "mira", "nel", "ilva", "shade");
+    public static final List<String> CHARACTERS = List.of("veld", "os", "ash", "irmen", "mira", "nel", "ilva", "shade",
+            "sayr", "tina", "hald", "seina", "moss", "varg", "veira");
 
     private StoryCommand() {
     }

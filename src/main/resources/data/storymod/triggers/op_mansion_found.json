@@ -1,0 +1,27 @@
+{
+  "once": "world",
+  "pace": "discovery",
+  "if": {
+    "structure": "#storymod:mansions",
+    "dimension": "minecraft:overworld"
+  },
+  "actions": [
+    {
+      "type": "mark_place",
+      "name": "veira"
+    },
+    {
+      "type": "spawn_npc",
+      "character": "veira",
+      "distance": 3
+    },
+    {
+      "type": "set_flag",
+      "flag": "op_mansion_seen"
+    },
+    {
+      "type": "message",
+      "text": "В пустом зале накрыт стол на двоих. Хозяйка дома поднимается навстречу, и свечи клонятся к ней, как к сквозняку."
+    }
+  ]
+}

@@ -40,6 +40,9 @@ import java.util.function.BiPredicate;
  *   "counter": {"name": "stars_fallen", "min": 2},       // a story counter
  *   "lanterns": 4,                               // star lanterns standing around the old circle
  *   "chance": 0.25,                              // passes only sometimes
+ *   "biome": "minecraft:desert" | "#minecraft:is_ocean" | [...],   // standing in one of these biomes
+ *   "near_place": {"name": "sayr", "radius": 12},  // near a place the story remembered (same dimension)
+ *   "weather": "rain" | "thunder" | "clear",     // at the player's position
  *   "not": {...},                                // the nested condition fails
  *   "any": [ {...}, {...} ]                      // at least one nested condition passes
  * }
@@ -125,6 +128,35 @@ public final class Condition {
             } else {
                 parts.add((p, s) -> p.level().dimension().location().toString().equals(dim));
             }
+        }
+        if (obj.has("biome")) {
+            List<String> biomes = new ArrayList<>();
+            if (obj.get("biome").isJsonArray()) {
+                biomes.addAll(strings(obj, "biome"));
+            } else {
+                biomes.add(obj.get("biome").getAsString());
+            }
+            parts.add((p, s) -> inBiome(p, biomes));
+        }
+        if (obj.has("near_place")) {
+            JsonObject np = obj.getAsJsonObject("near_place");
+            String name = np.get("name").getAsString();
+            double radius = np.has("radius") ? np.get("radius").getAsDouble() : 12;
+            parts.add((p, s) -> {
+                net.minecraft.core.GlobalPos gp = s.place(name);
+                return gp != null && gp.dimension() == p.level().dimension()
+                        && gp.pos().distToCenterSqr(p.position()) <= radius * radius;
+            });
+        }
+        if (obj.has("weather")) {
+            String weather = obj.get("weather").getAsString();
+            parts.add((p, s) -> {
+                return switch (weather) {
+                    case "rain" -> p.level().isRaining();
+                    case "thunder" -> p.level().isThundering();
+                    default -> !p.level().isRaining();
+                };
+            });
         }
         if (obj.has("near_anchor")) {
             double radius = obj.get("near_anchor").getAsDouble();
@@ -257,4 +289,20 @@ public final class Condition {
         return true;
     }
 
+
+    private static boolean inBiome(ServerPlayer player, List<String> biomes) {
+        net.minecraft.core.Holder<net.minecraft.world.level.biome.Biome> biome = player.level().getBiome(player.blockPosition());
+        for (String b : biomes) {
+            if (b.startsWith("#")) {
+                net.minecraft.tags.TagKey<net.minecraft.world.level.biome.Biome> tag = net.minecraft.tags.TagKey.create(
+                        net.minecraft.core.registries.Registries.BIOME, ResourceLocation.parse(b.substring(1)));
+                if (biome.is(tag)) {
+                    return true;
+                }
+            } else if (biome.is(ResourceLocation.parse(b))) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

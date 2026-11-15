@@ -39,6 +39,8 @@ public class StoryState extends SavedData {
     /** The next falling star: game time of impact (0 = none planned) and where it lands. */
     private long nextStarTime;
     private BlockPos nextStarPos;
+    /** Named places the story remembers (where someone was met), with their dimension. */
+    private final Map<String, net.minecraft.core.GlobalPos> places = new HashMap<>();
     private transient MinecraftServer server;
 
     public static StoryState get(MinecraftServer server) {
@@ -89,6 +91,16 @@ public class StoryState extends SavedData {
         for (long packed : tag.getLongArray("Lanterns")) {
             state.lanterns.add(BlockPos.of(packed));
         }
+        CompoundTag placeTag = tag.getCompound("Places");
+        for (String key : placeTag.getAllKeys()) {
+            CompoundTag p = placeTag.getCompound(key);
+            net.minecraft.resources.ResourceLocation dim = net.minecraft.resources.ResourceLocation.tryParse(p.getString("Dim"));
+            if (dim != null) {
+                state.places.put(key, net.minecraft.core.GlobalPos.of(
+                        net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.DIMENSION, dim),
+                        BlockPos.of(p.getLong("Pos"))));
+            }
+        }
         state.nextStarTime = tag.getLong("NextStarTime");
         if (tag.contains("NextStarPos")) {
             state.nextStarPos = BlockPos.of(tag.getLong("NextStarPos"));
@@ -126,6 +138,14 @@ public class StoryState extends SavedData {
         counters.forEach(counterTag::putInt);
         tag.put("Counters", counterTag);
         tag.putLongArray("Lanterns", lanterns.stream().mapToLong(BlockPos::asLong).toArray());
+        CompoundTag placeTag = new CompoundTag();
+        places.forEach((key, gp) -> {
+            CompoundTag p = new CompoundTag();
+            p.putString("Dim", gp.dimension().location().toString());
+            p.putLong("Pos", gp.pos().asLong());
+            placeTag.put(key, p);
+        });
+        tag.put("Places", placeTag);
         tag.putLong("NextStarTime", nextStarTime);
         if (nextStarPos != null) {
             tag.putLong("NextStarPos", nextStarPos.asLong());
@@ -293,7 +313,17 @@ public class StoryState extends SavedData {
         setDirty();
     }
 
+    public net.minecraft.core.GlobalPos place(String name) {
+        return places.get(name);
+    }
+
+    public void setPlace(String name, net.minecraft.core.GlobalPos pos) {
+        places.put(name, pos);
+        setDirty();
+    }
+
     public void reset() {
+        places.clear();
         counters.clear();
         lanterns.clear();
         nextStarTime = 0;
