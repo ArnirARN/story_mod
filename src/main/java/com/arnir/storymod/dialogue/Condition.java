@@ -120,7 +120,11 @@ public final class Condition {
         }
         if (obj.has("dimension")) {
             String dim = obj.get("dimension").getAsString();
-            parts.add((p, s) -> p.level().dimension().location().toString().equals(dim));
+            if (dim.equals(com.arnir.storymod.story.Underside.KEY.location().toString())) {
+                parts.add((p, s) -> com.arnir.storymod.story.Underside.isHere(p));
+            } else {
+                parts.add((p, s) -> p.level().dimension().location().toString().equals(dim));
+            }
         }
         if (obj.has("near_anchor")) {
             double radius = obj.get("near_anchor").getAsDouble();

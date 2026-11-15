@@ -39,12 +39,23 @@ public final class Underside {
     private Underside() {
     }
 
+    /**
+     * The level that hosts the island. The game test server ignores datapack dimensions, so there the
+     * island is built in the Nether instead; everywhere else it is storymod:underside.
+     */
+    public static ResourceKey<Level> key(MinecraftServer server) {
+        if (server.getLevel(KEY) == null && server instanceof net.minecraft.gametest.framework.GameTestServer) {
+            return Level.NETHER;
+        }
+        return KEY;
+    }
+
     public static ServerLevel level(MinecraftServer server) {
-        return server.getLevel(KEY);
+        return server.getLevel(key(server));
     }
 
     public static boolean isHere(ServerPlayer player) {
-        return player.level().dimension() == KEY;
+        return player.getServer() != null && player.level().dimension() == key(player.getServer());
     }
 
     public static void enter(ServerPlayer player) {

@@ -503,10 +503,10 @@ public final class ActTwo {
             }
         }
         if (!s.has("eclipse_active")) {
-            if (night && someoneThere && s.counter("eclipse_tries") < 1000) {
-                startEclipse(server);
+            if (!night || !someoneThere || s.counter("eclipse_tries") >= 1000) {
+                return;
             }
-            return;
+            startEclipse(server);
         }
         if (!night || !someoneThere) {
             s.clear("eclipse_active");
@@ -828,7 +828,7 @@ public final class ActTwo {
         if (!started(s) || over(s) || seam(s) < 2) {
             return;
         }
-        boolean dark = player.level().dimension() == Underside.KEY
+        boolean dark = Underside.isHere(player)
                 || (player.level().dimension() == Level.OVERWORLD && isNight(player.getServer().overworld().getDayTime()));
         if (dark) {
             mark(player);

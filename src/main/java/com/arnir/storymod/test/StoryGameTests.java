@@ -1608,7 +1608,7 @@ public final class StoryGameTests {
         ServerPlayer w = player(helper, PlayerRoles.WANDERER);
         ServerPlayer k = player(helper, PlayerRoles.KEEPER);
         com.arnir.storymod.story.Underside.enter(k);
-        check(k.level().dimension() == com.arnir.storymod.story.Underside.KEY, "keeper did not cross the seam");
+        check(com.arnir.storymod.story.Underside.isHere(k), "keeper did not cross the seam");
         check(under.getBlockState(com.arnir.storymod.story.Underside.CENTER).is(net.minecraft.world.level.block.Blocks.REINFORCED_DEEPSLATE),
                 "island not built");
         List<StoryNpc> ilvas = new ArrayList<>(under.getEntities(com.arnir.storymod.registry.ModEntities.STORY_NPC.get(),
@@ -1755,7 +1755,7 @@ public final class StoryGameTests {
         ServerPlayer w = player(helper, PlayerRoles.WANDERER);
         w.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
         give(w, new ItemStack(ModItems.ILVA_THREAD.get()));
-        w.hurt(helper.getLevel().damageSources().generic(), 1000.0F);
+        w.hurt(helper.getLevel().damageSources().genericKill(), 1000.0F);
         check(w.isAlive() && w.getHealth() > 0, "thread did not save the wanderer");
         check(w.getCooldowns().isOnCooldown(ModItems.ILVA_THREAD.get()), "thread has no cooldown");
         check(com.arnir.storymod.story.PersonalItems.isBound(new ItemStack(ModItems.ILVA_THREAD.get())), "thread is not bound");
@@ -1823,7 +1823,7 @@ public final class StoryGameTests {
         p.moveTo(a.getX() + 0.5, a.getY(), a.getZ() + 0.5);
         p.setShiftKeyDown(true);
         com.arnir.storymod.story.ActTwo.tickPlayer(p);
-        check(p.level().dimension() == com.arnir.storymod.story.Underside.KEY, "sneaking at the lodestone did not lead across");
+        check(com.arnir.storymod.story.Underside.isHere(p), "sneaking at the lodestone did not lead across");
         p.moveTo(com.arnir.storymod.story.Underside.EXIT.getX() + 0.5, com.arnir.storymod.story.Underside.EXIT.getY(),
                 com.arnir.storymod.story.Underside.EXIT.getZ() + 0.5);
         com.arnir.storymod.story.ActTwo.tickPlayer(p);
