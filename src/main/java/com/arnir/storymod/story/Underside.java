@@ -107,7 +107,7 @@ public final class Underside {
             leave(player);
         }
         ServerLevel level = player.serverLevel();
-        if (level.getGameTime() % 200 == 0) {
+        if (level.getGameTime() % 40 == 0) {
             ensureCast(level, s);
         }
     }

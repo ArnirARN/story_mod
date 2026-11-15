@@ -1613,6 +1613,8 @@ public final class StoryGameTests {
                 "island not built");
         // Entities in a freshly loaded dimension become visible a few ticks after the chunks get a ticket.
         helper.runAfterDelay(20, () -> {
+            // The player tick re-checks the cast once the island chunks are loaded; mock players do not tick.
+            com.arnir.storymod.story.Underside.ensureCast(under, state);
             List<StoryNpc> ilvas = new ArrayList<>(under.getEntities(com.arnir.storymod.registry.ModEntities.STORY_NPC.get(),
                     e -> e.getCharacter().equals("ilva") && e.isAlive()));
             StringBuilder seen = new StringBuilder();
