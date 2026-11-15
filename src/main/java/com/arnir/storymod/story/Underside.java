@@ -111,6 +111,13 @@ public final class Underside {
     }
 
     public static void ensureArena(ServerLevel level) {
+        // The island stays loaded so the people it keeps are always there (and findable) when someone arrives.
+        int r = Math.floorDiv(RADIUS + 1, 16) + 1;
+        for (int cx = -r; cx < r; cx++) {
+            for (int cz = -r; cz < r; cz++) {
+                level.setChunkForced(cx, cz, true);
+            }
+        }
         level.getChunkAt(CENTER);
         if (level.getBlockState(CENTER).is(Blocks.REINFORCED_DEEPSLATE)) {
             return;
